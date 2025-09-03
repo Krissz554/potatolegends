@@ -1,7 +1,7 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using DG.Tweening;
 using PotatoCardGame.Core;
 using PotatoCardGame.Network;
 using PotatoCardGame.Battle;

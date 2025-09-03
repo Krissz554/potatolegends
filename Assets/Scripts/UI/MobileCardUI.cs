@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using DG.Tweening;
+
 using PotatoCardGame.Data;
 
 namespace PotatoCardGame.UI

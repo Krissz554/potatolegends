@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using DG.Tweening;
+
 using PotatoCardGame.Data;
 using PotatoCardGame.Battle;
 using PotatoCardGame.Network;
