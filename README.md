@@ -1,73 +1,115 @@
-# Welcome to your Lovable project
+# 🎮 Potato Card Game - Unity Mobile Version
 
-## Project info
+## 📱 Unity 6 Mobile Trading Card Game
 
-**URL**: https://lovable.dev/projects/262bb457-a944-4fe6-af56-8e864fc38f29
+This is the Unity mobile version of "What's My Potato?" - a real-time multiplayer trading card game with potato-themed cards, battles, and collection mechanics.
 
-## How can I edit this code?
+## 🚀 Quick Start
 
-There are several ways of editing your application.
+### Requirements
+- **Unity 6000.2.2f1** (Unity 6) or newer
+- **Mobile Build Modules** (Android/iOS)
+- **Git** for version control
 
-**Use Lovable**
+### Opening the Project
+1. **Clone this repository** to your local machine
+2. **Switch to the `unity-mobile-game` branch**
+3. **Open Unity Hub**
+4. **Add project** and select this folder
+5. **Unity will automatically import** all assets and scripts
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/262bb457-a944-4fe6-af56-8e864fc38f29) and start prompting.
+## 🏗️ Project Structure
 
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+```
+Assets/
+├── Scripts/
+│   ├── Core/          # GameManager, core systems
+│   ├── Cards/         # Card display and interaction
+│   ├── Battle/        # Combat system
+│   ├── UI/            # User interface
+│   ├── Network/       # Supabase integration
+│   ├── Data/          # ScriptableObjects
+│   └── Utils/         # Helper functions
+├── Scenes/            # Game scenes
+├── Prefabs/           # Reusable objects
+├── Art/               # Sprites and textures
+└── Audio/             # Sound effects
 ```
 
-**Edit a file directly in GitHub**
+## 🔌 Backend Integration
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+- **Database**: Supabase PostgreSQL (same as web version)
+- **Authentication**: Supabase Auth with Unity integration
+- **Real-time**: WebSocket connections for live battles
+- **API**: RESTful endpoints for game data
 
-**Use GitHub Codespaces**
+## 📱 Mobile Features
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+- **Touch Controls**: Drag and drop card playing
+- **Responsive UI**: Adapts to all screen sizes
+- **Performance Optimized**: 60+ FPS on mobile devices
+- **Battery Efficient**: Optimized for extended gameplay
+- **Cross-Platform**: Android and iOS support
 
-## What technologies are used for this project?
+## 🎯 Core Systems
 
-This project is built with:
+### ✅ Implemented
+- **GameManager**: Core game state management
+- **SupabaseClient**: Backend authentication and API calls
+- **CardData**: ScriptableObject system for 236+ cards
+- **CardDisplay**: Interactive card UI with animations
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+### 🚧 In Development
+- Battle system and turn-based combat
+- Deck builder for mobile
+- Collection browser
+- Real-time multiplayer
+- Hero system integration
 
-## How can I deploy this project?
+## 🎨 Visual Style
 
-Simply open [Lovable](https://lovable.dev/projects/262bb457-a944-4fe6-af56-8e864fc38f29) and click on Share -> Publish.
+- **Pixel Art**: Retro-inspired card designs
+- **Modern UI**: Clean, mobile-optimized interface
+- **Smooth Animations**: DOTween-powered transitions
+- **Visual Effects**: Particle systems and shaders
 
-## Can I connect a custom domain to my Lovable project?
+## 🔧 Development
 
-Yes, you can!
+### Required Packages
+- **Newtonsoft JSON**: For API communication
+- **DOTween**: For smooth animations
+- **TextMeshPro**: For text rendering
+- **Unity UI**: For interface elements
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+### Build Targets
+- **Android**: API Level 24+ (Android 7.0+)
+- **iOS**: iOS 12.0+
+- **Development**: Unity Editor for testing
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+## 🎮 Game Features
+
+- **236+ Unique Cards** with different rarities and abilities
+- **Real-time Battles** with turn-based strategy
+- **Deck Building** with 30-card decks and copy limits
+- **Collection System** for discovering and managing cards
+- **Hero Powers** for strategic gameplay
+- **Cross-platform Play** with web version users
+
+## 🚀 Getting Started Development
+
+1. **Open MainScene** in `Assets/Scenes/`
+2. **Check GameManager** is in the scene
+3. **Configure SupabaseClient** with your credentials
+4. **Press Play** to test core systems
+5. **Switch to mobile platform** in Build Settings
+
+## 📊 Performance Targets
+
+- **60+ FPS** on mid-range mobile devices
+- **< 2 second** scene transitions
+- **< 100 MB** total app size
+- **Efficient memory usage** for smooth gameplay
+
+---
+
+*Built with Unity 6 for optimal mobile performance and modern development features!* 🚀
