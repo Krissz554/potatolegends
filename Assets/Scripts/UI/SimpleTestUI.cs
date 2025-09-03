@@ -37,8 +37,27 @@ namespace PotatoCardGame.UI
             {
                 GameObject eventSystemObj = new GameObject("EventSystem");
                 eventSystemObj.AddComponent<UnityEngine.EventSystems.EventSystem>();
-                eventSystemObj.AddComponent<UnityEngine.EventSystems.StandaloneInputModule>();
-                Debug.Log("✅ EventSystem created for input handling");
+                
+                // Try to use InputSystemUIInputModule if available, fallback to StandaloneInputModule
+                try
+                {
+                    var inputSystemType = System.Type.GetType("UnityEngine.InputSystem.UI.InputSystemUIInputModule, Unity.InputSystem");
+                    if (inputSystemType != null)
+                    {
+                        eventSystemObj.AddComponent(inputSystemType);
+                        Debug.Log("✅ EventSystem created with New Input System support");
+                    }
+                    else
+                    {
+                        eventSystemObj.AddComponent<UnityEngine.EventSystems.StandaloneInputModule>();
+                        Debug.Log("✅ EventSystem created with Legacy Input System");
+                    }
+                }
+                catch
+                {
+                    eventSystemObj.AddComponent<UnityEngine.EventSystems.StandaloneInputModule>();
+                    Debug.Log("✅ EventSystem created with Legacy Input System (fallback)");
+                }
             }
             
             // Create test text
