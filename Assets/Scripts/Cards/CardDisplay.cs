@@ -2,7 +2,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
-using DG.Tweening;
 using PotatoCardGame.Data;
 
 namespace PotatoCardGame.Cards
@@ -165,9 +164,8 @@ namespace PotatoCardGame.Cards
         {
             if (!isInteractable || isDragging) return;
             
-            // Scale up animation
-            transform.DOScale(Vector3.one * hoverScale, hoverDuration)
-                     .SetEase(Ease.OutBack);
+            // Scale up animation using Unity's built-in system
+            StartCoroutine(AnimateScale(Vector3.one * hoverScale, hoverDuration));
             
             // Bring to front
             transform.SetAsLastSibling();
@@ -182,8 +180,7 @@ namespace PotatoCardGame.Cards
             if (!isInteractable || isDragging) return;
             
             // Scale back to normal
-            transform.DOScale(Vector3.one, hoverDuration)
-                     .SetEase(Ease.OutQuad);
+            StartCoroutine(AnimateScale(Vector3.one, hoverDuration));
         }
         
         public void OnPointerClick(PointerEventData eventData)
@@ -208,7 +205,7 @@ namespace PotatoCardGame.Cards
             canvasGroup.blocksRaycasts = false;
             
             // Scale back to normal size
-            transform.DOScale(Vector3.one, 0.1f);
+            StartCoroutine(AnimateScale(Vector3.one, 0.1f));
             
             OnCardDragStart?.Invoke(this);
             
@@ -251,18 +248,14 @@ namespace PotatoCardGame.Cards
         public void ReturnToHand()
         {
             // Animate back to original position
-            transform.DOMove(originalPosition, 0.3f).SetEase(Ease.OutQuad);
+            StartCoroutine(AnimatePosition(originalPosition, 0.3f));
             transform.SetSiblingIndex(siblingIndex);
         }
         
         public void PlayCard()
         {
             // Animation for playing the card
-            transform.DOScale(Vector3.zero, 0.3f).SetEase(Ease.InBack)
-                     .OnComplete(() => {
-                         OnCardPlayed?.Invoke(this);
-                         gameObject.SetActive(false);
-                     });
+            StartCoroutine(AnimateCardPlay());
             
             Debug.Log($"✨ Card played: {cardData?.cardName}");
         }
@@ -270,12 +263,85 @@ namespace PotatoCardGame.Cards
         public void DestroyCard()
         {
             // Death animation
-            transform.DOScale(Vector3.zero, 0.5f).SetEase(Ease.InBack);
-            canvasGroup.DOFade(0f, 0.5f)
-                       .OnComplete(() => Destroy(gameObject));
+            StartCoroutine(AnimateCardDestroy());
             
             Debug.Log($"💀 Card destroyed: {cardData?.cardName}");
         }
+        
+        #region Animation Coroutines
+        
+        private System.Collections.IEnumerator AnimateScale(Vector3 targetScale, float duration)
+        {
+            Vector3 startScale = transform.localScale;
+            float elapsedTime = 0f;
+            
+            while (elapsedTime < duration)
+            {
+                elapsedTime += Time.deltaTime;
+                float t = elapsedTime / duration;
+                
+                // Smooth curve
+                t = Mathf.SmoothStep(0f, 1f, t);
+                
+                transform.localScale = Vector3.Lerp(startScale, targetScale, t);
+                yield return null;
+            }
+            
+            transform.localScale = targetScale;
+        }
+        
+        private System.Collections.IEnumerator AnimatePosition(Vector3 targetPosition, float duration)
+        {
+            Vector3 startPosition = transform.position;
+            float elapsedTime = 0f;
+            
+            while (elapsedTime < duration)
+            {
+                elapsedTime += Time.deltaTime;
+                float t = elapsedTime / duration;
+                
+                t = Mathf.SmoothStep(0f, 1f, t);
+                
+                transform.position = Vector3.Lerp(startPosition, targetPosition, t);
+                yield return null;
+            }
+            
+            transform.position = targetPosition;
+        }
+        
+        private System.Collections.IEnumerator AnimateCardPlay()
+        {
+            yield return StartCoroutine(AnimateScale(Vector3.zero, 0.3f));
+            OnCardPlayed?.Invoke(this);
+            gameObject.SetActive(false);
+        }
+        
+        private System.Collections.IEnumerator AnimateCardDestroy()
+        {
+            // Scale and fade out simultaneously
+            StartCoroutine(AnimateScale(Vector3.zero, 0.5f));
+            yield return StartCoroutine(AnimateFade(0f, 0.5f));
+            Destroy(gameObject);
+        }
+        
+        private System.Collections.IEnumerator AnimateFade(float targetAlpha, float duration)
+        {
+            float startAlpha = canvasGroup.alpha;
+            float elapsedTime = 0f;
+            
+            while (elapsedTime < duration)
+            {
+                elapsedTime += Time.deltaTime;
+                float t = elapsedTime / duration;
+                
+                canvasGroup.alpha = Mathf.Lerp(startAlpha, targetAlpha, t);
+                yield return null;
+            }
+            
+            canvasGroup.alpha = targetAlpha;
+        }
+        
+        #endregion
         
         // Public getters
         public CardData GetCardData() => cardData;
@@ -284,9 +350,8 @@ namespace PotatoCardGame.Cards
         
         private void OnDestroy()
         {
-            // Clean up any running tweens
-            transform.DOKill();
-            if (canvasGroup) canvasGroup.DOKill();
+            // Stop all coroutines
+            StopAllCoroutines();
         }
     }
 }

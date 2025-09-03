@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using DG.Tweening;
 using PotatoCardGame.Core;
 
 namespace PotatoCardGame.UI
@@ -44,7 +43,6 @@ namespace PotatoCardGame.UI
         
         [Header("Animation Settings")]
         [SerializeField] private float screenTransitionDuration = 0.3f;
-        [SerializeField] private Ease screenTransitionEase = Ease.OutQuad;
         
         // Singleton pattern
         public static UIManager Instance { get; private set; }
