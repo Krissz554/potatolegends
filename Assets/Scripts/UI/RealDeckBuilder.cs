@@ -497,53 +497,7 @@ namespace PotatoCardGame.UI
             return content.transform;
         }
         
-        private void CreateDeckInfoPanel(Transform parent)
-        {
-            GameObject infoPanel = CreatePanel("Deck Info Panel", parent);
-            Image infoBg = infoPanel.GetComponent<Image>();
-            infoBg.color = new Color(0f, 0f, 0f, 0.6f);
-            
-            RectTransform infoRect = infoPanel.GetComponent<RectTransform>();
-            infoRect.anchorMin = new Vector2(0.05f, 0.02f);
-            infoRect.anchorMax = new Vector2(0.95f, 0.08f);
-            infoRect.offsetMin = Vector2.zero;
-            infoRect.offsetMax = Vector2.zero;
-            
-            // Deck progress
-            GameObject progressObj = new GameObject("Deck Progress");
-            progressObj.transform.SetParent(infoPanel.transform, false);
-            progressObj.layer = 5;
-            
-            deckCountText = progressObj.AddComponent<TextMeshProUGUI>();
-            deckCountText.text = "Cards: 0/30";
-            deckCountText.fontSize = 24;
-            deckCountText.color = Color.white;
-            deckCountText.alignment = TextAlignmentOptions.Center;
-            deckCountText.fontStyle = FontStyles.Bold;
-            
-            RectTransform progressRect = progressObj.GetComponent<RectTransform>();
-            progressRect.anchorMin = new Vector2(0.1f, 0f);
-            progressRect.anchorMax = new Vector2(0.4f, 1f);
-            progressRect.offsetMin = Vector2.zero;
-            progressRect.offsetMax = Vector2.zero;
-            
-            // Validation status
-            GameObject validationObj = new GameObject("Validation Status");
-            validationObj.transform.SetParent(infoPanel.transform, false);
-            validationObj.layer = 5;
-            
-            validationText = validationObj.AddComponent<TextMeshProUGUI>();
-            validationText.text = "❌ Need 30 cards";
-            validationText.fontSize = 20;
-            validationText.color = new Color(1f, 0.3f, 0.3f, 1f);
-            validationText.alignment = TextAlignmentOptions.Center;
-            
-            RectTransform validationRect = validationObj.GetComponent<RectTransform>();
-            validationRect.anchorMin = new Vector2(0.6f, 0f);
-            validationRect.anchorMax = new Vector2(0.9f, 1f);
-            validationRect.offsetMin = Vector2.zero;
-            validationRect.offsetMax = Vector2.zero;
-        }
+
         
         private void SetupEventListeners()
         {

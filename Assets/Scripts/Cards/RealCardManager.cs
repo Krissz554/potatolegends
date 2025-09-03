@@ -225,32 +225,210 @@ namespace PotatoCardGame.Cards
         
         public GameObject CreateCardDisplay(RealSupabaseClient.EnhancedCard card, Transform parent = null, bool showQuantity = false)
         {
-            if (cardPrefab == null)
-            {
-                Debug.LogError("❌ Card prefab not assigned!");
-                return null;
-            }
+            // Create a simple card display without prefab dependency
+            GameObject cardObject = CreateSimpleCardDisplay(card, parent);
             
-            Transform spawnParent = parent ?? cardContainer;
-            GameObject cardObject = Instantiate(cardPrefab, spawnParent);
-            
-            // Configure card display
-            CardDisplay cardDisplay = cardObject.GetComponent<CardDisplay>();
-            if (cardDisplay != null)
+            // Load real card image
+            if (!string.IsNullOrEmpty(card.illustration_url))
             {
-                // Convert EnhancedCard to CardData
-                CardData cardData = ConvertEnhancedCardToCardData(card);
-                cardDisplay.Initialize(cardData, false); // Not in hand area for collection
-                
-                // Show quantity if requested
-                if (showQuantity)
+                Image cardImage = cardObject.GetComponent<Image>();
+                if (cardImage != null && ImageLoader.Instance != null)
                 {
-                    int quantity = GetCardQuantity(card.id);
-                    // TODO: Display quantity on card UI
+                    ImageLoader.Instance.LoadImageFromURL(card.illustration_url, cardImage);
                 }
             }
             
+            // Show quantity if requested
+            if (showQuantity)
+            {
+                int quantity = GetCardQuantity(card.id);
+                AddQuantityBadge(cardObject, quantity);
+            }
+            
             return cardObject;
+        }
+        
+        private GameObject CreateSimpleCardDisplay(RealSupabaseClient.EnhancedCard card, Transform parent)
+        {
+            GameObject cardObj = new GameObject($"Card_{card.name}");
+            cardObj.transform.SetParent(parent, false);
+            cardObj.layer = 5;
+            
+            // Card background
+            Image cardImage = cardObj.AddComponent<Image>();
+            cardImage.color = GetCardBackgroundColor(card.rarity);
+            
+            // Card name
+            GameObject nameObj = new GameObject("Card Name");
+            nameObj.transform.SetParent(cardObj.transform, false);
+            nameObj.layer = 5;
+            
+            TextMeshProUGUI nameText = nameObj.AddComponent<TextMeshProUGUI>();
+            nameText.text = card.name;
+            nameText.fontSize = 12;
+            nameText.color = Color.white;
+            nameText.alignment = TextAlignmentOptions.Center;
+            nameText.fontStyle = FontStyles.Bold;
+            
+            RectTransform nameRect = nameObj.GetComponent<RectTransform>();
+            nameRect.anchorMin = new Vector2(0.05f, 0.85f);
+            nameRect.anchorMax = new Vector2(0.95f, 0.95f);
+            nameRect.offsetMin = Vector2.zero;
+            nameRect.offsetMax = Vector2.zero;
+            
+            // Mana cost
+            GameObject manaObj = new GameObject("Mana Cost");
+            manaObj.transform.SetParent(cardObj.transform, false);
+            manaObj.layer = 5;
+            
+            Image manaBg = manaObj.AddComponent<Image>();
+            manaBg.color = new Color(0.2f, 0.6f, 1f, 0.9f); // Blue mana
+            
+            TextMeshProUGUI manaText = manaObj.AddComponent<TextMeshProUGUI>();
+            manaText.text = card.mana_cost.ToString();
+            manaText.fontSize = 16;
+            manaText.color = Color.white;
+            manaText.alignment = TextAlignmentOptions.Center;
+            manaText.fontStyle = FontStyles.Bold;
+            
+            RectTransform manaRect = manaObj.GetComponent<RectTransform>();
+            manaRect.anchorMin = new Vector2(0.05f, 0.8f);
+            manaRect.anchorMax = new Vector2(0.25f, 0.95f);
+            manaRect.offsetMin = Vector2.zero;
+            manaRect.offsetMax = Vector2.zero;
+            
+            // Attack/Health (for units)
+            if (card.attack.HasValue && card.hp.HasValue)
+            {
+                // Attack
+                GameObject attackObj = new GameObject("Attack");
+                attackObj.transform.SetParent(cardObj.transform, false);
+                attackObj.layer = 5;
+                
+                Image attackBg = attackObj.AddComponent<Image>();
+                attackBg.color = new Color(1f, 0.3f, 0.3f, 0.9f); // Red attack
+                
+                TextMeshProUGUI attackText = attackObj.AddComponent<TextMeshProUGUI>();
+                attackText.text = card.attack.Value.ToString();
+                attackText.fontSize = 14;
+                attackText.color = Color.white;
+                attackText.alignment = TextAlignmentOptions.Center;
+                attackText.fontStyle = FontStyles.Bold;
+                
+                RectTransform attackRect = attackObj.GetComponent<RectTransform>();
+                attackRect.anchorMin = new Vector2(0.05f, 0.05f);
+                attackRect.anchorMax = new Vector2(0.25f, 0.2f);
+                attackRect.offsetMin = Vector2.zero;
+                attackRect.offsetMax = Vector2.zero;
+                
+                // Health
+                GameObject healthObj = new GameObject("Health");
+                healthObj.transform.SetParent(cardObj.transform, false);
+                healthObj.layer = 5;
+                
+                Image healthBg = healthObj.AddComponent<Image>();
+                healthBg.color = new Color(0.3f, 1f, 0.3f, 0.9f); // Green health
+                
+                TextMeshProUGUI healthText = healthObj.AddComponent<TextMeshProUGUI>();
+                healthText.text = card.hp.Value.ToString();
+                healthText.fontSize = 14;
+                healthText.color = Color.white;
+                healthText.alignment = TextAlignmentOptions.Center;
+                healthText.fontStyle = FontStyles.Bold;
+                
+                RectTransform healthRect = healthObj.GetComponent<RectTransform>();
+                healthRect.anchorMin = new Vector2(0.75f, 0.05f);
+                healthRect.anchorMax = new Vector2(0.95f, 0.2f);
+                healthRect.offsetMin = Vector2.zero;
+                healthRect.offsetMax = Vector2.zero;
+            }
+            
+            // Rarity gem
+            GameObject rarityObj = new GameObject("Rarity");
+            rarityObj.transform.SetParent(cardObj.transform, false);
+            rarityObj.layer = 5;
+            
+            Image rarityBg = rarityObj.AddComponent<Image>();
+            rarityBg.color = GetRarityColor(card.rarity);
+            
+            TextMeshProUGUI rarityText = rarityObj.AddComponent<TextMeshProUGUI>();
+            rarityText.text = GetRarityIcon(card.rarity);
+            rarityText.fontSize = 16;
+            rarityText.color = Color.white;
+            rarityText.alignment = TextAlignmentOptions.Center;
+            rarityText.fontStyle = FontStyles.Bold;
+            
+            RectTransform rarityRect = rarityObj.GetComponent<RectTransform>();
+            rarityRect.anchorMin = new Vector2(0.75f, 0.8f);
+            rarityRect.anchorMax = new Vector2(0.95f, 0.95f);
+            rarityRect.offsetMin = Vector2.zero;
+            rarityRect.offsetMax = Vector2.zero;
+            
+            return cardObj;
+        }
+        
+        private void AddQuantityBadge(GameObject cardObj, int quantity)
+        {
+            if (quantity <= 0) return;
+            
+            GameObject quantityObj = new GameObject("Quantity Badge");
+            quantityObj.transform.SetParent(cardObj.transform, false);
+            quantityObj.layer = 5;
+            
+            Image quantityBg = quantityObj.AddComponent<Image>();
+            quantityBg.color = new Color(0f, 0f, 0f, 0.8f);
+            
+            TextMeshProUGUI quantityText = quantityObj.AddComponent<TextMeshProUGUI>();
+            quantityText.text = quantity.ToString();
+            quantityText.fontSize = 18;
+            quantityText.color = Color.white;
+            quantityText.alignment = TextAlignmentOptions.Center;
+            quantityText.fontStyle = FontStyles.Bold;
+            
+            RectTransform quantityRect = quantityObj.GetComponent<RectTransform>();
+            quantityRect.anchorMin = new Vector2(0.8f, 0.8f);
+            quantityRect.anchorMax = new Vector2(1f, 1f);
+            quantityRect.offsetMin = Vector2.zero;
+            quantityRect.offsetMax = Vector2.zero;
+        }
+        
+        private Color GetCardBackgroundColor(string rarity)
+        {
+            return rarity?.ToLower() switch
+            {
+                "common" => new Color(0.6f, 0.6f, 0.6f, 1f),      // Gray
+                "uncommon" => new Color(0.3f, 0.8f, 0.3f, 1f),   // Green
+                "rare" => new Color(0.3f, 0.5f, 1f, 1f),         // Blue
+                "legendary" => new Color(1f, 0.8f, 0.2f, 1f),    // Gold
+                "exotic" => new Color(0.8f, 0.2f, 1f, 1f),       // Purple
+                _ => new Color(0.5f, 0.5f, 0.5f, 1f)             // Default gray
+            };
+        }
+        
+        private Color GetRarityColor(string rarity)
+        {
+            return rarity?.ToLower() switch
+            {
+                "common" => Color.white,
+                "uncommon" => Color.green,
+                "rare" => Color.blue,
+                "legendary" => Color.yellow,
+                "exotic" => new Color(1f, 0.2f, 1f, 1f), // Magenta
+                _ => Color.white
+            };
+        }
+        
+        private string GetRarityIcon(string rarity)
+        {
+            return rarity?.ToLower() switch
+            {
+                "common" => "⚪",
+                "uncommon" => "🟢", 
+                "rare" => "🔵",
+                "legendary" => "🟡",
+                "exotic" => "🟣",
+                _ => "⚪"
+            };
         }
         
         private CardData ConvertEnhancedCardToCardData(RealSupabaseClient.EnhancedCard enhancedCard)
