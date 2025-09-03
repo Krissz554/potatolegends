@@ -1855,12 +1855,19 @@ namespace PotatoCardGame.UI
         {
             Debug.Log("🎨 Auto-loading custom assets...");
             
-            // Auto-load icons
+            // Debug: Check what's actually in Resources
+            Debug.Log("🔍 Checking Resources folders...");
+            
+            // Auto-load icons (correct Resources path)
             library.goldIcon = Resources.Load<Sprite>("UI/Icons/gold-icon");
             library.gemIcon = Resources.Load<Sprite>("UI/Icons/gems-icon");
             library.battleIcon = Resources.Load<Sprite>("UI/Icons/battle-icon");
             library.settingsIcon = Resources.Load<Sprite>("UI/Icons/settings-icon");
             library.shopIcon = Resources.Load<Sprite>("UI/Icons/shop-icon");
+            
+            // Debug each icon load
+            Debug.Log($"🔍 Gold icon: {(library.goldIcon != null ? "FOUND" : "NOT FOUND")}");
+            Debug.Log($"🔍 Battle icon: {(library.battleIcon != null ? "FOUND" : "NOT FOUND")}");
             
             // Auto-load backgrounds
             library.mainMenuBackground = Resources.Load<Sprite>("UI/Backgrounds/main-menu-bg");
@@ -1868,6 +1875,9 @@ namespace PotatoCardGame.UI
             library.collectionBackground = Resources.Load<Sprite>("UI/Backgrounds/collection-bg");
             library.deckBuilderBackground = Resources.Load<Sprite>("UI/Backgrounds/deck-builder-bg");
             library.heroHallBackground = Resources.Load<Sprite>("UI/Backgrounds/hero-hall-bg");
+            
+            // Debug background loads
+            Debug.Log($"🔍 Main menu background: {(library.mainMenuBackground != null ? "FOUND" : "NOT FOUND")}");
             
             // Auto-load buttons
             library.primaryButtonSprite = Resources.Load<Sprite>("UI/Buttons/primary-button");
@@ -1880,13 +1890,24 @@ namespace PotatoCardGame.UI
             if (library.gemIcon != null) { assetsFound++; Debug.Log("✅ Found custom gems icon"); }
             if (library.battleIcon != null) { assetsFound++; Debug.Log("✅ Found custom battle icon"); }
             if (library.mainMenuBackground != null) { assetsFound++; Debug.Log("✅ Found custom main menu background"); }
+            if (library.settingsIcon != null) { assetsFound++; Debug.Log("✅ Found custom settings icon"); }
+            if (library.shopIcon != null) { assetsFound++; Debug.Log("✅ Found custom shop icon"); }
             
             Debug.Log($"🎨 Auto-loaded {assetsFound} custom assets");
             
             if (assetsFound == 0)
             {
                 Debug.Log("📝 No custom assets found - using beautiful defaults");
-                Debug.Log("💡 Add assets to Assets/UI/Icons/ and Assets/UI/Backgrounds/ for custom styling");
+                Debug.Log("💡 Make sure assets are in Assets/Resources/UI/Icons/ and Assets/Resources/UI/Backgrounds/");
+                Debug.Log("💡 Make sure Texture Type is set to 'Sprite (2D and UI)'");
+                
+                // Debug: List what's actually in Resources
+                var allResources = Resources.LoadAll<Sprite>("UI");
+                Debug.Log($"🔍 Found {allResources.Length} total sprites in Resources/UI/");
+                foreach (var resource in allResources)
+                {
+                    Debug.Log($"🔍 Available resource: {resource.name}");
+                }
             }
         }
         
