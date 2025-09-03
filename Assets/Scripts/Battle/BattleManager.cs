@@ -523,6 +523,61 @@ namespace PotatoCardGame.Battle
         
         #endregion
         
+        #region Deck Validation
+        
+        public async Task<bool> checkUserHasValidDeck(string userId)
+        {
+            try
+            {
+                Debug.Log($"🔍 Checking deck validity for user: {userId}");
+                
+                // Get user's active deck
+                var deckResponse = await SupabaseClient.Instance.GetData<List<PlayerDeck>>(
+                    $"decks?user_id=eq.{userId}&is_active=eq.true&select=*"
+                );
+                
+                if (deckResponse == null || deckResponse.Count == 0)
+                {
+                    Debug.Log("❌ No active deck found");
+                    return false;
+                }
+                
+                var deck = deckResponse[0];
+                
+                // Get deck cards
+                var deckCardsResponse = await SupabaseClient.Instance.GetData<List<DeckCard>>(
+                    $"deck_cards?deck_id=eq.{deck.id}&select=*"
+                );
+                
+                if (deckCardsResponse == null)
+                {
+                    Debug.Log("❌ No deck cards found");
+                    return false;
+                }
+                
+                // Calculate total cards
+                int totalCards = 0;
+                foreach (var deckCard in deckCardsResponse)
+                {
+                    totalCards += deckCard.quantity;
+                }
+                
+                // Check if deck has exactly 30 cards
+                bool isValid = totalCards == 30;
+                
+                Debug.Log($"✅ Deck validation: {totalCards}/30 cards - {(isValid ? "VALID" : "INVALID")}");
+                return isValid;
+                
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"❌ Error checking deck validity: {e.Message}");
+                return false;
+            }
+        }
+        
+        #endregion
+        
         #region Public Interface
         
         public void SetBattleState(BattleState newState)

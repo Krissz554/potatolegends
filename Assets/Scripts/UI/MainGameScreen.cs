@@ -549,7 +549,7 @@ namespace PotatoCardGame.UI
             try
             {
                 string userId = SupabaseClient.Instance.GetUserId();
-                hasValidDeck = await BattleManager.Instance.CheckUserHasValidDeck(userId);
+                hasValidDeck = await BattleManager.Instance.checkUserHasValidDeck(userId);
                 
                 UpdateBattleButtonState();
             }

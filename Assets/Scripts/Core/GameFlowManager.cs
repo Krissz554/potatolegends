@@ -214,7 +214,7 @@ namespace PotatoCardGame.Core
             if (BattleManager.Instance == null) return false;
             
             string userId = SupabaseClient.Instance.GetUserId();
-            return await BattleManager.Instance.CheckUserHasValidDeck(userId);
+            return await BattleManager.Instance.checkUserHasValidDeck(userId);
         }
         
         private void OnBattleStateChanged(BattleManager.BattleState newState)
