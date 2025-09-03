@@ -298,7 +298,7 @@ namespace PotatoCardGame.Network
         {
             try
             {
-                Debug.log("🔍 Joining matchmaking queue...");
+                Debug.Log("🔍 Joining matchmaking queue...");
                 
                 var matchmakingData = new
                 {
@@ -307,7 +307,7 @@ namespace PotatoCardGame.Network
                     status = "searching"
                 };
                 
-                await PostData("matchmaking_queue", matchmakingData);
+                await PostData<object>("matchmaking_queue", matchmakingData);
                 
                 Debug.Log("✅ Joined matchmaking queue");
                 return true;
@@ -402,7 +402,7 @@ namespace PotatoCardGame.Network
                     updated_at = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ")
                 };
                 
-                await PostData("decks", deckData);
+                await PostData<object>("decks", deckData);
                 
                 // Save deck cards
                 foreach (var deckCard in deck.cards)
@@ -414,7 +414,7 @@ namespace PotatoCardGame.Network
                         quantity = deckCard.quantity
                     };
                     
-                    await PostData("deck_cards", cardData);
+                    await PostData<object>("deck_cards", cardData);
                 }
                 
                 Debug.Log("✅ Deck saved successfully");

@@ -240,7 +240,7 @@ namespace PotatoCardGame.Cards
             {
                 // Convert EnhancedCard to CardData
                 CardData cardData = ConvertEnhancedCardToCardData(card);
-                cardDisplay.Initialize(cardData, parent == playerHandArea);
+                cardDisplay.Initialize(cardData, false); // Not in hand area for collection
                 
                 // Show quantity if requested
                 if (showQuantity)

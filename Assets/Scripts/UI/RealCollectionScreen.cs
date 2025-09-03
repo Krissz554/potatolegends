@@ -344,11 +344,11 @@ namespace PotatoCardGame.UI
             scrollRect = scrollViewObj.AddComponent<ScrollRect>();
             scrollViewObj.AddComponent<Image>().color = new Color(0f, 0f, 0f, 0.2f);
             
-            RectTransform scrollRect = scrollViewObj.GetComponent<RectTransform>();
-            scrollRect.anchorMin = new Vector2(0.05f, 0.1f);
-            scrollRect.anchorMax = new Vector2(0.95f, 0.7f);
-            scrollRect.offsetMin = Vector2.zero;
-            scrollRect.offsetMax = Vector2.zero;
+            RectTransform scrollViewRect = scrollViewObj.GetComponent<RectTransform>();
+            scrollViewRect.anchorMin = new Vector2(0.05f, 0.1f);
+            scrollViewRect.anchorMax = new Vector2(0.95f, 0.7f);
+            scrollViewRect.offsetMin = Vector2.zero;
+            scrollViewRect.offsetMax = Vector2.zero;
             
             // Viewport
             GameObject viewport = new GameObject("Viewport");
