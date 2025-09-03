@@ -1750,9 +1750,52 @@ namespace PotatoCardGame.UI
         
         private UIAssetLibrary CreateAssetLibrary()
         {
-            // Create ScriptableObject asset library
+            // Create ScriptableObject asset library with automatic asset loading
             UIAssetLibrary library = ScriptableObject.CreateInstance<UIAssetLibrary>();
+            
+            // Auto-load custom assets from UI folders
+            LoadCustomAssets(library);
+            
             return library;
+        }
+        
+        private void LoadCustomAssets(UIAssetLibrary library)
+        {
+            Debug.Log("🎨 Auto-loading custom assets...");
+            
+            // Auto-load icons
+            library.goldIcon = Resources.Load<Sprite>("UI/Icons/gold-icon");
+            library.gemIcon = Resources.Load<Sprite>("UI/Icons/gems-icon");
+            library.battleIcon = Resources.Load<Sprite>("UI/Icons/battle-icon");
+            library.settingsIcon = Resources.Load<Sprite>("UI/Icons/settings-icon");
+            library.shopIcon = Resources.Load<Sprite>("UI/Icons/shop-icon");
+            
+            // Auto-load backgrounds
+            library.mainMenuBackground = Resources.Load<Sprite>("UI/Backgrounds/main-menu-bg");
+            library.authBackground = Resources.Load<Sprite>("UI/Backgrounds/auth-bg");
+            library.collectionBackground = Resources.Load<Sprite>("UI/Backgrounds/collection-bg");
+            library.deckBuilderBackground = Resources.Load<Sprite>("UI/Backgrounds/deck-builder-bg");
+            library.heroHallBackground = Resources.Load<Sprite>("UI/Backgrounds/hero-hall-bg");
+            
+            // Auto-load buttons
+            library.primaryButtonSprite = Resources.Load<Sprite>("UI/Buttons/primary-button");
+            library.battleButtonSprite = Resources.Load<Sprite>("UI/Buttons/battle-button");
+            library.secondaryButtonSprite = Resources.Load<Sprite>("UI/Buttons/secondary-button");
+            
+            // Log what was found
+            int assetsFound = 0;
+            if (library.goldIcon != null) { assetsFound++; Debug.Log("✅ Found custom gold icon"); }
+            if (library.gemIcon != null) { assetsFound++; Debug.Log("✅ Found custom gems icon"); }
+            if (library.battleIcon != null) { assetsFound++; Debug.Log("✅ Found custom battle icon"); }
+            if (library.mainMenuBackground != null) { assetsFound++; Debug.Log("✅ Found custom main menu background"); }
+            
+            Debug.Log($"🎨 Auto-loaded {assetsFound} custom assets");
+            
+            if (assetsFound == 0)
+            {
+                Debug.Log("📝 No custom assets found - using beautiful defaults");
+                Debug.Log("💡 Add assets to Assets/UI/Icons/ and Assets/UI/Backgrounds/ for custom styling");
+            }
         }
         
         private Sprite CreatePlaceholderIcon(Color color)
