@@ -2,8 +2,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 using PotatoCardGame.Network;
 using PotatoCardGame.Data;
+using PotatoCardGame.UI;
 
 namespace PotatoCardGame.Cards
 {

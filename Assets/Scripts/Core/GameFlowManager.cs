@@ -264,6 +264,36 @@ namespace PotatoCardGame.Core
             return requireAuthentication;
         }
         
+        public void NavigateToAuth()
+        {
+            ChangeGameFlow(GameFlow.Authentication);
+        }
+        
+        public void NavigateToMainMenu()
+        {
+            ChangeGameFlow(GameFlow.MainMenu);
+        }
+        
+        public void NavigateToCollection()
+        {
+            ChangeGameFlow(GameFlow.Collection);
+        }
+        
+        public void NavigateToDeckBuilder()
+        {
+            ChangeGameFlow(GameFlow.DeckBuilder);
+        }
+        
+        public void NavigateToHeroHall()
+        {
+            ChangeGameFlow(GameFlow.HeroHall);
+        }
+        
+        public void NavigateToBattle()
+        {
+            ChangeGameFlow(GameFlow.Battle);
+        }
+        
         #endregion
         
         private void OnDestroy()
