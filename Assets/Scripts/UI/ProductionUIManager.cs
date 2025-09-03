@@ -750,72 +750,74 @@ namespace PotatoCardGame.UI
         
         private Button CreateCustomBattleButton(Transform parent, Vector2 anchorMin, Vector2 anchorMax)
         {
-            GameObject btnObj = CreatePanel("Custom Battle Button", parent);
-            Button button = btnObj.AddComponent<Button>();
-            Image buttonImage = btnObj.GetComponent<Image>();
-            
-            // Use custom battle button sprite if available
-            if (assetLibrary.battleButtonSprite != null)
+            // If we have a custom battle icon, use ONLY the icon as the button
+            if (assetLibrary.battleIcon != null)
             {
-                buttonImage.sprite = assetLibrary.battleButtonSprite;
-                buttonImage.type = Image.Type.Sliced;
-                Debug.Log("✅ Applied custom battle button sprite!");
+                Debug.Log("🎨 Creating PURE ICON battle button with your custom icon!");
+                
+                GameObject btnObj = new GameObject("Pure Icon Battle Button");
+                btnObj.transform.SetParent(parent, false);
+                btnObj.layer = 5;
+                
+                // The button IS your custom icon (no background rectangle!)
+                Button button = btnObj.AddComponent<Button>();
+                Image buttonImage = btnObj.AddComponent<Image>();
+                buttonImage.sprite = assetLibrary.battleIcon;
+                buttonImage.color = Color.white;
+                buttonImage.type = Image.Type.Simple; // Keep original proportions
+                
+                RectTransform btnRect = btnObj.GetComponent<RectTransform>();
+                btnRect.anchorMin = anchorMin;
+                btnRect.anchorMax = anchorMax;
+                btnRect.offsetMin = Vector2.zero;
+                btnRect.offsetMax = Vector2.zero;
+                
+                // Professional button interaction (no background color changes)
+                ColorBlock colors = button.colors;
+                colors.normalColor = Color.white;
+                colors.highlightedColor = new Color(1.1f, 1.1f, 1.1f, 1f); // Slightly brighter on hover
+                colors.pressedColor = new Color(0.9f, 0.9f, 0.9f, 1f); // Slightly darker when pressed
+                colors.disabledColor = new Color(0.6f, 0.6f, 0.6f, 0.8f);
+                colors.fadeDuration = 0.1f;
+                button.colors = colors;
+                
+                Debug.Log("✅ Created pure icon battle button - no ugly rectangle!");
+                return button;
             }
             else
             {
-                // Beautiful fallback
+                // Fallback: Create old-style button if no custom icon
+                Debug.Log("📝 No custom battle icon found - creating fallback button");
+                
+                GameObject btnObj = CreatePanel("Fallback Battle Button", parent);
+                Button button = btnObj.AddComponent<Button>();
+                Image buttonImage = btnObj.GetComponent<Image>();
                 buttonImage.color = colors.battleRed;
-                Debug.Log("📝 Using fallback color for battle button");
-            }
-            
-            RectTransform btnRect = btnObj.GetComponent<RectTransform>();
-            btnRect.anchorMin = anchorMin;
-            btnRect.anchorMax = anchorMax;
-            btnRect.offsetMin = Vector2.zero;
-            btnRect.offsetMax = Vector2.zero;
-            
-            // Battle icon (YOUR CUSTOM ICON!)
-            if (assetLibrary.battleIcon != null)
-            {
-                GameObject iconObj = CreatePanel("Battle Icon", btnObj.transform);
-                Image iconImage = iconObj.GetComponent<Image>();
-                iconImage.sprite = assetLibrary.battleIcon;
-                iconImage.color = Color.white;
                 
-                RectTransform iconRect = iconObj.GetComponent<RectTransform>();
-                iconRect.anchorMin = new Vector2(0.15f, 0.3f);
-                iconRect.anchorMax = new Vector2(0.45f, 0.7f);
-                iconRect.offsetMin = Vector2.zero;
-                iconRect.offsetMax = Vector2.zero;
+                RectTransform btnRect = btnObj.GetComponent<RectTransform>();
+                btnRect.anchorMin = anchorMin;
+                btnRect.anchorMax = anchorMax;
+                btnRect.offsetMin = Vector2.zero;
+                btnRect.offsetMax = Vector2.zero;
                 
-                Debug.Log("✅ Applied custom battle icon!");
+                // Fallback text
+                GameObject textObj = new GameObject("Battle Text");
+                textObj.transform.SetParent(btnObj.transform, false);
+                textObj.layer = 5;
+                
+                TextMeshProUGUI buttonText = textObj.AddComponent<TextMeshProUGUI>();
+                buttonText.text = "BATTLE";
+                buttonText.fontSize = 20;
+                buttonText.color = Color.white;
+                buttonText.alignment = TextAlignmentOptions.Center;
+                buttonText.fontStyle = FontStyles.Bold;
+                buttonText.raycastTarget = false;
+                
+                SetFullScreen(textObj.GetComponent<RectTransform>());
+                SetupProfessionalButtonColors(button);
+                
+                return button;
             }
-            
-            // Battle text
-            GameObject textObj = new GameObject("Battle Text");
-            textObj.transform.SetParent(btnObj.transform, false);
-            textObj.layer = 5;
-            
-            TextMeshProUGUI buttonText = textObj.AddComponent<TextMeshProUGUI>();
-            buttonText.text = "BATTLE";
-            buttonText.fontSize = 20;
-            buttonText.color = Color.white;
-            buttonText.alignment = TextAlignmentOptions.Center;
-            buttonText.fontStyle = FontStyles.Bold;
-            buttonText.raycastTarget = false;
-            buttonText.outlineColor = Color.black;
-            buttonText.outlineWidth = 0.3f;
-            
-            RectTransform textRect = textObj.GetComponent<RectTransform>();
-            textRect.anchorMin = new Vector2(0.5f, 0.1f);
-            textRect.anchorMax = new Vector2(0.9f, 0.9f);
-            textRect.offsetMin = Vector2.zero;
-            textRect.offsetMax = Vector2.zero;
-            
-            // Professional button colors
-            SetupProfessionalButtonColors(button);
-            
-            return button;
         }
         
         private void CreateBottomUtilityBar(Transform parent)
@@ -1266,11 +1268,14 @@ namespace PotatoCardGame.UI
             if (backgroundSprite != null)
             {
                 bgImage.sprite = backgroundSprite;
-                bgImage.type = Image.Type.Sliced; // For proper scaling
+                bgImage.type = Image.Type.Simple; // Keep original proportions for backgrounds
+                bgImage.color = Color.white; // Ensure full visibility
+                Debug.Log($"✅ Applied custom background: {backgroundSprite.name}");
             }
             else
             {
                 bgImage.color = fallbackColor;
+                Debug.Log($"📝 Using fallback color for {name}");
             }
             
             SetFullScreen(background.GetComponent<RectTransform>());
