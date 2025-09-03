@@ -6,13 +6,11 @@ using UnityEngine;
 using UnityEngine.Networking;
 using Newtonsoft.Json;
 
-namespace PotatoCardGame.Network
-{
-    /// <summary>
-    /// REAL Supabase client that actually connects to your database
-    /// Implements all the functionality from your web version
-    /// </summary>
-    public class RealSupabaseClient : MonoBehaviour
+/// <summary>
+/// REAL Supabase client that actually connects to your database
+/// Implements all the functionality from your web version
+/// </summary>
+public class RealSupabaseClient : MonoBehaviour
     {
         [Header("Supabase Configuration")]
         private const string SUPABASE_URL = "https://xsknbbvyagngljxkftkd.supabase.co";
@@ -843,4 +841,3 @@ namespace PotatoCardGame.Network
         
         #endregion
     }
-}
