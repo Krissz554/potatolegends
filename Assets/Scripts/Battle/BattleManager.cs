@@ -44,7 +44,7 @@ namespace PotatoCardGame.Battle
         private bool isPlayerTurn = false;
         private int currentTurn = 1;
         private int playerMana = 1;
-        private int opponentMana = 1;
+        // private int opponentMana = 1; // TODO: Implement opponent mana tracking
         private float currentTurnTime = 60f;
         
         // Card collections
@@ -322,7 +322,7 @@ namespace PotatoCardGame.Battle
             DrawCard();
             
             // Send turn end to server
-            SendTurnEndToServer();
+            _ = SendTurnEndToServer();
             
             OnTurnChanged?.Invoke(isPlayerTurn);
         }

@@ -65,7 +65,7 @@ namespace PotatoCardGame.Cards
         private void Start()
         {
             // Load cards from Supabase when ready
-            LoadCardsFromDatabase();
+            _ = LoadCardsFromDatabase();
         }
         
         #region Database Operations
