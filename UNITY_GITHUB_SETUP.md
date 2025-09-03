@@ -45,7 +45,7 @@ Unity will automatically:
 
 When Unity opens the project for the first time:
 
-1. **Unity Version**: If prompted, use Unity **2023.2.20f1** or newer
+1. **Unity Version**: If prompted, use Unity **6000.2.2f1** (Unity 6) or newer
 2. **Import Settings**: Accept all import settings
 3. **Package Manager**: Unity will automatically install required packages
 

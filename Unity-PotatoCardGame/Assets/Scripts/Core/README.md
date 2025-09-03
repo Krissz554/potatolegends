@@ -78,7 +78,7 @@ The Unity project connects to the same Supabase backend as the web version:
 
 ## 📋 Requirements
 
-- **Unity 2023.2.20f1** or newer
+- **Unity 6000.2.2f1** (Unity 6) or newer
 - **Mobile Build Modules** (Android/iOS)
 - **Required Packages**:
   - Newtonsoft JSON
