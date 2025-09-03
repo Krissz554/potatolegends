@@ -269,26 +269,6 @@ namespace PotatoCardGame.Core
             ChangeGameFlow(GameFlow.Authentication);
         }
         
-        public void NavigateToMainMenu()
-        {
-            ChangeGameFlow(GameFlow.MainMenu);
-        }
-        
-        public void NavigateToCollection()
-        {
-            ChangeGameFlow(GameFlow.Collection);
-        }
-        
-        public void NavigateToDeckBuilder()
-        {
-            ChangeGameFlow(GameFlow.DeckBuilder);
-        }
-        
-        public void NavigateToHeroHall()
-        {
-            ChangeGameFlow(GameFlow.HeroHall);
-        }
-        
         public void NavigateToBattle()
         {
             ChangeGameFlow(GameFlow.Battle);
