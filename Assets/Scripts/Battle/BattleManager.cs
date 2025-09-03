@@ -296,7 +296,7 @@ namespace PotatoCardGame.Battle
             // Add structure to battlefield
             playerBattlefieldCards.Add(card);
             
-            Debug.log($"🏗️ Structure built: {card.cardName}");
+            Debug.Log($"🏗️ Structure built: {card.cardName}");
         }
         
         #endregion

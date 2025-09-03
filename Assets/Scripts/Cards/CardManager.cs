@@ -99,7 +99,7 @@ namespace PotatoCardGame.Cards
                         }
                     }
                     
-                    Debug.log($"🎯 Total cards in database: {cardDatabase.Count}");
+                    Debug.Log($"🎯 Total cards in database: {cardDatabase.Count}");
                 }
                 
                 // Load user's collection
