@@ -26,7 +26,7 @@ namespace PotatoCardGame.Core
             Loading
         }
         
-        [SerializeField] private GameState currentState = GameState.MainMenu;
+        [SerializeField] private GameState currentState = GameState.Loading;
         public GameState CurrentState => currentState;
         
         // Events
@@ -55,6 +55,27 @@ namespace PotatoCardGame.Core
             if (debugMode)
             {
                 Debug.Log("🐛 Debug Mode Enabled");
+            }
+            
+            // Start the game flow
+            StartCoroutine(InitializeGame());
+        }
+        
+        private IEnumerator InitializeGame()
+        {
+            // Wait for other systems to initialize
+            yield return new WaitForSeconds(0.1f);
+            
+            // Check authentication and show appropriate UI
+            if (SupabaseClient.Instance != null && SupabaseClient.Instance.IsAuthenticated)
+            {
+                // User is logged in, go to main menu
+                ChangeGameState(GameState.MainMenu);
+            }
+            else
+            {
+                // User needs to log in, this will be handled by LoginScreen
+                Debug.Log("🔐 User not authenticated, login screen will handle this");
             }
         }
         
