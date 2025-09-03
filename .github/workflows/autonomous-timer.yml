@@ -1,0 +1,54 @@
+name: Autonomous Battle Timer
+
+on:
+  schedule:
+    # Run every minute (GitHub Actions minimum is 1 minute)
+    # This will call our service 60 times per minute for 1-second precision
+    - cron: '* * * * *'
+  workflow_dispatch: # Allow manual triggering
+
+jobs:
+  run-timer:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Call Autonomous Timer Service
+      run: |
+        # Call the timer service 60 times with 1-second intervals
+        for i in {1..60}; do
+          echo "Timer call $i/60 at $(date)"
+          
+          # Call the autonomous timer service
+          curl -X POST \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" \
+            "https://xsknbbvyagngljxkftkd.supabase.co/functions/v1/autonomous-timer-service" \
+            --max-time 10 \
+            --silent \
+            --fail \
+            || echo "Timer call $i failed"
+          
+          # Wait 1 second (except for the last iteration)
+          if [ $i -lt 60 ]; then
+            sleep 1
+          fi
+        done
+        
+        echo "Autonomous timer cycle complete"
+
+  monitor-health:
+    runs-on: ubuntu-latest
+    needs: run-timer
+    
+    steps:
+    - name: Check Timer Health
+      run: |
+        echo "Checking autonomous timer health..."
+        
+        # Call a health check endpoint
+        response=$(curl -X GET \
+          -H "Authorization: Bearer ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" \
+          "https://xsknbbvyagngljxkftkd.supabase.co/rest/v1/battle_timer_logs?select=*&order=processed_at.desc&limit=1" \
+          --silent)
+        
+        echo "Latest timer log: $response"
