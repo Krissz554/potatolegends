@@ -236,7 +236,7 @@ namespace PotatoCardGame.UI
             Image buttonImage = button.GetComponent<Image>();
             if (buttonImage != null)
             {
-                buttonImage.DOColor(color, 0.3f);
+                StartCoroutine(AnimateColor(buttonImage, color, 0.3f));
             }
         }
         
@@ -252,10 +252,10 @@ namespace PotatoCardGame.UI
                 if (canvasGroup == null) canvasGroup = authPanel.AddComponent<CanvasGroup>();
                 
                 canvasGroup.alpha = 0f;
-                canvasGroup.DOFade(1f, panelAnimationDuration);
+                StartCoroutine(AnimateFade(canvasGroup, 1f, panelAnimationDuration));
                 
                 authPanel.transform.localScale = Vector3.one * 0.8f;
-                authPanel.transform.DOScale(Vector3.one, panelAnimationDuration).SetEase(Ease.OutBack);
+                StartCoroutine(AnimateScale(authPanel.transform, Vector3.one, panelAnimationDuration));
             }
         }
         
@@ -462,10 +462,63 @@ namespace PotatoCardGame.UI
             }
         }
         
+        #region Animation Helpers
+        
+        private IEnumerator AnimateColor(Image image, Color targetColor, float duration)
+        {
+            Color startColor = image.color;
+            float elapsedTime = 0f;
+            
+            while (elapsedTime < duration)
+            {
+                elapsedTime += Time.deltaTime;
+                float t = elapsedTime / duration;
+                image.color = Color.Lerp(startColor, targetColor, t);
+                yield return null;
+            }
+            
+            image.color = targetColor;
+        }
+        
+        private IEnumerator AnimateFade(CanvasGroup canvasGroup, float targetAlpha, float duration)
+        {
+            float startAlpha = canvasGroup.alpha;
+            float elapsedTime = 0f;
+            
+            while (elapsedTime < duration)
+            {
+                elapsedTime += Time.deltaTime;
+                float t = elapsedTime / duration;
+                canvasGroup.alpha = Mathf.Lerp(startAlpha, targetAlpha, t);
+                yield return null;
+            }
+            
+            canvasGroup.alpha = targetAlpha;
+        }
+        
+        private IEnumerator AnimateScale(Transform transform, Vector3 targetScale, float duration)
+        {
+            Vector3 startScale = transform.localScale;
+            float elapsedTime = 0f;
+            
+            while (elapsedTime < duration)
+            {
+                elapsedTime += Time.deltaTime;
+                float t = elapsedTime / duration;
+                t = Mathf.SmoothStep(0f, 1f, t); // Smooth easing
+                transform.localScale = Vector3.Lerp(startScale, targetScale, t);
+                yield return null;
+            }
+            
+            transform.localScale = targetScale;
+        }
+        
+        #endregion
+        
         private void OnDestroy()
         {
-            // Cleanup DOTween animations
-            DOTween.Kill(transform);
+            // Cleanup coroutines
+            StopAllCoroutines();
         }
     }
 }

@@ -196,14 +196,14 @@ namespace PotatoCardGame.UI
             }
             
             canvasGroup.alpha = 0f;
-            canvasGroup.DOFade(1f, screenTransitionDuration).SetEase(screenTransitionEase);
+            StartCoroutine(AnimateFadeIn(canvasGroup, screenTransitionDuration));
             
             // Scale animation for mobile feel
             RectTransform rectTransform = screen.GetComponent<RectTransform>();
             if (rectTransform != null)
             {
                 rectTransform.localScale = Vector3.one * 0.9f;
-                rectTransform.DOScale(Vector3.one, screenTransitionDuration).SetEase(Ease.OutBack);
+                StartCoroutine(AnimateScale(rectTransform, Vector3.one, screenTransitionDuration));
             }
             
             yield return new WaitForSeconds(screenTransitionDuration);
@@ -216,7 +216,7 @@ namespace PotatoCardGame.UI
             CanvasGroup canvasGroup = screen.GetComponent<CanvasGroup>();
             if (canvasGroup != null)
             {
-                canvasGroup.DOFade(0f, screenTransitionDuration * 0.5f).SetEase(Ease.InQuad);
+                StartCoroutine(AnimateFadeOut(canvasGroup, screenTransitionDuration * 0.5f));
             }
             
             yield return new WaitForSeconds(screenTransitionDuration * 0.5f);
@@ -271,11 +271,11 @@ namespace PotatoCardGame.UI
             // Scale effect for active button
             if (isActive)
             {
-                button.transform.DOScale(Vector3.one * 1.1f, 0.2f).SetEase(Ease.OutBack);
+                StartCoroutine(AnimateScale(button.transform as RectTransform, Vector3.one * 1.1f, 0.2f));
             }
             else
             {
-                button.transform.DOScale(Vector3.one, 0.2f).SetEase(Ease.OutQuad);
+                StartCoroutine(AnimateScale(button.transform as RectTransform, Vector3.one, 0.2f));
             }
         }
         
@@ -363,6 +363,61 @@ namespace PotatoCardGame.UI
             }
         }
         
+        #region Animation Coroutines
+        
+        private IEnumerator AnimateFadeIn(CanvasGroup canvasGroup, float duration)
+        {
+            float elapsedTime = 0f;
+            float startAlpha = canvasGroup.alpha;
+            
+            while (elapsedTime < duration)
+            {
+                elapsedTime += Time.deltaTime;
+                float t = elapsedTime / duration;
+                canvasGroup.alpha = Mathf.Lerp(startAlpha, 1f, t);
+                yield return null;
+            }
+            
+            canvasGroup.alpha = 1f;
+        }
+        
+        private IEnumerator AnimateFadeOut(CanvasGroup canvasGroup, float duration)
+        {
+            float elapsedTime = 0f;
+            float startAlpha = canvasGroup.alpha;
+            
+            while (elapsedTime < duration)
+            {
+                elapsedTime += Time.deltaTime;
+                float t = elapsedTime / duration;
+                canvasGroup.alpha = Mathf.Lerp(startAlpha, 0f, t);
+                yield return null;
+            }
+            
+            canvasGroup.alpha = 0f;
+        }
+        
+        private IEnumerator AnimateScale(RectTransform rectTransform, Vector3 targetScale, float duration)
+        {
+            if (rectTransform == null) yield break;
+            
+            Vector3 startScale = rectTransform.localScale;
+            float elapsedTime = 0f;
+            
+            while (elapsedTime < duration)
+            {
+                elapsedTime += Time.deltaTime;
+                float t = elapsedTime / duration;
+                t = Mathf.SmoothStep(0f, 1f, t); // Smooth easing
+                rectTransform.localScale = Vector3.Lerp(startScale, targetScale, t);
+                yield return null;
+            }
+            
+            rectTransform.localScale = targetScale;
+        }
+        
+        #endregion
+        
         private void OnDestroy()
         {
             // Cleanup
@@ -371,8 +426,8 @@ namespace PotatoCardGame.UI
                 GameManager.Instance.OnGameStateChanged -= OnGameStateChanged;
             }
             
-            // Stop all tweens
-            DOTween.KillAll();
+            // Stop all coroutines
+            StopAllCoroutines();
         }
     }
 }

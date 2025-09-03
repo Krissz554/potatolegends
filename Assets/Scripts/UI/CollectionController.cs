@@ -294,10 +294,10 @@ namespace PotatoCardGame.UI
             if (canvasGroup == null) canvasGroup = cardDetailPanel.AddComponent<CanvasGroup>();
             
             canvasGroup.alpha = 0f;
-            canvasGroup.DOFade(1f, 0.3f);
+            StartCoroutine(AnimateFade(canvasGroup, 1f, 0.3f));
             
             cardDetailPanel.transform.localScale = Vector3.one * 0.8f;
-            cardDetailPanel.transform.DOScale(Vector3.one, 0.3f).SetEase(Ease.OutBack);
+            StartCoroutine(AnimateScale(cardDetailPanel.transform, Vector3.one, 0.3f));
         }
         
         private void CloseCardDetail()
@@ -307,7 +307,7 @@ namespace PotatoCardGame.UI
             CanvasGroup canvasGroup = cardDetailPanel.GetComponent<CanvasGroup>();
             if (canvasGroup != null)
             {
-                canvasGroup.DOFade(0f, 0.2f).OnComplete(() => cardDetailPanel.SetActive(false));
+                StartCoroutine(AnimateFadeAndClose(canvasGroup, cardDetailPanel, 0.2f));
             }
             else
             {
@@ -447,5 +447,48 @@ namespace PotatoCardGame.UI
             
             // TODO: Show unlock animation
         }
+        
+        #region Animation Helpers
+        
+        private IEnumerator AnimateFade(CanvasGroup canvasGroup, float targetAlpha, float duration)
+        {
+            float startAlpha = canvasGroup.alpha;
+            float elapsedTime = 0f;
+            
+            while (elapsedTime < duration)
+            {
+                elapsedTime += Time.deltaTime;
+                float t = elapsedTime / duration;
+                canvasGroup.alpha = Mathf.Lerp(startAlpha, targetAlpha, t);
+                yield return null;
+            }
+            
+            canvasGroup.alpha = targetAlpha;
+        }
+        
+        private IEnumerator AnimateScale(Transform transform, Vector3 targetScale, float duration)
+        {
+            Vector3 startScale = transform.localScale;
+            float elapsedTime = 0f;
+            
+            while (elapsedTime < duration)
+            {
+                elapsedTime += Time.deltaTime;
+                float t = elapsedTime / duration;
+                t = Mathf.SmoothStep(0f, 1f, t);
+                transform.localScale = Vector3.Lerp(startScale, targetScale, t);
+                yield return null;
+            }
+            
+            transform.localScale = targetScale;
+        }
+        
+        private IEnumerator AnimateFadeAndClose(CanvasGroup canvasGroup, GameObject panel, float duration)
+        {
+            yield return StartCoroutine(AnimateFade(canvasGroup, 0f, duration));
+            panel.SetActive(false);
+        }
+        
+        #endregion
     }
 }
