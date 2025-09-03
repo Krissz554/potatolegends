@@ -481,10 +481,21 @@ namespace PotatoCardGame.UI
             goldRect.offsetMin = Vector2.zero;
             goldRect.offsetMax = Vector2.zero;
             
-            // Gold icon placeholder
+            // Gold icon (CUSTOM or fallback)
             GameObject goldIcon = CreatePanel("Gold Icon", goldContainer.transform);
             Image goldIconImg = goldIcon.GetComponent<Image>();
-            goldIconImg.color = colors.legendaryGold;
+            
+            if (assetLibrary.goldIcon != null)
+            {
+                goldIconImg.sprite = assetLibrary.goldIcon;
+                goldIconImg.color = Color.white;
+                Debug.Log("✅ Applied custom gold icon!");
+            }
+            else
+            {
+                goldIconImg.color = colors.legendaryGold;
+                Debug.Log("📝 Using fallback color for gold icon");
+            }
             
             RectTransform goldIconRect = goldIcon.GetComponent<RectTransform>();
             goldIconRect.anchorMin = new Vector2(0f, 0f);
@@ -526,10 +537,21 @@ namespace PotatoCardGame.UI
             gemRect.offsetMin = Vector2.zero;
             gemRect.offsetMax = Vector2.zero;
             
-            // Gem icon placeholder
+            // Gem icon (CUSTOM or fallback)
             GameObject gemIcon = CreatePanel("Gem Icon", gemContainer.transform);
             Image gemIconImg = gemIcon.GetComponent<Image>();
-            gemIconImg.color = colors.rarePurple;
+            
+            if (assetLibrary.gemIcon != null)
+            {
+                gemIconImg.sprite = assetLibrary.gemIcon;
+                gemIconImg.color = Color.white;
+                Debug.Log("✅ Applied custom gem icon!");
+            }
+            else
+            {
+                gemIconImg.color = colors.rarePurple;
+                Debug.Log("📝 Using fallback color for gem icon");
+            }
             
             RectTransform gemIconRect = gemIcon.GetComponent<RectTransform>();
             gemIconRect.anchorMin = new Vector2(0f, 0f);
@@ -586,7 +608,7 @@ namespace PotatoCardGame.UI
                 "Browse Cards", 
                 colors.primaryGreen,
                 assetLibrary.collectionIcon,
-                () => ShowScreen(GameScreen.Collection)
+                () => _ = ShowScreen(GameScreen.Collection)
             );
             
             // Deck Builder card
@@ -596,7 +618,7 @@ namespace PotatoCardGame.UI
                 "Craft Strategy", 
                 colors.rarePurple,
                 assetLibrary.deckBuilderIcon,
-                () => ShowScreen(GameScreen.DeckBuilder)
+                () => _ = ShowScreen(GameScreen.DeckBuilder)
             );
             
             // Hero Hall card
@@ -606,7 +628,7 @@ namespace PotatoCardGame.UI
                 "Choose Champion", 
                 colors.legendaryGold,
                 assetLibrary.heroHallIcon,
-                () => ShowScreen(GameScreen.HeroHall)
+                () => _ = ShowScreen(GameScreen.HeroHall)
             );
         }
         
@@ -623,11 +645,22 @@ namespace PotatoCardGame.UI
             // Add gradient overlay for accent color
             CreateGradientOverlay(card.transform, accentColor, 0.2f);
             
-            // Icon
+            // Icon (CUSTOM or fallback)
             GameObject iconObj = CreatePanel("Card Icon", card.transform);
             Image iconImage = iconObj.GetComponent<Image>();
-            iconImage.sprite = iconSprite ?? CreatePlaceholderIcon(accentColor);
-            iconImage.color = Color.white;
+            
+            if (iconSprite != null)
+            {
+                iconImage.sprite = iconSprite;
+                iconImage.color = Color.white;
+                Debug.Log($"✅ Applied custom icon for {title}!");
+            }
+            else
+            {
+                iconImage.sprite = CreatePlaceholderIcon(accentColor);
+                iconImage.color = Color.white;
+                Debug.Log($"📝 Using fallback icon for {title}");
+            }
             
             RectTransform iconRect = iconObj.GetComponent<RectTransform>();
             iconRect.anchorMin = new Vector2(0.3f, 0.6f);
@@ -700,23 +733,12 @@ namespace PotatoCardGame.UI
             glowImage.color = new Color(1f, 0.4f, 0.1f, 0.4f); // Orange battle glow
             SetFullScreen(glowObj.GetComponent<RectTransform>());
             
-            // Main battle button
-            battleButton = CreateFantasyButton(
-                "Production Battle Button",
+            // Main battle button with CUSTOM ICON
+            battleButton = CreateCustomBattleButton(
                 battleContainer.transform,
-                "BATTLE",
-                colors.battleRed,
-                assetLibrary.battleButtonSprite,
                 new Vector2(0.1f, 0.1f),
                 new Vector2(0.9f, 0.9f)
             );
-            
-            // Enhanced battle button styling
-            TextMeshProUGUI battleText = battleButton.GetComponentInChildren<TextMeshProUGUI>();
-            battleText.fontSize = 24;
-            battleText.fontStyle = FontStyles.Bold;
-            battleText.outlineColor = Color.black;
-            battleText.outlineWidth = 0.3f;
             
             battleButton.onClick.AddListener(() => {
                 StartCoroutine(AnimateBattleButtonPress());
@@ -724,6 +746,76 @@ namespace PotatoCardGame.UI
             
             // Continuous glow animation
             StartCoroutine(AnimateBattleGlow(glowImage));
+        }
+        
+        private Button CreateCustomBattleButton(Transform parent, Vector2 anchorMin, Vector2 anchorMax)
+        {
+            GameObject btnObj = CreatePanel("Custom Battle Button", parent);
+            Button button = btnObj.AddComponent<Button>();
+            Image buttonImage = btnObj.GetComponent<Image>();
+            
+            // Use custom battle button sprite if available
+            if (assetLibrary.battleButtonSprite != null)
+            {
+                buttonImage.sprite = assetLibrary.battleButtonSprite;
+                buttonImage.type = Image.Type.Sliced;
+                Debug.Log("✅ Applied custom battle button sprite!");
+            }
+            else
+            {
+                // Beautiful fallback
+                buttonImage.color = colors.battleRed;
+                Debug.Log("📝 Using fallback color for battle button");
+            }
+            
+            RectTransform btnRect = btnObj.GetComponent<RectTransform>();
+            btnRect.anchorMin = anchorMin;
+            btnRect.anchorMax = anchorMax;
+            btnRect.offsetMin = Vector2.zero;
+            btnRect.offsetMax = Vector2.zero;
+            
+            // Battle icon (YOUR CUSTOM ICON!)
+            if (assetLibrary.battleIcon != null)
+            {
+                GameObject iconObj = CreatePanel("Battle Icon", btnObj.transform);
+                Image iconImage = iconObj.GetComponent<Image>();
+                iconImage.sprite = assetLibrary.battleIcon;
+                iconImage.color = Color.white;
+                
+                RectTransform iconRect = iconObj.GetComponent<RectTransform>();
+                iconRect.anchorMin = new Vector2(0.15f, 0.3f);
+                iconRect.anchorMax = new Vector2(0.45f, 0.7f);
+                iconRect.offsetMin = Vector2.zero;
+                iconRect.offsetMax = Vector2.zero;
+                
+                Debug.Log("✅ Applied custom battle icon!");
+            }
+            
+            // Battle text
+            GameObject textObj = new GameObject("Battle Text");
+            textObj.transform.SetParent(btnObj.transform, false);
+            textObj.layer = 5;
+            
+            TextMeshProUGUI buttonText = textObj.AddComponent<TextMeshProUGUI>();
+            buttonText.text = "BATTLE";
+            buttonText.fontSize = 20;
+            buttonText.color = Color.white;
+            buttonText.alignment = TextAlignmentOptions.Center;
+            buttonText.fontStyle = FontStyles.Bold;
+            buttonText.raycastTarget = false;
+            buttonText.outlineColor = Color.black;
+            buttonText.outlineWidth = 0.3f;
+            
+            RectTransform textRect = textObj.GetComponent<RectTransform>();
+            textRect.anchorMin = new Vector2(0.5f, 0.1f);
+            textRect.anchorMax = new Vector2(0.9f, 0.9f);
+            textRect.offsetMin = Vector2.zero;
+            textRect.offsetMax = Vector2.zero;
+            
+            // Professional button colors
+            SetupProfessionalButtonColors(button);
+            
+            return button;
         }
         
         private void CreateBottomUtilityBar(Transform parent)
