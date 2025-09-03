@@ -20,8 +20,7 @@ namespace PotatoCardGame.UI
         
         [Header("Haptic Feedback")]
         [SerializeField] private bool enableHaptics = true;
-        [SerializeField] private float hapticLightDuration = 0.1f;
-        [SerializeField] private float hapticMediumDuration = 0.2f;
+        // Haptic feedback durations (removed unused fields)
         
         // Singleton
         public static MobileInputHandler Instance { get; private set; }

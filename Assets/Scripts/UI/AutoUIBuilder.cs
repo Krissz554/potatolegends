@@ -50,7 +50,7 @@ namespace PotatoCardGame.UI
         private void CreateMainCanvas()
         {
             // Find existing canvas or create new one
-            mainCanvas = FindObjectOfType<Canvas>();
+            mainCanvas = FindFirstObjectByType<Canvas>();
             
             if (mainCanvas == null)
             {

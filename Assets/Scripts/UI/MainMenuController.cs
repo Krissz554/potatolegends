@@ -56,7 +56,7 @@ namespace PotatoCardGame.UI
         [SerializeField] private GameObject matchLoadingIndicator;
         
         [Header("Animation")]
-        [SerializeField] private float buttonAnimationDuration = 0.2f;
+        // Animation settings (moved to individual methods)
         [SerializeField] private float panelAnimationDuration = 0.3f;
         
         private bool isSearchingForMatch = false;
@@ -195,7 +195,7 @@ namespace PotatoCardGame.UI
             }
         }
         
-        private async void LoadUserStats()
+        private void LoadUserStats()
         {
             try
             {

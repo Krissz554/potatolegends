@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using PotatoCardGame.Network;
 
 namespace PotatoCardGame.Core
 {

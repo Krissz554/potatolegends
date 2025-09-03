@@ -227,7 +227,7 @@ namespace PotatoCardGame.UI
             LoadUserStats();
         }
         
-        private async void LoadUserInfo()
+        private void LoadUserInfo()
         {
             // This will trigger OnUserProfileLoaded when complete
             Debug.Log("📊 Loading user information...");
