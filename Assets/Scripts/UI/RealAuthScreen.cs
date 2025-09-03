@@ -69,23 +69,15 @@ namespace PotatoCardGame.UI
             
             canvasObj.AddComponent<GraphicRaycaster>();
             
-            // Create EventSystem if it doesn't exist
+            // Create EventSystem if it doesn't exist (USE NEW INPUT SYSTEM)
             if (FindFirstObjectByType<UnityEngine.EventSystems.EventSystem>() == null)
             {
                 GameObject eventSystemObj = new GameObject("EventSystem");
                 eventSystemObj.AddComponent<UnityEngine.EventSystems.EventSystem>();
                 
-                // Try new Input System first, fallback to old
-                try
-                {
-                    var newInputModule = eventSystemObj.AddComponent<UnityEngine.InputSystem.UI.InputSystemUIInputModule>();
-                    Debug.Log("✅ Using new Input System UI module");
-                }
-                catch
-                {
-                    var oldInputModule = eventSystemObj.AddComponent<UnityEngine.EventSystems.StandaloneInputModule>();
-                    Debug.Log("✅ Using legacy Input System module");
-                }
+                // Use NEW Input System (recommended for Unity 6)
+                eventSystemObj.AddComponent<UnityEngine.InputSystem.UI.InputSystemUIInputModule>();
+                Debug.Log("✅ Using NEW Input System UI module (recommended)");
             }
         }
         
