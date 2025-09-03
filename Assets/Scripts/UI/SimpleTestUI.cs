@@ -320,3 +320,5 @@ namespace PotatoCardGame.UI
             battleText.text = "⚔️\nBATTLE";
             battleImage.color = new Color(1f, 0.3f, 0.3f, 1f); // Back to red
         }
+    }
+}
