@@ -228,18 +228,8 @@ namespace PotatoCardGame.Cards
         
         public GameObject CreateCardDisplay(RealSupabaseClient.EnhancedCard card, Transform parent = null, bool showQuantity = false)
         {
-            // Create a simple card display without prefab dependency
-            GameObject cardObject = CreateSimpleCardDisplay(card, parent);
-            
-            // Load real card image
-            if (!string.IsNullOrEmpty(card.illustration_url))
-            {
-                Image cardImage = cardObject.GetComponent<Image>();
-                if (cardImage != null && ImageLoader.Instance != null)
-                {
-                    ImageLoader.Instance.LoadImageFromURL(card.illustration_url, cardImage);
-                }
-            }
+            // Create a card display with real elemental backgrounds
+            GameObject cardObject = CreateElementalCardDisplay(card, parent);
             
             // Show quantity if requested
             if (showQuantity)
@@ -251,15 +241,27 @@ namespace PotatoCardGame.Cards
             return cardObject;
         }
         
-        private GameObject CreateSimpleCardDisplay(RealSupabaseClient.EnhancedCard card, Transform parent)
+        private GameObject CreateElementalCardDisplay(RealSupabaseClient.EnhancedCard card, Transform parent)
         {
             GameObject cardObj = new GameObject($"Card_{card.name}");
             cardObj.transform.SetParent(parent, false);
             cardObj.layer = 5;
             
-            // Card background
+            // Card background with REAL elemental image
             Image cardImage = cardObj.AddComponent<Image>();
-            cardImage.color = GetCardBackgroundColor(card.rarity);
+            
+            // Load elemental background (exactly like web version)
+            Sprite elementalBg = GetElementalBackground(card.potato_type, card.exotic || card.is_exotic);
+            if (elementalBg != null)
+            {
+                cardImage.sprite = elementalBg;
+                cardImage.type = Image.Type.Sliced; // For proper scaling
+            }
+            else
+            {
+                // Fallback to color if image not found
+                cardImage.color = GetCardBackgroundColor(card.rarity);
+            }
             
             // Card name
             GameObject nameObj = new GameObject("Card Name");
@@ -393,6 +395,35 @@ namespace PotatoCardGame.Cards
             quantityRect.anchorMax = new Vector2(1f, 1f);
             quantityRect.offsetMin = Vector2.zero;
             quantityRect.offsetMax = Vector2.zero;
+        }
+        
+        private Sprite GetElementalBackground(string potatoType, bool isExotic)
+        {
+            // Use exotic background if card is exotic (exactly like web version)
+            if (isExotic)
+            {
+                return Resources.Load<Sprite>("ElementalBackgrounds/exotic-class-card");
+            }
+            
+            // Use elemental background based on potato_type (exactly like web version)
+            string backgroundName = potatoType?.ToLower() switch
+            {
+                "fire" => "fire-card",
+                "ice" => "ice-card", 
+                "light" => "light-card",
+                "lightning" => "lightning-card",
+                "void" => "void-card",
+                _ => "void-card" // Default to void if unknown
+            };
+            
+            Sprite background = Resources.Load<Sprite>($"ElementalBackgrounds/{backgroundName}");
+            
+            if (background == null)
+            {
+                Debug.LogWarning($"⚠️ Elemental background not found: {backgroundName}");
+            }
+            
+            return background;
         }
         
         private Color GetCardBackgroundColor(string rarity)
