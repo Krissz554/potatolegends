@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using TMPro;
 
 namespace PotatoCardGame.UI
@@ -30,6 +31,15 @@ namespace PotatoCardGame.UI
             scaler.referenceResolution = new Vector2(1080, 1920);
             
             canvasObj.AddComponent<GraphicRaycaster>();
+            
+            // Create EventSystem if it doesn't exist (needed for input)
+            if (FindFirstObjectByType<UnityEngine.EventSystems.EventSystem>() == null)
+            {
+                GameObject eventSystemObj = new GameObject("EventSystem");
+                eventSystemObj.AddComponent<UnityEngine.EventSystems.EventSystem>();
+                eventSystemObj.AddComponent<UnityEngine.EventSystems.StandaloneInputModule>();
+                Debug.Log("✅ EventSystem created for input handling");
+            }
             
             // Create test text
             GameObject textObj = new GameObject("Test Text");
@@ -116,18 +126,22 @@ namespace PotatoCardGame.UI
         {
             GameObject inputObj = new GameObject($"{placeholder} Input");
             inputObj.transform.SetParent(parent, false);
+            inputObj.layer = 5; // UI layer
             
             // Background
             Image inputBg = inputObj.AddComponent<Image>();
             inputBg.color = new Color(1f, 1f, 1f, 0.9f); // White background
+            inputBg.raycastTarget = true; // Enable clicks
             
             // Input field component
             TMP_InputField inputField = inputObj.AddComponent<TMP_InputField>();
             if (isPassword) inputField.contentType = TMP_InputField.ContentType.Password;
+            inputField.interactable = true;
             
             // Text area
             GameObject textArea = new GameObject("Text Area");
             textArea.transform.SetParent(inputObj.transform, false);
+            textArea.layer = 5; // UI layer
             RectMask2D mask = textArea.AddComponent<RectMask2D>();
             
             RectTransform textAreaRect = textArea.GetComponent<RectTransform>();
@@ -139,12 +153,14 @@ namespace PotatoCardGame.UI
             // Placeholder text
             GameObject placeholderObj = new GameObject("Placeholder");
             placeholderObj.transform.SetParent(textArea.transform, false);
+            placeholderObj.layer = 5; // UI layer
             
             TextMeshProUGUI placeholderText = placeholderObj.AddComponent<TextMeshProUGUI>();
             placeholderText.text = $"Enter your {placeholder.ToLower()}";
             placeholderText.fontSize = 24;
             placeholderText.color = new Color(0.5f, 0.5f, 0.5f, 1f);
             placeholderText.fontStyle = FontStyles.Italic;
+            placeholderText.raycastTarget = false; // Don't block input
             
             RectTransform placeholderRect = placeholderObj.GetComponent<RectTransform>();
             placeholderRect.anchorMin = Vector2.zero;
@@ -155,11 +171,13 @@ namespace PotatoCardGame.UI
             // Input text
             GameObject inputTextObj = new GameObject("Text");
             inputTextObj.transform.SetParent(textArea.transform, false);
+            inputTextObj.layer = 5; // UI layer
             
             TextMeshProUGUI inputText = inputTextObj.AddComponent<TextMeshProUGUI>();
             inputText.text = "";
             inputText.fontSize = 24;
             inputText.color = Color.black;
+            inputText.raycastTarget = false; // Don't block input
             
             RectTransform inputTextRect = inputTextObj.GetComponent<RectTransform>();
             inputTextRect.anchorMin = Vector2.zero;
