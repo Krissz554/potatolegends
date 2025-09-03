@@ -191,7 +191,8 @@ namespace PotatoCardGame.UI
             // Animate out current screen
             if (!immediate && currentScreenObject != null)
             {
-                await AnimateScreenOut();
+                StartCoroutine(AnimateScreenOut());
+                await Task.Delay(200); // Wait for animation
             }
             
             // Clear current screen
@@ -203,7 +204,7 @@ namespace PotatoCardGame.UI
             // Animate in new screen
             if (!immediate)
             {
-                await AnimateScreenIn();
+                StartCoroutine(AnimateScreenIn());
             }
             
             Debug.Log($"✅ Successfully transitioned to {targetScreen}");
@@ -1539,7 +1540,7 @@ namespace PotatoCardGame.UI
             yield return StartCoroutine(AnimateCardPress(battleButton.gameObject));
             
             // Transition to matchmaking
-            await ShowScreen(GameScreen.BattleMatchmaking);
+            _ = ShowScreen(GameScreen.BattleMatchmaking);
         }
         
         #endregion
@@ -1749,8 +1750,9 @@ namespace PotatoCardGame.UI
         
         private UIAssetLibrary CreateAssetLibrary()
         {
-            GameObject assetLibraryObj = new GameObject("UI Asset Library");
-            return assetLibraryObj.AddComponent<UIAssetLibrary>();
+            // Create ScriptableObject asset library
+            UIAssetLibrary library = ScriptableObject.CreateInstance<UIAssetLibrary>();
+            return library;
         }
         
         private Sprite CreatePlaceholderIcon(Color color)
