@@ -1779,9 +1779,6 @@ namespace PotatoCardGame.UI
         // TODO: Implement these methods
         private void CreateDeckGrid(Transform parent) { }
         private void CreateAvailableCardsGrid(Transform parent) { }
-        private void CreateDeckBuilderSplitView(Transform parent) { }
-        private void CreateDeckPanelContent(Transform parent) { }
-        private void CreateCardsPanelContent(Transform parent) { }
         private async Task<GameObject> CreateBattleMatchmakingScreen() { return null; }
         
         #endregion
