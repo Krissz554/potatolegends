@@ -826,24 +826,108 @@ namespace PotatoCardGame.UI
         
         private void CreateBottomUtilityBar(Transform parent)
         {
-            // Utility bar container - smaller and more compact
-            GameObject utilityBar = CreateFantasyPanel(
-                "Utility Bar",
-                parent,
-                new Vector2(0.05f, 0.02f),
-                new Vector2(0.55f, 0.1f), // Smaller height
-                assetLibrary.utilityBarSprite
+            // NO background panel - just place icons directly on screen
+            Debug.Log("🔧 Creating compact utility buttons without background...");
+            
+            // Calculate button size (square, compact)
+            float buttonSize = 0.06f; // 6% of screen width/height
+            float spacing = 0.01f; // 1% spacing between buttons
+            float startX = 0.05f; // Start 5% from left edge
+            float bottomY = 0.02f; // 2% from bottom
+            
+            // Settings button (leftmost)
+            CreateCompactUtilityButton(
+                parent, 
+                "Settings", 
+                assetLibrary.settingsIcon, 
+                colors.primaryBlue,
+                new Vector2(startX, bottomY),
+                new Vector2(startX + buttonSize, bottomY + buttonSize)
             );
             
-            // Create small, square utility buttons
-            CreateSmallUtilityButton(utilityBar.transform, "Settings", assetLibrary.settingsIcon, colors.primaryBlue, new Vector2(0.1f, 0.1f), new Vector2(0.35f, 0.9f));
+            // Shop button (middle)
+            CreateCompactUtilityButton(
+                parent, 
+                "Shop", 
+                assetLibrary.shopIcon, 
+                colors.legendaryGold,
+                new Vector2(startX + buttonSize + spacing, bottomY),
+                new Vector2(startX + (buttonSize * 2) + spacing, bottomY + buttonSize)
+            );
             
-            CreateSmallUtilityButton(utilityBar.transform, "Shop", assetLibrary.shopIcon, colors.legendaryGold, new Vector2(0.4f, 0.1f), new Vector2(0.65f, 0.9f));
+            // Logout button (rightmost) - USES CUSTOM LOGOUT ICON!
+            Button logoutBtn = CreateCompactUtilityButton(
+                parent, 
+                "Logout", 
+                Resources.Load<Sprite>("UI/Icons/logout-icon"), // Direct load for logout icon
+                colors.battleRed,
+                new Vector2(startX + (buttonSize * 2) + (spacing * 2), bottomY),
+                new Vector2(startX + (buttonSize * 3) + (spacing * 2), bottomY + buttonSize)
+            );
             
-            Button logoutBtn = CreateSmallUtilityButton(utilityBar.transform, "Logout", null, colors.battleRed, new Vector2(0.7f, 0.1f), new Vector2(0.95f, 0.9f));
             logoutBtn.onClick.AddListener(async () => {
                 await HandleLogout();
             });
+        }
+        
+        private Button CreateCompactUtilityButton(Transform parent, string name, Sprite customIcon, Color fallbackColor, Vector2 anchorMin, Vector2 anchorMax)
+        {
+            GameObject btnObj = new GameObject($"Compact {name} Button");
+            btnObj.transform.SetParent(parent, false);
+            btnObj.layer = 5;
+            
+            Button button = btnObj.AddComponent<Button>();
+            Image buttonImage = btnObj.AddComponent<Image>();
+            
+            // Use custom icon if available (PURE ICON, NO BACKGROUND)
+            if (customIcon != null)
+            {
+                buttonImage.sprite = customIcon;
+                buttonImage.color = Color.white;
+                buttonImage.type = Image.Type.Simple; // Preserve aspect ratio
+                buttonImage.preserveAspect = true; // Keep original proportions
+                Debug.Log($"✅ Applied compact custom {name.ToLower()} icon - pure icon, no background!");
+            }
+            else
+            {
+                // Fallback: minimal colored icon
+                buttonImage.color = fallbackColor;
+                Debug.Log($"📝 Using compact fallback for {name.ToLower()} button");
+                
+                // Minimal single letter for fallback
+                GameObject textObj = new GameObject($"{name} Text");
+                textObj.transform.SetParent(btnObj.transform, false);
+                textObj.layer = 5;
+                
+                TextMeshProUGUI buttonText = textObj.AddComponent<TextMeshProUGUI>();
+                buttonText.text = name.Substring(0, 1).ToUpper(); // Just first letter (S, $, L)
+                buttonText.fontSize = 20;
+                buttonText.color = Color.white;
+                buttonText.alignment = TextAlignmentOptions.Center;
+                buttonText.fontStyle = FontStyles.Bold;
+                buttonText.raycastTarget = false;
+                buttonText.outlineColor = Color.black;
+                buttonText.outlineWidth = 0.2f;
+                
+                SetFullScreen(textObj.GetComponent<RectTransform>());
+            }
+            
+            RectTransform btnRect = btnObj.GetComponent<RectTransform>();
+            btnRect.anchorMin = anchorMin;
+            btnRect.anchorMax = anchorMax;
+            btnRect.offsetMin = Vector2.zero;
+            btnRect.offsetMax = Vector2.zero;
+            
+            // Professional compact button interactions
+            ColorBlock colors = button.colors;
+            colors.normalColor = Color.white;
+            colors.highlightedColor = new Color(1.1f, 1.1f, 1.1f, 1f); // Slight brightness on hover
+            colors.pressedColor = new Color(0.9f, 0.9f, 0.9f, 1f); // Slight dim on press
+            colors.disabledColor = new Color(0.6f, 0.6f, 0.6f, 0.8f);
+            colors.fadeDuration = 0.1f;
+            button.colors = colors;
+            
+            return button;
         }
         
         private Button CreateSmallUtilityButton(Transform parent, string name, Sprite customIcon, Color fallbackColor, Vector2 anchorMin, Vector2 anchorMax)
