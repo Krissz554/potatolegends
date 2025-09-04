@@ -481,7 +481,7 @@ namespace PotatoCardGame.UI
             goldRect.offsetMin = Vector2.zero;
             goldRect.offsetMax = Vector2.zero;
             
-            // Gold icon (CUSTOM or fallback)
+            // Gold icon (CUSTOM or fallback) - PROPER SIZE
             GameObject goldIcon = CreatePanel("Gold Icon", goldContainer.transform);
             Image goldIconImg = goldIcon.GetComponent<Image>();
             
@@ -489,7 +489,9 @@ namespace PotatoCardGame.UI
             {
                 goldIconImg.sprite = assetLibrary.goldIcon;
                 goldIconImg.color = Color.white;
-                Debug.Log("✅ Applied custom gold icon!");
+                goldIconImg.type = Image.Type.Simple; // Preserve aspect ratio
+                goldIconImg.preserveAspect = true; // Keep original proportions
+                Debug.Log("✅ Applied custom gold icon with proper proportions!");
             }
             else
             {
@@ -498,8 +500,8 @@ namespace PotatoCardGame.UI
             }
             
             RectTransform goldIconRect = goldIcon.GetComponent<RectTransform>();
-            goldIconRect.anchorMin = new Vector2(0f, 0f);
-            goldIconRect.anchorMax = new Vector2(0.4f, 1f);
+            goldIconRect.anchorMin = new Vector2(0f, 0.1f);
+            goldIconRect.anchorMax = new Vector2(0.35f, 0.9f); // Smaller, square-like
             goldIconRect.offsetMin = Vector2.zero;
             goldIconRect.offsetMax = Vector2.zero;
             
@@ -516,7 +518,7 @@ namespace PotatoCardGame.UI
             goldText.fontStyle = FontStyles.Bold;
             
             RectTransform goldTextRect = goldTextObj.GetComponent<RectTransform>();
-            goldTextRect.anchorMin = new Vector2(0.45f, 0f);
+            goldTextRect.anchorMin = new Vector2(0.4f, 0f);
             goldTextRect.anchorMax = new Vector2(1f, 1f);
             goldTextRect.offsetMin = Vector2.zero;
             goldTextRect.offsetMax = Vector2.zero;
@@ -537,7 +539,7 @@ namespace PotatoCardGame.UI
             gemRect.offsetMin = Vector2.zero;
             gemRect.offsetMax = Vector2.zero;
             
-            // Gem icon (CUSTOM or fallback)
+            // Gem icon (CUSTOM or fallback) - PROPER SIZE
             GameObject gemIcon = CreatePanel("Gem Icon", gemContainer.transform);
             Image gemIconImg = gemIcon.GetComponent<Image>();
             
@@ -545,7 +547,9 @@ namespace PotatoCardGame.UI
             {
                 gemIconImg.sprite = assetLibrary.gemIcon;
                 gemIconImg.color = Color.white;
-                Debug.Log("✅ Applied custom gem icon!");
+                gemIconImg.type = Image.Type.Simple; // Preserve aspect ratio
+                gemIconImg.preserveAspect = true; // Keep original proportions
+                Debug.Log("✅ Applied custom gem icon with proper proportions!");
             }
             else
             {
@@ -554,8 +558,8 @@ namespace PotatoCardGame.UI
             }
             
             RectTransform gemIconRect = gemIcon.GetComponent<RectTransform>();
-            gemIconRect.anchorMin = new Vector2(0f, 0f);
-            gemIconRect.anchorMax = new Vector2(0.5f, 1f);
+            gemIconRect.anchorMin = new Vector2(0f, 0.1f);
+            gemIconRect.anchorMax = new Vector2(0.4f, 0.9f); // Smaller, square-like
             gemIconRect.offsetMin = Vector2.zero;
             gemIconRect.offsetMax = Vector2.zero;
             
@@ -572,7 +576,7 @@ namespace PotatoCardGame.UI
             gemText.fontStyle = FontStyles.Bold;
             
             RectTransform gemTextRect = gemTextObj.GetComponent<RectTransform>();
-            gemTextRect.anchorMin = new Vector2(0.55f, 0f);
+            gemTextRect.anchorMin = new Vector2(0.45f, 0f);
             gemTextRect.anchorMax = new Vector2(1f, 1f);
             gemTextRect.offsetMin = Vector2.zero;
             gemTextRect.offsetMax = Vector2.zero;
@@ -822,25 +826,82 @@ namespace PotatoCardGame.UI
         
         private void CreateBottomUtilityBar(Transform parent)
         {
+            // Utility bar container - smaller and more compact
             GameObject utilityBar = CreateFantasyPanel(
                 "Utility Bar",
                 parent,
                 new Vector2(0.05f, 0.02f),
-                new Vector2(0.55f, 0.12f),
+                new Vector2(0.55f, 0.1f), // Smaller height
                 assetLibrary.utilityBarSprite
             );
             
-            // Settings button (CUSTOM ICON)
-            CreateCustomUtilityButton(utilityBar.transform, "Settings", assetLibrary.settingsIcon, colors.primaryBlue, new Vector2(0.05f, 0.1f), new Vector2(0.3f, 0.9f));
+            // Create small, square utility buttons
+            CreateSmallUtilityButton(utilityBar.transform, "Settings", assetLibrary.settingsIcon, colors.primaryBlue, new Vector2(0.1f, 0.1f), new Vector2(0.35f, 0.9f));
             
-            // Shop button (CUSTOM ICON)
-            CreateCustomUtilityButton(utilityBar.transform, "Shop", assetLibrary.shopIcon, colors.legendaryGold, new Vector2(0.35f, 0.1f), new Vector2(0.65f, 0.9f));
+            CreateSmallUtilityButton(utilityBar.transform, "Shop", assetLibrary.shopIcon, colors.legendaryGold, new Vector2(0.4f, 0.1f), new Vector2(0.65f, 0.9f));
             
-            // Logout button (CUSTOM ICON)
-            Button logoutBtn = CreateCustomUtilityButton(utilityBar.transform, "Logout", null, colors.battleRed, new Vector2(0.7f, 0.1f), new Vector2(0.95f, 0.9f));
+            Button logoutBtn = CreateSmallUtilityButton(utilityBar.transform, "Logout", null, colors.battleRed, new Vector2(0.7f, 0.1f), new Vector2(0.95f, 0.9f));
             logoutBtn.onClick.AddListener(async () => {
                 await HandleLogout();
             });
+        }
+        
+        private Button CreateSmallUtilityButton(Transform parent, string name, Sprite customIcon, Color fallbackColor, Vector2 anchorMin, Vector2 anchorMax)
+        {
+            GameObject btnObj = new GameObject($"Small {name} Button");
+            btnObj.transform.SetParent(parent, false);
+            btnObj.layer = 5;
+            
+            Button button = btnObj.AddComponent<Button>();
+            Image buttonImage = btnObj.AddComponent<Image>();
+            
+            // Use custom icon if available
+            if (customIcon != null)
+            {
+                buttonImage.sprite = customIcon;
+                buttonImage.color = Color.white;
+                buttonImage.type = Image.Type.Simple; // Preserve aspect ratio
+                buttonImage.preserveAspect = true; // Keep original proportions
+                Debug.Log($"✅ Applied small custom {name.ToLower()} icon with proper proportions!");
+            }
+            else
+            {
+                // Fallback: small colored square with minimal text
+                buttonImage.color = fallbackColor;
+                Debug.Log($"📝 Using small fallback for {name.ToLower()} button");
+                
+                // Minimal text for fallback
+                GameObject textObj = new GameObject($"{name} Text");
+                textObj.transform.SetParent(btnObj.transform, false);
+                textObj.layer = 5;
+                
+                TextMeshProUGUI buttonText = textObj.AddComponent<TextMeshProUGUI>();
+                buttonText.text = name.Substring(0, 1).ToUpper(); // Just first letter
+                buttonText.fontSize = 16;
+                buttonText.color = Color.white;
+                buttonText.alignment = TextAlignmentOptions.Center;
+                buttonText.fontStyle = FontStyles.Bold;
+                buttonText.raycastTarget = false;
+                
+                SetFullScreen(textObj.GetComponent<RectTransform>());
+            }
+            
+            RectTransform btnRect = btnObj.GetComponent<RectTransform>();
+            btnRect.anchorMin = anchorMin;
+            btnRect.anchorMax = anchorMax;
+            btnRect.offsetMin = Vector2.zero;
+            btnRect.offsetMax = Vector2.zero;
+            
+            // Professional small button interactions
+            ColorBlock colors = button.colors;
+            colors.normalColor = Color.white;
+            colors.highlightedColor = new Color(1.1f, 1.1f, 1.1f, 1f);
+            colors.pressedColor = new Color(0.9f, 0.9f, 0.9f, 1f);
+            colors.disabledColor = new Color(0.6f, 0.6f, 0.6f, 0.8f);
+            colors.fadeDuration = 0.1f;
+            button.colors = colors;
+            
+            return button;
         }
         
         private Button CreateCustomUtilityButton(Transform parent, string name, Sprite customIcon, Color fallbackColor, Vector2 anchorMin, Vector2 anchorMax)
