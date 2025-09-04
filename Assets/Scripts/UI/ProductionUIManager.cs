@@ -830,17 +830,73 @@ namespace PotatoCardGame.UI
                 assetLibrary.utilityBarSprite
             );
             
-            // Settings button
-            CreateUtilityButton(utilityBar.transform, "Settings", colors.primaryBlue, new Vector2(0.05f, 0.1f), new Vector2(0.3f, 0.9f));
+            // Settings button (CUSTOM ICON)
+            CreateCustomUtilityButton(utilityBar.transform, "Settings", assetLibrary.settingsIcon, colors.primaryBlue, new Vector2(0.05f, 0.1f), new Vector2(0.3f, 0.9f));
             
-            // Shop button
-            CreateUtilityButton(utilityBar.transform, "Shop", colors.legendaryGold, new Vector2(0.35f, 0.1f), new Vector2(0.65f, 0.9f));
+            // Shop button (CUSTOM ICON)
+            CreateCustomUtilityButton(utilityBar.transform, "Shop", assetLibrary.shopIcon, colors.legendaryGold, new Vector2(0.35f, 0.1f), new Vector2(0.65f, 0.9f));
             
-            // Logout button
-            Button logoutBtn = CreateUtilityButton(utilityBar.transform, "Logout", colors.battleRed, new Vector2(0.7f, 0.1f), new Vector2(0.95f, 0.9f));
+            // Logout button (CUSTOM ICON)
+            Button logoutBtn = CreateCustomUtilityButton(utilityBar.transform, "Logout", null, colors.battleRed, new Vector2(0.7f, 0.1f), new Vector2(0.95f, 0.9f));
             logoutBtn.onClick.AddListener(async () => {
                 await HandleLogout();
             });
+        }
+        
+        private Button CreateCustomUtilityButton(Transform parent, string name, Sprite customIcon, Color fallbackColor, Vector2 anchorMin, Vector2 anchorMax)
+        {
+            GameObject btnObj = new GameObject($"Custom {name} Button");
+            btnObj.transform.SetParent(parent, false);
+            btnObj.layer = 5;
+            
+            Button button = btnObj.AddComponent<Button>();
+            Image buttonImage = btnObj.AddComponent<Image>();
+            
+            // Use custom icon if available, otherwise fallback to colored button
+            if (customIcon != null)
+            {
+                buttonImage.sprite = customIcon;
+                buttonImage.color = Color.white;
+                buttonImage.type = Image.Type.Simple;
+                Debug.Log($"✅ Applied custom {name.ToLower()} icon!");
+            }
+            else
+            {
+                buttonImage.color = fallbackColor;
+                Debug.Log($"📝 Using fallback color for {name.ToLower()} button");
+                
+                // Add text for fallback
+                GameObject textObj = new GameObject($"{name} Text");
+                textObj.transform.SetParent(btnObj.transform, false);
+                textObj.layer = 5;
+                
+                TextMeshProUGUI buttonText = textObj.AddComponent<TextMeshProUGUI>();
+                buttonText.text = name.ToUpper();
+                buttonText.fontSize = 12;
+                buttonText.color = Color.white;
+                buttonText.alignment = TextAlignmentOptions.Center;
+                buttonText.fontStyle = FontStyles.Bold;
+                buttonText.raycastTarget = false;
+                
+                SetFullScreen(textObj.GetComponent<RectTransform>());
+            }
+            
+            RectTransform btnRect = btnObj.GetComponent<RectTransform>();
+            btnRect.anchorMin = anchorMin;
+            btnRect.anchorMax = anchorMax;
+            btnRect.offsetMin = Vector2.zero;
+            btnRect.offsetMax = Vector2.zero;
+            
+            // Professional button interactions
+            ColorBlock colors = button.colors;
+            colors.normalColor = Color.white;
+            colors.highlightedColor = new Color(1.1f, 1.1f, 1.1f, 1f);
+            colors.pressedColor = new Color(0.9f, 0.9f, 0.9f, 1f);
+            colors.disabledColor = new Color(0.6f, 0.6f, 0.6f, 0.8f);
+            colors.fadeDuration = 0.1f;
+            button.colors = colors;
+            
+            return button;
         }
         
         private Button CreateUtilityButton(Transform parent, string text, Color color, Vector2 anchorMin, Vector2 anchorMax)
