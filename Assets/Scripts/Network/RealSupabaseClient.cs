@@ -829,7 +829,6 @@ public class RealSupabaseClient : MonoBehaviour
             public EnhancedCard card;
             public int quantity;
         }
-    }
         
         [Serializable]
         public class Hero
