@@ -249,6 +249,89 @@ public class RealSupabaseClient : MonoBehaviour
             }
         }
         
+        // DECK MANAGEMENT METHODS
+        public async Task<List<Deck>> LoadUserDecks()
+        {
+            Debug.Log($"🃏 Loading decks for user: {userId}");
+            
+            try
+            {
+                var decks = await GetData<List<Deck>>($"/rest/v1/decks?user_id=eq.{userId}&order=created_at.desc");
+                
+                Debug.Log($"✅ Loaded {decks?.Count ?? 0} user decks");
+                return decks ?? new List<Deck>();
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"❌ Error loading user decks: {e.Message}");
+                return new List<Deck>();
+            }
+        }
+        
+        public async Task<Deck> LoadDeckCards(string deckId)
+        {
+            Debug.Log($"🃏 Loading cards for deck: {deckId}");
+            
+            try
+            {
+                // First get the deck info
+                var deckInfo = await GetData<List<Deck>>($"/rest/v1/decks?id=eq.{deckId}");
+                if (deckInfo == null || deckInfo.Count == 0)
+                {
+                    Debug.LogError($"❌ Deck not found: {deckId}");
+                    return null;
+                }
+                
+                var deck = deckInfo[0];
+                
+                // Then get the deck cards with card details
+                var deckCardsQuery = $"/rest/v1/deck_cards?deck_id=eq.{deckId}&select=quantity,card_id,cards:card_complete(*)";
+                var deckCardsResult = await GetRequest(deckCardsQuery);
+                
+                // Parse the deck cards
+                var deckCards = JsonConvert.DeserializeObject<List<DeckCard>>(deckCardsResult);
+                deck.cards = deckCards ?? new List<DeckCard>();
+                deck.total_cards = deck.cards.Sum(dc => dc.quantity);
+                
+                Debug.Log($"✅ Loaded deck '{deck.name}' with {deck.total_cards} cards");
+                return deck;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"❌ Error loading deck cards: {e.Message}");
+                return null;
+            }
+        }
+        
+        public async Task<bool> CreateDeck(string deckName)
+        {
+            Debug.Log($"🃏 Creating deck: {deckName}");
+            
+            try
+            {
+                // Check if this will be the user's first deck
+                var existingDecks = await LoadUserDecks();
+                bool isFirstDeck = existingDecks.Count == 0;
+                
+                var deckData = new 
+                {
+                    user_id = userId,
+                    name = deckName,
+                    is_active = isFirstDeck
+                };
+                
+                await PostData<object>("/rest/v1/decks", deckData);
+                
+                Debug.Log($"✅ Created deck '{deckName}'{(isFirstDeck ? " and set as active" : "")}");
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"❌ Error creating deck: {e.Message}");
+                return false;
+            }
+        }
+        
         private List<CollectionItem> ParseCollectionData(object data)
         {
             // Parse collection data exactly like web version
@@ -732,7 +815,6 @@ public class RealSupabaseClient : MonoBehaviour
         public class Deck
         {
             public string id;
-            public string user_id;
             public string name;
             public bool is_active;
             public List<DeckCard> cards;
@@ -744,11 +826,10 @@ public class RealSupabaseClient : MonoBehaviour
         [Serializable]
         public class DeckCard
         {
-            public string deck_id;
-            public string card_id;
-            public int quantity;
             public EnhancedCard card;
+            public int quantity;
         }
+    }
         
         [Serializable]
         public class Hero

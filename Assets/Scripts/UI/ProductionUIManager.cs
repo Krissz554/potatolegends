@@ -1548,11 +1548,11 @@ namespace PotatoCardGame.UI
             ContentSizeFitter sizeFitter = content.AddComponent<ContentSizeFitter>();
             sizeFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
             
-            // Create available card displays - ACTUALLY CREATE THEM!
+            // Create available card displays - SHOW ALL CARDS!
             int cardsDisplayed = 0;
             try 
             {
-                var ownedCards = userCollection.Where(item => item.quantity > 0).Take(30);
+                var ownedCards = userCollection.Where(item => item.quantity > 0); // Show ALL cards, not just 30
                 Debug.Log($"🔍 About to create cards from {ownedCards.Count()} owned cards");
                 
                 foreach (var collectionItem in ownedCards)
