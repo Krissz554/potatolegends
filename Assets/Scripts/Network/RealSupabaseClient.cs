@@ -340,7 +340,7 @@ public class RealSupabaseClient : MonoBehaviour
             try
             {
                 // Delete existing cards
-                await DeleteData($"/rest/v1/deck_cards?deck_id=eq.{deckId}");
+                await DeleteData("deck_cards", $"deck_id=eq.{deckId}");
                 
                 // Insert new cards
                 if (deckCards.Count > 0)
@@ -393,10 +393,10 @@ public class RealSupabaseClient : MonoBehaviour
             try
             {
                 // Delete deck cards first (foreign key constraint)
-                await DeleteData($"/rest/v1/deck_cards?deck_id=eq.{deckId}");
+                await DeleteData("deck_cards", $"deck_id=eq.{deckId}");
                 
                 // Delete the deck itself
-                await DeleteData($"/rest/v1/decks?id=eq.{deckId}");
+                await DeleteData("decks", $"id=eq.{deckId}");
                 
                 Debug.Log($"✅ Deleted deck successfully");
                 return true;
@@ -404,6 +404,38 @@ public class RealSupabaseClient : MonoBehaviour
             catch (System.Exception e)
             {
                 Debug.LogError($"❌ Error deleting deck: {e.Message}");
+                return false;
+            }
+        }
+        
+        public async Task<bool> SaveDeck(Deck deck)
+        {
+            Debug.Log($"💾 Saving deck: {deck.name}");
+            
+            try
+            {
+                // Save deck metadata
+                var deckData = new
+                {
+                    id = deck.id,
+                    user_id = userId,
+                    name = deck.name,
+                    is_active = deck.is_active,
+                    updated_at = System.DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ")
+                };
+                
+                await PostData<object>("decks", deckData);
+                
+                // Save deck cards using the dedicated method
+                await SaveDeckCards(deck.id, deck.cards);
+                
+                Debug.Log("✅ Deck saved successfully");
+                return true;
+                
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"❌ Error saving deck: {e.Message}");
                 return false;
             }
         }
@@ -641,6 +673,22 @@ public class RealSupabaseClient : MonoBehaviour
             }
         }
         
+        public async Task<bool> PatchData(string endpoint, object data)
+        {
+            try
+            {
+                string jsonData = JsonConvert.SerializeObject(data);
+                await PatchRequest(endpoint, jsonData);
+                return true;
+                
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"❌ PATCH error: {e.Message}");
+                return false;
+            }
+        }
+        
         private async Task<string> GetRequest(string endpoint)
         {
             string url = SUPABASE_URL + endpoint;
@@ -707,6 +755,29 @@ public class RealSupabaseClient : MonoBehaviour
                 else
                 {
                     throw new Exception($"DELETE failed: {request.error}");
+                }
+            }
+        }
+        
+        private async Task<string> PatchRequest(string endpoint, string jsonData)
+        {
+            string url = SUPABASE_URL + endpoint;
+            
+            using (UnityWebRequest request = UnityWebRequest.Put(url, jsonData))
+            {
+                request.method = "PATCH";
+                SetHeaders(request);
+                
+                var operation = request.SendWebRequest();
+                while (!operation.isDone) await Task.Yield();
+                
+                if (request.result == UnityWebRequest.Result.Success)
+                {
+                    return request.downloadHandler.text;
+                }
+                else
+                {
+                    throw new Exception($"PATCH failed: {request.error}");
                 }
             }
         }
