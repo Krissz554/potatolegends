@@ -612,7 +612,7 @@ namespace PotatoCardGame.UI
                 "Browse Cards", 
                 colors.primaryGreen,
                 assetLibrary.collectionIcon,
-                () => _ = ShowScreen(GameScreen.Collection)
+                () => ShowFunctionalCollection()
             );
             
             // Deck Builder card
@@ -622,7 +622,7 @@ namespace PotatoCardGame.UI
                 "Craft Strategy", 
                 colors.rarePurple,
                 assetLibrary.deckBuilderIcon,
-                () => _ = ShowScreen(GameScreen.DeckBuilder)
+                () => ShowFunctionalDeckBuilder()
             );
             
             // Hero Hall card
@@ -632,7 +632,7 @@ namespace PotatoCardGame.UI
                 "Choose Champion", 
                 colors.legendaryGold,
                 assetLibrary.heroHallIcon,
-                () => _ = ShowScreen(GameScreen.HeroHall)
+                () => ShowFunctionalHeroHall()
             );
         }
         
@@ -1839,6 +1839,64 @@ namespace PotatoCardGame.UI
             
             // Transition to matchmaking
             _ = ShowScreen(GameScreen.BattleMatchmaking);
+        }
+        
+        #endregion
+        
+        #region Functional Screen Navigation
+        
+        private void ShowFunctionalCollection()
+        {
+            Debug.Log("📚 Opening FUNCTIONAL collection...");
+            
+            // Hide current screen
+            ClearCurrentScreen();
+            
+            // Find or create functional collection
+            var functionalCollection = FindFirstObjectByType<FunctionalCollectionScreen>();
+            if (functionalCollection == null)
+            {
+                GameObject collectionObj = new GameObject("Functional Collection Screen");
+                functionalCollection = collectionObj.AddComponent<FunctionalCollectionScreen>();
+            }
+            
+            functionalCollection.ShowCollection();
+        }
+        
+        private void ShowFunctionalDeckBuilder()
+        {
+            Debug.Log("🔧 Opening FUNCTIONAL deck builder...");
+            
+            // Hide current screen
+            ClearCurrentScreen();
+            
+            // Find or create functional deck builder
+            var functionalDeckBuilder = FindFirstObjectByType<FunctionalDeckBuilder>();
+            if (functionalDeckBuilder == null)
+            {
+                GameObject deckBuilderObj = new GameObject("Functional Deck Builder");
+                functionalDeckBuilder = deckBuilderObj.AddComponent<FunctionalDeckBuilder>();
+            }
+            
+            functionalDeckBuilder.ShowDeckBuilder();
+        }
+        
+        private void ShowFunctionalHeroHall()
+        {
+            Debug.Log("🦸 Opening FUNCTIONAL hero hall...");
+            
+            // Hide current screen
+            ClearCurrentScreen();
+            
+            // Find or create functional hero hall
+            var functionalHeroHall = FindFirstObjectByType<FunctionalHeroHall>();
+            if (functionalHeroHall == null)
+            {
+                GameObject heroHallObj = new GameObject("Functional Hero Hall");
+                functionalHeroHall = heroHallObj.AddComponent<FunctionalHeroHall>();
+            }
+            
+            functionalHeroHall.ShowHeroHall();
         }
         
         #endregion
