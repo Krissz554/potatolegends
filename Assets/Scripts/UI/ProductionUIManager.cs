@@ -1518,9 +1518,9 @@ namespace PotatoCardGame.UI
             GameObject viewport = new GameObject("Viewport");
             viewport.transform.SetParent(scrollView.transform, false);
             viewport.layer = 5;
-            viewport.AddComponent<RectMask2D>();
             
-            RectTransform viewportRect = viewport.GetComponent<RectTransform>();
+            RectTransform viewportRect = viewport.AddComponent<RectTransform>();
+            viewport.AddComponent<RectMask2D>();
             SetFullScreen(viewportRect);
             scrollComponent.viewport = viewportRect;
             
@@ -1529,7 +1529,7 @@ namespace PotatoCardGame.UI
             content.transform.SetParent(viewport.transform, false);
             content.layer = 5;
             
-            RectTransform contentRect = content.GetComponent<RectTransform>();
+            RectTransform contentRect = content.AddComponent<RectTransform>();
             contentRect.anchorMin = new Vector2(0f, 1f);
             contentRect.anchorMax = new Vector2(1f, 1f);
             contentRect.pivot = new Vector2(0.5f, 1f);
@@ -1553,6 +1553,7 @@ namespace PotatoCardGame.UI
             try 
             {
                 var ownedCards = userCollection.Where(item => item.quantity > 0).Take(30);
+                Debug.Log($"🔍 About to create cards from {ownedCards.Count()} owned cards");
                 
                 foreach (var collectionItem in ownedCards)
                 {
@@ -1564,10 +1565,15 @@ namespace PotatoCardGame.UI
                             cardsDisplayed++;
                             Debug.Log($"✅ Created deck builder card: {collectionItem.card.name}");
                         }
+                        else
+                        {
+                            Debug.LogWarning($"⚠️ CreateDeckBuilderCard returned null for {collectionItem.card.name}");
+                        }
                     }
                     catch (System.Exception cardEx)
                     {
                         Debug.LogError($"❌ Error creating card {collectionItem.card.name}: {cardEx.Message}");
+                        Debug.LogError($"❌ Stack trace: {cardEx.StackTrace}");
                     }
                 }
                 
@@ -1576,6 +1582,7 @@ namespace PotatoCardGame.UI
             catch (System.Exception ex)
             {
                 Debug.LogError($"❌ Error in CreateAvailableCardsScrollView: {ex.Message}");
+                Debug.LogError($"❌ Stack trace: {ex.StackTrace}");
             }
         }
         
