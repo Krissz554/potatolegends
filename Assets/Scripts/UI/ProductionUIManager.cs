@@ -1520,7 +1520,7 @@ namespace PotatoCardGame.UI
             viewport.layer = 5;
             viewport.AddComponent<RectMask2D>();
             
-            RectTransform viewportRect = viewport.AddComponent<RectTransform>();
+            RectTransform viewportRect = viewport.GetComponent<RectTransform>();
             SetFullScreen(viewportRect);
             scrollComponent.viewport = viewportRect;
             
@@ -1529,7 +1529,7 @@ namespace PotatoCardGame.UI
             content.transform.SetParent(viewport.transform, false);
             content.layer = 5;
             
-            RectTransform contentRect = content.AddComponent<RectTransform>();
+            RectTransform contentRect = content.GetComponent<RectTransform>();
             contentRect.anchorMin = new Vector2(0f, 1f);
             contentRect.anchorMax = new Vector2(1f, 1f);
             contentRect.pivot = new Vector2(0.5f, 1f);
@@ -1550,19 +1550,33 @@ namespace PotatoCardGame.UI
             
             // Create available card displays - ACTUALLY CREATE THEM!
             int cardsDisplayed = 0;
-            var ownedCards = userCollection.Where(item => item.quantity > 0).Take(30);
-            
-            foreach (var collectionItem in ownedCards)
+            try 
             {
-                GameObject cardObj = CreateDeckBuilderCard(collectionItem, content.transform);
-                if (cardObj != null) 
+                var ownedCards = userCollection.Where(item => item.quantity > 0).Take(30);
+                
+                foreach (var collectionItem in ownedCards)
                 {
-                    cardsDisplayed++;
-                    Debug.Log($"✅ Created deck builder card: {collectionItem.card.name}");
+                    try 
+                    {
+                        GameObject cardObj = CreateDeckBuilderCard(collectionItem, content.transform);
+                        if (cardObj != null) 
+                        {
+                            cardsDisplayed++;
+                            Debug.Log($"✅ Created deck builder card: {collectionItem.card.name}");
+                        }
+                    }
+                    catch (System.Exception cardEx)
+                    {
+                        Debug.LogError($"❌ Error creating card {collectionItem.card.name}: {cardEx.Message}");
+                    }
                 }
+                
+                Debug.Log($"✅ Created {cardsDisplayed} available cards for deck building");
             }
-            
-            Debug.Log($"✅ Created {cardsDisplayed} available cards for deck building");
+            catch (System.Exception ex)
+            {
+                Debug.LogError($"❌ Error in CreateAvailableCardsScrollView: {ex.Message}");
+            }
         }
         
         private GameObject CreateDeckBuilderCard(RealSupabaseClient.CollectionItem collectionItem, Transform parent)
