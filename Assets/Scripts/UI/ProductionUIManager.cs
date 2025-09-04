@@ -2431,31 +2431,6 @@ namespace PotatoCardGame.UI
             nameRect.offsetMax = Vector2.zero;
         }
         
-        private void CreateCardStat(Transform parent, string value, Color color, Vector2 anchorMin, Vector2 anchorMax)
-        {
-            GameObject statObj = CreatePanel("Card Stat", parent);
-            Image statBg = statObj.GetComponent<Image>();
-            statBg.color = color;
-            
-            RectTransform statRect = statObj.GetComponent<RectTransform>();
-            statRect.anchorMin = anchorMin;
-            statRect.anchorMax = anchorMax;
-            statRect.offsetMin = Vector2.zero;
-            statRect.offsetMax = Vector2.zero;
-            
-            GameObject textObj = new GameObject("Stat Text");
-            textObj.transform.SetParent(statObj.transform, false);
-            textObj.layer = 5;
-            
-            TextMeshProUGUI statText = textObj.AddComponent<TextMeshProUGUI>();
-            statText.text = value;
-            statText.fontSize = 10;
-            statText.color = Color.white;
-            statText.alignment = TextAlignmentOptions.Center;
-            statText.fontStyle = FontStyles.Bold;
-            
-            SetFullScreen(textObj.GetComponent<RectTransform>());
-        }
         
         private void CreateQuantityBadge(Transform parent, int quantity)
         {
