@@ -1503,19 +1503,16 @@ namespace PotatoCardGame.UI
         
         private void CreateAvailableCardsScrollView(Transform parent, List<RealSupabaseClient.CollectionItem> userCollection)
         {
-            GameObject scrollView = new GameObject("Available Cards Scroll");
-            scrollView.transform.SetParent(parent, false);
-            scrollView.layer = 5;
+            GameObject scrollView = CreatePanel("Available Cards Scroll", parent);
+            scrollView.GetComponent<Image>().color = Color.clear;
             
-            RectTransform scrollRect = scrollView.AddComponent<RectTransform>();
+            RectTransform scrollRect = scrollView.GetComponent<RectTransform>();
             scrollRect.anchorMin = new Vector2(0.05f, 0.05f);
             scrollRect.anchorMax = new Vector2(0.95f, 0.88f);
             scrollRect.offsetMin = Vector2.zero;
             scrollRect.offsetMax = Vector2.zero;
             
             ScrollRect scrollComponent = scrollView.AddComponent<ScrollRect>();
-            Image scrollBg = scrollView.AddComponent<Image>();
-            scrollBg.color = Color.clear;
             
             // Viewport
             GameObject viewport = new GameObject("Viewport");
@@ -1551,18 +1548,79 @@ namespace PotatoCardGame.UI
             ContentSizeFitter sizeFitter = content.AddComponent<ContentSizeFitter>();
             sizeFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
             
-            // Create available card displays
+            // Create available card displays - ACTUALLY CREATE THEM!
             int cardsDisplayed = 0;
-            foreach (var collectionItem in userCollection.Take(30)) // Performance limit
+            var ownedCards = userCollection.Where(item => item.quantity > 0).Take(30);
+            
+            foreach (var collectionItem in ownedCards)
             {
-                if (collectionItem.quantity > 0)
+                GameObject cardObj = CreateDeckBuilderCard(collectionItem, content.transform);
+                if (cardObj != null) 
                 {
-                    GameObject cardObj = CreateRealCollectionCard(collectionItem, content.transform);
-                    if (cardObj != null) cardsDisplayed++;
+                    cardsDisplayed++;
+                    Debug.Log($"✅ Created deck builder card: {collectionItem.card.name}");
                 }
             }
             
             Debug.Log($"✅ Created {cardsDisplayed} available cards for deck building");
+        }
+        
+        private GameObject CreateDeckBuilderCard(RealSupabaseClient.CollectionItem collectionItem, Transform parent)
+        {
+            var card = collectionItem.card;
+            
+            GameObject cardObj = new GameObject($"DeckCard_{card.name}");
+            cardObj.transform.SetParent(parent, false);
+            cardObj.layer = 5;
+            
+            // Card background with REAL elemental background
+            Image cardImage = cardObj.AddComponent<Image>();
+            Sprite elementalBg = GetElementalBackground(card.potato_type, card.exotic || card.is_exotic);
+            
+            if (elementalBg != null)
+            {
+                cardImage.sprite = elementalBg;
+                cardImage.type = Image.Type.Simple;
+            }
+            else
+            {
+                cardImage.color = GetElementalColor(card.potato_type);
+            }
+            
+            // Card name
+            CreateCardName(cardObj.transform, card.name);
+            
+            // Mana cost
+            CreateCardStat(cardObj.transform, card.mana_cost.ToString(), new Color(0.2f, 0.6f, 1f, 1f), new Vector2(0.05f, 0.8f), new Vector2(0.25f, 0.95f));
+            
+            // Attack/Health (for units)
+            if (card.attack.HasValue) CreateCardStat(cardObj.transform, card.attack.Value.ToString(), new Color(1f, 0.3f, 0.3f, 1f), new Vector2(0.05f, 0.05f), new Vector2(0.25f, 0.2f));
+            if (card.hp.HasValue) CreateCardStat(cardObj.transform, card.hp.Value.ToString(), new Color(0.3f, 1f, 0.3f, 1f), new Vector2(0.75f, 0.05f), new Vector2(0.95f, 0.2f));
+            
+            // Quantity badge
+            if (collectionItem.quantity > 1)
+            {
+                CreateQuantityBadge(cardObj.transform, collectionItem.quantity);
+            }
+            
+            // Rarity indicator
+            CreateRarityIndicator(cardObj.transform, card.rarity);
+            
+            // Click handler to add to deck
+            Button cardButton = cardObj.AddComponent<Button>();
+            cardButton.onClick.AddListener(() => {
+                Debug.Log($"🃏 Adding {card.name} to deck...");
+                // TODO: Add deck building logic
+            });
+            
+            // Professional button colors
+            ColorBlock colors = cardButton.colors;
+            colors.normalColor = Color.white;
+            colors.highlightedColor = new Color(1.1f, 1.1f, 1.1f, 1f);
+            colors.pressedColor = new Color(0.95f, 0.95f, 0.95f, 1f);
+            cardButton.colors = colors;
+            
+            return cardObj;
         }
         
         private void CreateCurrentDeckArea(Transform parent)
