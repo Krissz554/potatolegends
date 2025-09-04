@@ -1444,16 +1444,28 @@ namespace PotatoCardGame.UI
                     return;
                 }
                 
-                // Load user collection for deck building
+                // Load user collection and decks for deck building
                 var userCollection = await RealSupabaseClient.Instance.LoadUserCollection();
-                Debug.Log($"✅ Loaded {userCollection.Count} cards for deck building");
+                var userDecks = await RealSupabaseClient.Instance.LoadUserDecks();
+                Debug.Log($"✅ Loaded {userCollection.Count} cards and {userDecks.Count} decks for deck building");
+                
+                // Deck management panel (top)
+                GameObject deckManagementPanel = CreateFantasyPanel(
+                    "Deck Management Panel",
+                    parent,
+                    new Vector2(0.02f, 0.02f),
+                    new Vector2(0.98f, 0.12f),
+                    assetLibrary.headerPanelSprite
+                );
+                
+                CreateDeckManagementArea(deckManagementPanel.transform, userDecks);
                 
                 // Available cards panel (left)
                 GameObject availablePanel = CreateFantasyPanel(
                     "Available Cards Panel",
                     parent,
                     new Vector2(0.02f, 0.15f),
-                    new Vector2(0.48f, 0.85f),
+                    new Vector2(0.48f, 0.98f),
                     assetLibrary.deckPanelSprite
                 );
                 
@@ -1464,11 +1476,21 @@ namespace PotatoCardGame.UI
                     "Current Deck Panel",
                     parent,
                     new Vector2(0.52f, 0.15f),
-                    new Vector2(0.98f, 0.85f),
+                    new Vector2(0.98f, 0.98f),
                     assetLibrary.cardsPanelSprite
                 );
                 
-                CreateCurrentDeckArea(deckPanel.transform);
+                // Load active deck if available
+                var activeDeck = userDecks.FirstOrDefault(d => d.is_active);
+                if (activeDeck != null)
+                {
+                    var deckWithCards = await RealSupabaseClient.Instance.LoadDeckCards(activeDeck.id);
+                    CreateCurrentDeckArea(deckPanel.transform, deckWithCards);
+                }
+                else
+                {
+                    CreateCurrentDeckArea(deckPanel.transform, null);
+                }
                 
             }
             catch (System.Exception e)
@@ -1644,7 +1666,77 @@ namespace PotatoCardGame.UI
             return cardObj;
         }
         
-        private void CreateCurrentDeckArea(Transform parent)
+        private void CreateDeckManagementArea(Transform parent, List<RealSupabaseClient.Deck> userDecks)
+        {
+            // Title
+            GameObject titleObj = new GameObject("Deck Management Title");
+            titleObj.transform.SetParent(parent, false);
+            titleObj.layer = 5;
+            
+            TextMeshProUGUI titleText = titleObj.AddComponent<TextMeshProUGUI>();
+            titleText.text = "🔧 DECK MANAGEMENT";
+            titleText.fontSize = 18;
+            titleText.color = new Color(1f, 0.9f, 0.3f, 1f);
+            titleText.alignment = TextAlignmentOptions.Center;
+            titleText.fontStyle = FontStyles.Bold;
+            
+            RectTransform titleRect = titleObj.GetComponent<RectTransform>();
+            titleRect.anchorMin = new Vector2(0.02f, 0.5f);
+            titleRect.anchorMax = new Vector2(0.3f, 0.95f);
+            titleRect.offsetMin = Vector2.zero;
+            titleRect.offsetMax = Vector2.zero;
+            
+            // Active deck indicator
+            var activeDeck = userDecks.FirstOrDefault(d => d.is_active);
+            if (activeDeck != null)
+            {
+                GameObject activeIndicator = new GameObject("Active Deck Indicator");
+                activeIndicator.transform.SetParent(parent, false);
+                activeIndicator.layer = 5;
+                
+                TextMeshProUGUI activeText = activeIndicator.AddComponent<TextMeshProUGUI>();
+                activeText.text = $"👑 Active: {activeDeck.name}";
+                activeText.fontSize = 14;
+                activeText.color = new Color(1f, 0.8f, 0.2f, 1f);
+                activeText.alignment = TextAlignmentOptions.Left;
+                
+                RectTransform activeRect = activeIndicator.GetComponent<RectTransform>();
+                activeRect.anchorMin = new Vector2(0.32f, 0.5f);
+                activeRect.anchorMax = new Vector2(0.65f, 0.95f);
+                activeRect.offsetMin = Vector2.zero;
+                activeRect.offsetMax = Vector2.zero;
+            }
+            
+            // Create new deck button
+            GameObject newDeckBtn = CreateFantasyButton(
+                "Create New Deck",
+                parent,
+                new Vector2(0.67f, 0.1f),
+                new Vector2(0.85f, 0.9f),
+                "➕ New Deck",
+                new Color(0.2f, 0.8f, 0.2f, 1f),
+                () => {
+                    Debug.Log("🃏 Create new deck clicked - TODO: Implement deck creation dialog");
+                    // TODO: Implement deck creation dialog
+                }
+            );
+            
+            // Deck selector dropdown (placeholder for now)
+            GameObject deckSelectorBtn = CreateFantasyButton(
+                "Deck Selector",
+                parent,
+                new Vector2(0.87f, 0.1f),
+                new Vector2(0.98f, 0.9f),
+                "📋 Decks",
+                new Color(0.3f, 0.6f, 1f, 1f),
+                () => {
+                    Debug.Log("🃏 Deck selector clicked - TODO: Implement deck selector");
+                    // TODO: Implement deck selector dropdown
+                }
+            );
+        }
+        
+        private void CreateCurrentDeckArea(Transform parent, RealSupabaseClient.Deck currentDeck)
         {
             // Title
             GameObject titleObj = new GameObject("Current Deck Title");
@@ -1652,7 +1744,9 @@ namespace PotatoCardGame.UI
             titleObj.layer = 5;
             
             TextMeshProUGUI titleText = titleObj.AddComponent<TextMeshProUGUI>();
-            titleText.text = "CURRENT DECK (0/30)";
+            string deckName = currentDeck?.name ?? "No Deck Selected";
+            int cardCount = currentDeck?.total_cards ?? 0;
+            titleText.text = $"{deckName} ({cardCount}/30)";
             titleText.fontSize = 18;
             titleText.color = new Color(1f, 0.8f, 1f, 1f);
             titleText.alignment = TextAlignmentOptions.Center;
@@ -1684,8 +1778,115 @@ namespace PotatoCardGame.UI
             deckGrid.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
             deckGrid.constraintCount = 4;
             
-            // TODO: Populate with current deck cards
-            CreateDeckPlaceholders(deckArea.transform);
+            // Display current deck cards or placeholders
+            if (currentDeck != null && currentDeck.cards != null && currentDeck.cards.Count > 0)
+            {
+                CreateDeckCards(deckArea.transform, currentDeck.cards);
+            }
+            else
+            {
+                CreateDeckPlaceholders(deckArea.transform);
+            }
+        }
+        
+        private void CreateDeckCards(Transform parent, List<RealSupabaseClient.DeckCard> deckCards)
+        {
+            Debug.Log($"🃏 Creating deck display with {deckCards.Count} unique cards");
+            
+            int totalCards = 0;
+            foreach (var deckCard in deckCards)
+            {
+                for (int i = 0; i < deckCard.quantity; i++)
+                {
+                    GameObject cardObj = CreateDeckDisplayCard(deckCard.card, parent);
+                    if (cardObj != null)
+                    {
+                        totalCards++;
+                        
+                        // Add quantity indicator for cards with multiple copies
+                        if (deckCard.quantity > 1)
+                        {
+                            CreateQuantityBadge(cardObj.transform, deckCard.quantity);
+                        }
+                    }
+                }
+            }
+            
+            // Fill remaining slots with placeholders
+            for (int i = totalCards; i < 30; i++)
+            {
+                CreateDeckSlotPlaceholder(parent, i + 1);
+            }
+            
+            Debug.Log($"✅ Created deck display with {totalCards} cards and {30 - totalCards} placeholders");
+        }
+        
+        private GameObject CreateDeckDisplayCard(RealSupabaseClient.EnhancedCard card, Transform parent)
+        {
+            GameObject cardObj = new GameObject($"DeckDisplayCard_{card.name}");
+            cardObj.transform.SetParent(parent, false);
+            cardObj.layer = 5;
+            
+            // Card background with elemental background
+            Image cardImage = cardObj.AddComponent<Image>();
+            Sprite elementalBg = GetElementalBackground(card.potato_type, card.exotic || card.is_exotic);
+            
+            if (elementalBg != null)
+            {
+                cardImage.sprite = elementalBg;
+                cardImage.type = Image.Type.Simple;
+            }
+            else
+            {
+                cardImage.color = GetElementalColor(card.potato_type);
+            }
+            
+            // Card name (smaller for deck view)
+            CreateCardName(cardObj.transform, card.name);
+            
+            // Mana cost
+            CreateCardStat(cardObj.transform, card.mana_cost.ToString(), new Color(0.2f, 0.6f, 1f, 1f), new Vector2(0.05f, 0.8f), new Vector2(0.25f, 0.95f));
+            
+            // Attack/Health (for units) - smaller
+            if (card.attack.HasValue) CreateCardStat(cardObj.transform, card.attack.Value.ToString(), new Color(1f, 0.3f, 0.3f, 1f), new Vector2(0.05f, 0.05f), new Vector2(0.25f, 0.2f));
+            if (card.hp.HasValue) CreateCardStat(cardObj.transform, card.hp.Value.ToString(), new Color(0.3f, 1f, 0.3f, 1f), new Vector2(0.75f, 0.05f), new Vector2(0.95f, 0.2f));
+            
+            // Click handler to remove from deck
+            Button cardButton = cardObj.AddComponent<Button>();
+            cardButton.onClick.AddListener(() => {
+                Debug.Log($"🃏 Removing {card.name} from deck...");
+                // TODO: Add deck removal logic
+            });
+            
+            // Professional button colors
+            ColorBlock colors = cardButton.colors;
+            colors.normalColor = Color.white;
+            colors.highlightedColor = new Color(1.1f, 0.9f, 0.9f, 1f); // Slightly red tint for removal
+            colors.pressedColor = new Color(0.95f, 0.8f, 0.8f, 1f);
+            cardButton.colors = colors;
+            
+            return cardObj;
+        }
+        
+        private void CreateDeckSlotPlaceholder(Transform parent, int slotNumber)
+        {
+            GameObject slotObj = CreatePanel($"Deck Slot {slotNumber}", parent);
+            Image slotImage = slotObj.GetComponent<Image>();
+            slotImage.color = new Color(0.2f, 0.2f, 0.2f, 0.5f);
+            
+            // Slot number
+            GameObject numberObj = new GameObject("Slot Number");
+            numberObj.transform.SetParent(slotObj.transform, false);
+            numberObj.layer = 5;
+            
+            TextMeshProUGUI numberText = numberObj.AddComponent<TextMeshProUGUI>();
+            numberText.text = slotNumber.ToString();
+            numberText.fontSize = 10;
+            numberText.color = new Color(0.5f, 0.5f, 0.5f, 1f);
+            numberText.alignment = TextAlignmentOptions.Center;
+            
+            RectTransform numberRect = numberObj.GetComponent<RectTransform>();
+            SetFullScreen(numberRect);
         }
         
         private void CreateDeckPlaceholders(Transform parent)
