@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -328,6 +329,81 @@ public class RealSupabaseClient : MonoBehaviour
             catch (System.Exception e)
             {
                 Debug.LogError($"❌ Error creating deck: {e.Message}");
+                return false;
+            }
+        }
+        
+        public async Task<bool> SaveDeckCards(string deckId, List<DeckCard> deckCards)
+        {
+            Debug.Log($"🃏 Saving {deckCards.Count} cards to deck: {deckId}");
+            
+            try
+            {
+                // Delete existing cards
+                await DeleteData($"/rest/v1/deck_cards?deck_id=eq.{deckId}");
+                
+                // Insert new cards
+                if (deckCards.Count > 0)
+                {
+                    var deckCardData = deckCards.Select(dc => new {
+                        deck_id = deckId,
+                        card_id = dc.card.id,
+                        quantity = dc.quantity
+                    });
+                    
+                    await PostData<object>("/rest/v1/deck_cards", deckCardData);
+                }
+                
+                Debug.Log($"✅ Saved deck cards successfully");
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"❌ Error saving deck cards: {e.Message}");
+                return false;
+            }
+        }
+        
+        public async Task<bool> SetActiveDeck(string deckId)
+        {
+            Debug.Log($"🃏 Setting active deck: {deckId}");
+            
+            try
+            {
+                // Set all decks to inactive
+                await PatchData($"/rest/v1/decks?user_id=eq.{userId}", new { is_active = false });
+                
+                // Set the selected deck as active
+                await PatchData($"/rest/v1/decks?id=eq.{deckId}", new { is_active = true });
+                
+                Debug.Log($"✅ Set deck as active successfully");
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"❌ Error setting active deck: {e.Message}");
+                return false;
+            }
+        }
+        
+        public async Task<bool> DeleteDeck(string deckId)
+        {
+            Debug.Log($"🃏 Deleting deck: {deckId}");
+            
+            try
+            {
+                // Delete deck cards first (foreign key constraint)
+                await DeleteData($"/rest/v1/deck_cards?deck_id=eq.{deckId}");
+                
+                // Delete the deck itself
+                await DeleteData($"/rest/v1/decks?id=eq.{deckId}");
+                
+                Debug.Log($"✅ Deleted deck successfully");
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"❌ Error deleting deck: {e.Message}");
                 return false;
             }
         }
@@ -747,6 +823,7 @@ public class RealSupabaseClient : MonoBehaviour
         public class Deck
         {
             public string id;
+            public string user_id;
             public string name;
             public bool is_active;
             public List<DeckCard> cards;
@@ -758,6 +835,8 @@ public class RealSupabaseClient : MonoBehaviour
         [Serializable]
         public class DeckCard
         {
+            public string deck_id;
+            public string card_id;
             public EnhancedCard card;
             public int quantity;
         }

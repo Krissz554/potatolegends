@@ -1708,32 +1708,34 @@ namespace PotatoCardGame.UI
             }
             
             // Create new deck button
-            GameObject newDeckBtn = CreateFantasyButton(
+            Button newDeckBtn = CreateFantasyButton(
                 "Create New Deck",
                 parent,
-                new Vector2(0.67f, 0.1f),
-                new Vector2(0.85f, 0.9f),
                 "➕ New Deck",
                 new Color(0.2f, 0.8f, 0.2f, 1f),
-                () => {
-                    Debug.Log("🃏 Create new deck clicked - TODO: Implement deck creation dialog");
-                    // TODO: Implement deck creation dialog
-                }
+                null,
+                new Vector2(0.67f, 0.1f),
+                new Vector2(0.85f, 0.9f)
             );
+            newDeckBtn.onClick.AddListener(() => {
+                Debug.Log("🃏 Create new deck clicked - TODO: Implement deck creation dialog");
+                // TODO: Implement deck creation dialog
+            });
             
             // Deck selector dropdown (placeholder for now)
-            GameObject deckSelectorBtn = CreateFantasyButton(
+            Button deckSelectorBtn = CreateFantasyButton(
                 "Deck Selector",
                 parent,
-                new Vector2(0.87f, 0.1f),
-                new Vector2(0.98f, 0.9f),
                 "📋 Decks",
                 new Color(0.3f, 0.6f, 1f, 1f),
-                () => {
-                    Debug.Log("🃏 Deck selector clicked - TODO: Implement deck selector");
-                    // TODO: Implement deck selector dropdown
-                }
+                null,
+                new Vector2(0.87f, 0.1f),
+                new Vector2(0.98f, 0.9f)
             );
+            deckSelectorBtn.onClick.AddListener(() => {
+                Debug.Log("🃏 Deck selector clicked - TODO: Implement deck selector");
+                // TODO: Implement deck selector dropdown
+            });
         }
         
         private void CreateCurrentDeckArea(Transform parent, RealSupabaseClient.Deck currentDeck)
