@@ -107,6 +107,9 @@ namespace PotatoCardGame.UI
             // Setup mobile scaling
             SetupMobileScaling();
             
+            // Setup Supabase integration
+            SetupSupabaseIntegration();
+            
             // Initialize all screens but hide them
             InitializeAllScreens();
             
@@ -114,6 +117,22 @@ namespace PotatoCardGame.UI
             ShowScreen(currentScreen);
             
             Debug.Log("✅ Complete Editable UI System ready! Edit everything in Inspector!");
+        }
+        
+        private void SetupSupabaseIntegration()
+        {
+            // Create RealSupabaseClient if it doesn't exist
+            if (RealSupabaseClient.Instance == null)
+            {
+                GameObject supabaseObj = new GameObject("RealSupabaseClient");
+                DontDestroyOnLoad(supabaseObj);
+                supabaseObj.AddComponent<RealSupabaseClient>();
+                Debug.Log("🔌 Created RealSupabaseClient for editable UI system");
+            }
+            else
+            {
+                Debug.Log("🔌 RealSupabaseClient already exists");
+            }
         }
         
         private void SetupMobileScaling()

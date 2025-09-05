@@ -606,17 +606,28 @@ namespace PotatoCardGame.UI
             Debug.Log("🔐 Handling login...");
             
             // Get input values
+            if (loginFormArea == null)
+            {
+                Debug.LogError("❌ Login form area not found!");
+                return;
+            }
+            
             TMP_InputField[] inputs = loginFormArea.GetComponentsInChildren<TMP_InputField>();
+            Debug.Log($"🔍 Found {inputs.Length} input fields in login form");
+            
             string email = "";
             string password = "";
             
             foreach (var input in inputs)
             {
+                Debug.Log($"🔍 Input field: {input.name} = '{input.text}'");
                 if (input.name.Contains("Email"))
                     email = input.text;
                 else if (input.name.Contains("Password"))
                     password = input.text;
             }
+            
+            Debug.Log($"🔍 Extracted - Email: '{email}', Password: '{password}'");
             
             if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
             {
@@ -624,22 +635,54 @@ namespace PotatoCardGame.UI
                 return;
             }
             
-            // Authenticate with Supabase
-            bool success = await RealSupabaseClient.Instance.SignIn(email, password);
-            
-            if (success)
+            // Wait for RealSupabaseClient to be ready
+            RealSupabaseClient supabaseClient = null;
+            int attempts = 0;
+            while (supabaseClient == null && attempts < 50) // Wait up to 5 seconds
             {
-                Debug.Log("✅ Login successful!");
-                // Navigate to main menu
-                EditableUIManager uiManager = FindObjectOfType<EditableUIManager>();
-                if (uiManager != null)
+                supabaseClient = RealSupabaseClient.Instance;
+                if (supabaseClient == null)
                 {
-                    uiManager.GoToMainMenu();
+                    await System.Threading.Tasks.Task.Delay(100);
+                    attempts++;
                 }
             }
-            else
+            
+            if (supabaseClient == null)
             {
-                Debug.LogError("❌ Login failed!");
+                Debug.LogError("❌ Supabase client not ready - cannot authenticate");
+                return;
+            }
+            
+            Debug.Log($"🔐 Attempting login with email: {email}");
+            
+            try
+            {
+                // Authenticate with Supabase
+                bool success = await supabaseClient.SignIn(email, password);
+                
+                if (success)
+                {
+                    Debug.Log("✅ Login successful!");
+                    // Navigate to main menu
+                    EditableUIManager uiManager = FindFirstObjectByType<EditableUIManager>();
+                    if (uiManager != null)
+                    {
+                        uiManager.GoToMainMenu();
+                    }
+                    else
+                    {
+                        Debug.LogError("❌ EditableUIManager not found!");
+                    }
+                }
+                else
+                {
+                    Debug.LogError("❌ Login failed!");
+                }
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"❌ Login error: {e.Message}");
             }
         }
         
@@ -672,22 +715,54 @@ namespace PotatoCardGame.UI
                 return;
             }
             
-            // Sign up with Supabase
-            bool success = await RealSupabaseClient.Instance.SignUp(email, password);
-            
-            if (success)
+            // Wait for RealSupabaseClient to be ready
+            RealSupabaseClient supabaseClient = null;
+            int attempts = 0;
+            while (supabaseClient == null && attempts < 50)
             {
-                Debug.Log("✅ Signup successful!");
-                // Navigate to main menu
-                EditableUIManager uiManager = FindObjectOfType<EditableUIManager>();
-                if (uiManager != null)
+                supabaseClient = RealSupabaseClient.Instance;
+                if (supabaseClient == null)
                 {
-                    uiManager.GoToMainMenu();
+                    await System.Threading.Tasks.Task.Delay(100);
+                    attempts++;
                 }
             }
-            else
+            
+            if (supabaseClient == null)
             {
-                Debug.LogError("❌ Signup failed!");
+                Debug.LogError("❌ Supabase client not ready - cannot sign up");
+                return;
+            }
+            
+            Debug.Log($"📝 Attempting signup with email: {email}");
+            
+            try
+            {
+                // Sign up with Supabase
+                bool success = await supabaseClient.SignUp(email, password);
+                
+                if (success)
+                {
+                    Debug.Log("✅ Signup successful!");
+                    // Navigate to main menu
+                    EditableUIManager uiManager = FindFirstObjectByType<EditableUIManager>();
+                    if (uiManager != null)
+                    {
+                        uiManager.GoToMainMenu();
+                    }
+                    else
+                    {
+                        Debug.LogError("❌ EditableUIManager not found!");
+                    }
+                }
+                else
+                {
+                    Debug.LogError("❌ Signup failed!");
+                }
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"❌ Signup error: {e.Message}");
             }
         }
         
