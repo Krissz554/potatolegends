@@ -170,3 +170,163 @@ namespace PotatoCardGame.UI
             Debug.Log("✅ EDITABLE Deck Builder created successfully!");
             Debug.Log("🎮 Select 'EDITABLE_DECK_BUILDER' in Hierarchy to edit in Inspector!");
         }
+        
+        private GameObject CreatePanel(string name, Transform parent, Vector2 anchorMin, Vector2 anchorMax, Color color)
+        {
+            GameObject panel = new GameObject(name);
+            panel.transform.SetParent(parent, false);
+            panel.layer = 5;
+            
+            RectTransform rect = panel.AddComponent<RectTransform>();
+            rect.anchorMin = anchorMin;
+            rect.anchorMax = anchorMax;
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
+            
+            Image image = panel.AddComponent<Image>();
+            image.color = color;
+            
+            return panel;
+        }
+        
+        private GameObject CreateScrollView(string name, Transform parent)
+        {
+            GameObject scrollObj = new GameObject(name);
+            scrollObj.transform.SetParent(parent, false);
+            scrollObj.layer = 5;
+            
+            RectTransform scrollRect = scrollObj.AddComponent<RectTransform>();
+            scrollRect.anchorMin = new Vector2(0.05f, 0.15f);
+            scrollRect.anchorMax = new Vector2(0.95f, 0.95f);
+            scrollRect.offsetMin = Vector2.zero;
+            scrollRect.offsetMax = Vector2.zero;
+            
+            ScrollRect scroll = scrollObj.AddComponent<ScrollRect>();
+            Image scrollBg = scrollObj.AddComponent<Image>();
+            scrollBg.color = Color.clear;
+            
+            // Viewport
+            GameObject viewport = new GameObject("Viewport");
+            viewport.transform.SetParent(scrollObj.transform, false);
+            viewport.layer = 5;
+            
+            RectTransform viewportRect = viewport.AddComponent<RectTransform>();
+            viewportRect.anchorMin = Vector2.zero;
+            viewportRect.anchorMax = Vector2.one;
+            viewportRect.offsetMin = Vector2.zero;
+            viewportRect.offsetMax = Vector2.zero;
+            
+            viewport.AddComponent<RectMask2D>();
+            scroll.viewport = viewportRect;
+            
+            // Content
+            GameObject content = new GameObject("Content");
+            content.transform.SetParent(viewport.transform, false);
+            content.layer = 5;
+            
+            RectTransform contentRect = content.AddComponent<RectTransform>();
+            contentRect.anchorMin = new Vector2(0f, 1f);
+            contentRect.anchorMax = new Vector2(1f, 1f);
+            contentRect.pivot = new Vector2(0.5f, 1f);
+            scroll.content = contentRect;
+            
+            GridLayoutGroup grid = content.AddComponent<GridLayoutGroup>();
+            grid.cellSize = new Vector2(120, 160);
+            grid.spacing = new Vector2(5, 5);
+            grid.startCorner = GridLayoutGroup.Corner.UpperLeft;
+            grid.startAxis = GridLayoutGroup.Axis.Horizontal;
+            grid.childAlignment = TextAnchor.UpperCenter;
+            grid.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
+            grid.constraintCount = 3;
+            
+            ContentSizeFitter sizeFitter = content.AddComponent<ContentSizeFitter>();
+            sizeFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            
+            return scrollObj;
+        }
+        
+        private GameObject CreateDeckGrid(string name, Transform parent)
+        {
+            GameObject gridObj = new GameObject(name);
+            gridObj.transform.SetParent(parent, false);
+            gridObj.layer = 5;
+            
+            RectTransform gridRect = gridObj.AddComponent<RectTransform>();
+            gridRect.anchorMin = new Vector2(0.05f, 0.15f);
+            gridRect.anchorMax = new Vector2(0.95f, 0.95f);
+            gridRect.offsetMin = Vector2.zero;
+            gridRect.offsetMax = Vector2.zero;
+            
+            GridLayoutGroup grid = gridObj.AddComponent<GridLayoutGroup>();
+            grid.cellSize = new Vector2(100, 140);
+            grid.spacing = new Vector2(5, 5);
+            grid.startCorner = GridLayoutGroup.Corner.UpperLeft;
+            grid.startAxis = GridLayoutGroup.Axis.Horizontal;
+            grid.childAlignment = TextAnchor.UpperCenter;
+            grid.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
+            grid.constraintCount = 4;
+            
+            return gridObj;
+        }
+        
+        private GameObject CreateTitle(string name, Transform parent, string text, int fontSize, Vector2 anchorMin, Vector2 anchorMax)
+        {
+            GameObject titleObj = new GameObject(name);
+            titleObj.transform.SetParent(parent, false);
+            titleObj.layer = 5;
+            
+            TextMeshProUGUI titleText = titleObj.AddComponent<TextMeshProUGUI>();
+            titleText.text = text;
+            titleText.fontSize = fontSize;
+            titleText.color = Color.white;
+            titleText.alignment = TextAlignmentOptions.Center;
+            titleText.fontStyle = FontStyles.Bold;
+            
+            RectTransform titleRect = titleObj.GetComponent<RectTransform>();
+            titleRect.anchorMin = anchorMin;
+            titleRect.anchorMax = anchorMax;
+            titleRect.offsetMin = Vector2.zero;
+            titleRect.offsetMax = Vector2.zero;
+            
+            return titleObj;
+        }
+        
+        private GameObject CreateButton(string name, Transform parent, string text, Vector2 anchorMin, Vector2 anchorMax)
+        {
+            GameObject buttonObj = new GameObject(name);
+            buttonObj.transform.SetParent(parent, false);
+            buttonObj.layer = 5;
+            
+            RectTransform buttonRect = buttonObj.AddComponent<RectTransform>();
+            buttonRect.anchorMin = anchorMin;
+            buttonRect.anchorMax = anchorMax;
+            buttonRect.offsetMin = Vector2.zero;
+            buttonRect.offsetMax = Vector2.zero;
+            
+            Image buttonImage = buttonObj.AddComponent<Image>();
+            buttonImage.color = new Color(0.2f, 0.4f, 0.8f, 0.8f);
+            
+            Button button = buttonObj.AddComponent<Button>();
+            
+            // Button text
+            GameObject textObj = new GameObject("Text");
+            textObj.transform.SetParent(buttonObj.transform, false);
+            textObj.layer = 5;
+            
+            TextMeshProUGUI buttonText = textObj.AddComponent<TextMeshProUGUI>();
+            buttonText.text = text;
+            buttonText.fontSize = 12;
+            buttonText.color = Color.white;
+            buttonText.alignment = TextAlignmentOptions.Center;
+            buttonText.fontStyle = FontStyles.Bold;
+            
+            RectTransform textRect = textObj.GetComponent<RectTransform>();
+            textRect.anchorMin = Vector2.zero;
+            textRect.anchorMax = Vector2.one;
+            textRect.offsetMin = Vector2.zero;
+            textRect.offsetMax = Vector2.zero;
+            
+            return buttonObj;
+        }
+    }
+}
