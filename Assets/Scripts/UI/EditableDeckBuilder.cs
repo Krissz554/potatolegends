@@ -802,18 +802,6 @@ namespace PotatoCardGame.UI
             statRect.offsetMax = Vector2.zero;
         }
         
-        private Color GetElementalColor(string potatoType)
-        {
-            switch (potatoType?.ToLower())
-            {
-                case "fire": return new Color(1f, 0.3f, 0.2f, 1f);
-                case "ice": return new Color(0.3f, 0.7f, 1f, 1f);
-                case "lightning": return new Color(1f, 1f, 0.3f, 1f);
-                case "light": return new Color(1f, 0.95f, 0.7f, 1f);
-                case "void": return new Color(0.5f, 0.3f, 0.8f, 1f);
-                default: return new Color(0.7f, 0.7f, 0.7f, 1f);
-            }
-        }
         
         private void SetupButtonEvents()
         {
