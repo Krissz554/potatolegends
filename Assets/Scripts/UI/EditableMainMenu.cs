@@ -101,6 +101,28 @@ namespace PotatoCardGame.UI
         public float battleButtonSize = 120f;
         
         [Space(10)]
+        [Header("🔧 Individual Utility Button Positions")]
+        [Tooltip("Settings button position in utility area")]
+        public Vector4 settingsButtonRect = new Vector4(0f, 0.5f, 0.2f, 1f); // (minX, minY, maxX, maxY)
+        
+        [Tooltip("Shop button position in utility area")]
+        public Vector4 shopButtonRect = new Vector4(0.25f, 0.5f, 0.45f, 1f);
+        
+        [Tooltip("Logout button position in utility area")]
+        public Vector4 logoutButtonRect = new Vector4(0.5f, 0.5f, 0.7f, 1f);
+        
+        [Space(10)]
+        [Header("🎨 Individual Button Styling")]
+        [Tooltip("Settings button color")]
+        public Color settingsButtonColor = new Color(0.3f, 0.3f, 0.3f, 0.8f);
+        
+        [Tooltip("Shop button color")]
+        public Color shopButtonColor = new Color(0.3f, 0.6f, 0.3f, 0.8f);
+        
+        [Tooltip("Logout button color")]
+        public Color logoutButtonColor = new Color(0.6f, 0.3f, 0.3f, 0.8f);
+        
+        [Space(10)]
         [Header("🔄 Quick Actions")]
         [Tooltip("Refresh this screen")]
         public bool refreshScreen = false;
@@ -328,20 +350,32 @@ namespace PotatoCardGame.UI
         private void CreateUtilityButtons()
         {
             // Settings button
-            CreateUtilityButton("⚙️ Settings", new Vector2(0f, 0.5f), new Vector2(0.2f, 1f), () => {
-                Debug.Log("⚙️ Settings clicked");
-            });
+            CreateUtilityButton("⚙️ Settings", 
+                new Vector2(settingsButtonRect.x, settingsButtonRect.y), 
+                new Vector2(settingsButtonRect.z, settingsButtonRect.w), 
+                settingsButtonColor,
+                () => {
+                    Debug.Log("⚙️ Settings clicked");
+                });
             
             // Shop button
-            CreateUtilityButton("🛒 Shop", new Vector2(0.25f, 0.5f), new Vector2(0.45f, 1f), () => {
-                Debug.Log("🛒 Shop clicked");
-            });
+            CreateUtilityButton("🛒 Shop", 
+                new Vector2(shopButtonRect.x, shopButtonRect.y), 
+                new Vector2(shopButtonRect.z, shopButtonRect.w), 
+                shopButtonColor,
+                () => {
+                    Debug.Log("🛒 Shop clicked");
+                });
             
             // Logout button
-            CreateUtilityButton("🚪 Logout", new Vector2(0.5f, 0.5f), new Vector2(0.7f, 1f), () => {
-                EditableUIManager uiManager = FindObjectOfType<EditableUIManager>();
-                uiManager?.GoToAuth();
-            });
+            CreateUtilityButton("🚪 Logout", 
+                new Vector2(logoutButtonRect.x, logoutButtonRect.y), 
+                new Vector2(logoutButtonRect.z, logoutButtonRect.w), 
+                logoutButtonColor,
+                () => {
+                    EditableUIManager uiManager = FindFirstObjectByType<EditableUIManager>();
+                    uiManager?.GoToAuth();
+                });
         }
         
         private void CreateNavigationCard(string title, string subtitle, Sprite icon, Color bgColor, Vector2 anchorMin, Vector2 anchorMax, System.Action onClick)
@@ -375,14 +409,14 @@ namespace PotatoCardGame.UI
             CreateText("Subtitle", subtitle, cardObj.transform, new Vector2(0.05f, 0.1f), new Vector2(0.95f, 0.3f), 10, new Color(0.8f, 0.8f, 0.8f, 1f));
         }
         
-        private void CreateUtilityButton(string text, Vector2 anchorMin, Vector2 anchorMax, System.Action onClick)
+        private void CreateUtilityButton(string text, Vector2 anchorMin, Vector2 anchorMax, Color buttonColor, System.Action onClick)
         {
             GameObject btnObj = new GameObject($"Utility: {text}");
             btnObj.transform.SetParent(utilityArea, false);
             btnObj.layer = 5;
             
             Image btnImg = btnObj.AddComponent<Image>();
-            btnImg.color = utilityButtonColor;
+            btnImg.color = buttonColor;
             
             Button button = btnObj.AddComponent<Button>();
             if (onClick != null) button.onClick.AddListener(() => onClick());
