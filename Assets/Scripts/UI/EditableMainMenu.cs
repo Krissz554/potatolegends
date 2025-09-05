@@ -402,7 +402,7 @@ namespace PotatoCardGame.UI
             currencyObj.transform.SetParent(parent, false);
             currencyObj.layer = 5;
             
-            RectTransform currencyRect = currencyObj.GetComponent<RectTransform>();
+            RectTransform currencyRect = currencyObj.AddComponent<RectTransform>();
             currencyRect.anchorMin = anchorMin;
             currencyRect.anchorMax = anchorMax;
             currencyRect.offsetMin = Vector2.zero;

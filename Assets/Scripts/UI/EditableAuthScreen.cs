@@ -461,15 +461,15 @@ namespace PotatoCardGame.UI
             textButtonObj.transform.SetParent(parent, false);
             textButtonObj.layer = 5;
             
-            Button button = textButtonObj.AddComponent<Button>();
-            button.targetGraphic = null; // No background
-            if (onClick != null) button.onClick.AddListener(() => onClick());
-            
-            RectTransform textButtonRect = textButtonObj.GetComponent<RectTransform>();
+            RectTransform textButtonRect = textButtonObj.AddComponent<RectTransform>();
             textButtonRect.anchorMin = anchorMin;
             textButtonRect.anchorMax = anchorMax;
             textButtonRect.offsetMin = Vector2.zero;
             textButtonRect.offsetMax = Vector2.zero;
+            
+            Button button = textButtonObj.AddComponent<Button>();
+            button.targetGraphic = null; // No background
+            if (onClick != null) button.onClick.AddListener(() => onClick());
             
             TextMeshProUGUI textButtonText = textButtonObj.AddComponent<TextMeshProUGUI>();
             textButtonText.text = text;
