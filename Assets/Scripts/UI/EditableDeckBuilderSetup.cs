@@ -104,9 +104,10 @@ namespace PotatoCardGame.UI
             deckBuilder.collectionPanelArea = collectionPanel.GetComponent<RectTransform>();
             deckBuilder.deckPanelArea = deckPanel.GetComponent<RectTransform>();
             
-            deckBuilder.collectionPanelBackground = collectionPanel.GetComponent<Image>();
-            deckBuilder.deckPanelBackground = deckPanel.GetComponent<Image>();
-            deckBuilder.managementBarBackground = managementBar.GetComponent<Image>();
+            // Background sprites will be loaded from Resources - no need to assign here
+            // deckBuilder.collectionPanelBackground = collectionPanel.GetComponent<Image>().sprite;
+            // deckBuilder.deckPanelBackground = deckPanel.GetComponent<Image>().sprite;
+            // deckBuilder.managementBarBackground = managementBar.GetComponent<Image>().sprite;
             
             deckBuilder.collectionScrollView = collectionScroll.GetComponent<ScrollRect>();
             deckBuilder.collectionGrid = collectionScroll.transform.Find("Viewport/Content").GetComponent<GridLayoutGroup>();

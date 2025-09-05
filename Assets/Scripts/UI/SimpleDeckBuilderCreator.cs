@@ -150,9 +150,10 @@ namespace PotatoCardGame.UI
             editableComponent.collectionPanelArea = collectionPanel.GetComponent<RectTransform>();
             editableComponent.deckPanelArea = deckPanel.GetComponent<RectTransform>();
             
-            editableComponent.managementBarBackground = managementBar.GetComponent<Image>();
-            editableComponent.collectionPanelBackground = collectionPanel.GetComponent<Image>();
-            editableComponent.deckPanelBackground = deckPanel.GetComponent<Image>();
+            // Background sprites will be loaded from Resources - no need to assign here
+            // editableComponent.managementBarBackground = managementBar.GetComponent<Image>().sprite;
+            // editableComponent.collectionPanelBackground = collectionPanel.GetComponent<Image>().sprite;
+            // editableComponent.deckPanelBackground = deckPanel.GetComponent<Image>().sprite;
             
             editableComponent.collectionScrollView = scrollView.GetComponent<ScrollRect>();
             editableComponent.collectionGrid = scrollView.transform.Find("Viewport/Content").GetComponent<GridLayoutGroup>();

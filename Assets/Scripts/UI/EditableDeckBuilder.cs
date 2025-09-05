@@ -513,15 +513,9 @@ namespace PotatoCardGame.UI
         
         private void ApplyInspectorSettings()
         {
-            // Apply background tints
-            if (collectionPanelBackground != null)
-                collectionPanelBackground.color = collectionPanelTint;
-            
-            if (deckPanelBackground != null)
-                deckPanelBackground.color = deckPanelTint;
-            
-            if (managementBarBackground != null)
-                managementBarBackground.color = managementBarTint;
+            // Apply background tints to Image components (not sprites directly)
+            // Tints will be applied when sprites are assigned to Image components
+            // in CreateDeckBuilderContent() method
             
             // Apply card grid settings
             if (collectionGrid != null)
