@@ -55,9 +55,9 @@ namespace PotatoCardGame.UI
             uiManagerObj.transform.SetParent(null); // Top level
             EditableUIManager uiManager = uiManagerObj.AddComponent<EditableUIManager>();
             
-            // Add save system for persistent UI changes
-            uiManagerObj.AddComponent<EditableUISaveSystem>();
-            Debug.Log("💾 Added UI Save System for persistent changes");
+            // Add AUTO-SAVE system for instant persistent UI changes
+            uiManagerObj.AddComponent<AutoSaveEditableUI>();
+            Debug.Log("💾 Added AUTO-SAVE UI System - changes save instantly!");
             
             // Create all editable screens
             CreateEditableAuthScreen(uiManagerObj.transform);
