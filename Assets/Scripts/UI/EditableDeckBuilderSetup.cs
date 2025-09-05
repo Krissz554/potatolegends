@@ -10,9 +10,32 @@ namespace PotatoCardGame.UI
     /// </summary>
     public class EditableDeckBuilderSetup : MonoBehaviour
     {
-        [Header("🎮 SETUP - Click 'Create Editable Deck Builder' below")]
-        [Tooltip("Click this to create the editable deck builder structure")]
+        [Header("🎮 DECK BUILDER SETUP")]
+        [Space(10)]
+        
+        [Header("👆 CHECK THIS BOX TO CREATE DECK BUILDER:")]
+        [Tooltip("Check this checkbox to create the editable deck builder instantly!")]
+        public bool createDeckBuilderNow = false;
+        
+        [Space(10)]
+        [Header("📋 Instructions:")]
+        [TextArea(4, 6)]
+        public string instructions = "1. Check the 'Create Deck Builder Now' checkbox above ☝️\n2. The editable deck builder will be created automatically\n3. Select 'EDITABLE_DECK_BUILDER' in Hierarchy\n4. Edit everything in Inspector!\n\nYou can also right-click this component and select 'Create Editable Deck Builder'";
+        
+        [Space(10)]
+        [Header("✅ Status:")]
+        [Tooltip("Shows if setup is complete")]
         public bool setupComplete = false;
+        
+        void Update()
+        {
+            // Check if user wants to create the deck builder
+            if (createDeckBuilderNow && !setupComplete)
+            {
+                CreateEditableDeckBuilder();
+                createDeckBuilderNow = false;
+            }
+        }
         
         [ContextMenu("🎨 Create Editable Deck Builder")]
         public void CreateEditableDeckBuilder()
