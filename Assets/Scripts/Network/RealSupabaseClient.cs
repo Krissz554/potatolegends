@@ -491,7 +491,7 @@ public class RealSupabaseClient : MonoBehaviour
             try
             {
                 // Deactivate current hero
-                await PatchData("/rest/v1/user_heroes", new { is_active = false }, $"user_id=eq.{userId}");
+                await PatchData($"/rest/v1/user_heroes?user_id=eq.{userId}", new { is_active = false });
                 
                 // Set new active hero
                 var heroData = new

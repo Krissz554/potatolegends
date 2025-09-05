@@ -628,7 +628,7 @@ namespace PotatoCardGame.UI
             {
                 filteredCollection = userCollection.Where(item => 
                     item.quantity > 0 && 
-                    item.card.element?.ToLower() == elementName
+                    item.card.potato_type?.ToLower() == elementName
                 ).ToList();
             }
             

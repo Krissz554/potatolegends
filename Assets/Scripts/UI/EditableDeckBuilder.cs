@@ -26,13 +26,13 @@ namespace PotatoCardGame.UI
         
         [Header("🎨 Visual Styling")]
         [Tooltip("Collection panel background image")]
-        public Image collectionPanelBackground;
+        public Sprite collectionPanelBackground;
         
         [Tooltip("Deck panel background image")]
-        public Image deckPanelBackground;
+        public Sprite deckPanelBackground;
         
         [Tooltip("Management bar background image")]
-        public Image managementBarBackground;
+        public Sprite managementBarBackground;
         
         [Header("🃏 Card Display Settings")]
         [Tooltip("Card size in collection")]
@@ -232,8 +232,8 @@ namespace PotatoCardGame.UI
             
             // Grid layout
             GridLayoutGroup grid = content.AddComponent<GridLayoutGroup>();
-            grid.cellSize = new Vector2(collectionCardSize, collectionCardSize * 1.4f);
-            grid.spacing = new Vector2(5, 5);
+            grid.cellSize = collectionCardSize;
+            grid.spacing = cardSpacing;
             grid.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
             grid.constraintCount = collectionColumnsPerRow;
             
@@ -281,7 +281,7 @@ namespace PotatoCardGame.UI
             deckGridRect.offsetMax = Vector2.zero;
             
             GridLayoutGroup grid = deckGrid.AddComponent<GridLayoutGroup>();
-            grid.cellSize = new Vector2(deckCardSize, deckCardSize * 1.4f);
+            grid.cellSize = deckCardSize;
             grid.spacing = new Vector2(3, 3);
             grid.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
             grid.constraintCount = deckColumnsPerRow;
@@ -324,7 +324,7 @@ namespace PotatoCardGame.UI
             deckGridRect.offsetMax = Vector2.zero;
             
             GridLayoutGroup grid = deckGrid.AddComponent<GridLayoutGroup>();
-            grid.cellSize = new Vector2(deckCardSize, deckCardSize * 1.4f);
+            grid.cellSize = deckCardSize;
             grid.spacing = new Vector2(3, 3);
             grid.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
             grid.constraintCount = deckColumnsPerRow;
@@ -822,8 +822,8 @@ namespace PotatoCardGame.UI
             Debug.Log("🔄 Resetting deck builder to defaults...");
             
             // Reset visual settings
-            collectionCardSize = 100f;
-            deckCardSize = 80f;
+            collectionCardSize = new Vector2(100f, 140f);
+            deckCardSize = new Vector2(80f, 110f);
             collectionColumnsPerRow = 3;
             deckColumnsPerRow = 5;
             cardTint = Color.white;

@@ -506,7 +506,7 @@ namespace PotatoCardGame.UI
             labelText.text = text;
             labelText.fontSize = formTextSize - 2;
             labelText.color = Color.white;
-            labelText.alignment = TextAlignmentOptions.MiddleLeft;
+            labelText.alignment = TextAlignmentOptions.MidlineLeft;
             
             RectTransform labelRect = labelObj.GetComponent<RectTransform>();
             labelRect.anchorMin = new Vector2(0.15f, 0f);
