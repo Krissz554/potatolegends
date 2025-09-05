@@ -48,6 +48,15 @@ namespace PotatoCardGame.UI
         [Tooltip("Deck builder right panel")]
         public Sprite cardsPanelSprite;
         
+        [Tooltip("Collection panel background")]
+        public Sprite collectionPanelBackground;
+        
+        [Tooltip("Current deck panel background")]
+        public Sprite deckPanelBackground;
+        
+        [Tooltip("Deck management bar background")]
+        public Sprite deckManagementBarBackground;
+        
         [Tooltip("Utility bar panel")]
         public Sprite utilityBarSprite;
         

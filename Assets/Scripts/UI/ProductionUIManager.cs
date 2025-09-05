@@ -1455,7 +1455,7 @@ namespace PotatoCardGame.UI
                     parent,
                     new Vector2(0.02f, 0.02f),
                     new Vector2(0.98f, 0.12f),
-                    assetLibrary.headerPanelSprite
+                    assetLibrary.deckManagementBarBackground ?? assetLibrary.headerPanelSprite
                 );
                 
                 CreateDeckManagementArea(deckManagementPanel.transform, userDecks);
@@ -1466,7 +1466,7 @@ namespace PotatoCardGame.UI
                     parent,
                     new Vector2(0.02f, 0.15f),
                     new Vector2(0.48f, 0.98f),
-                    assetLibrary.deckPanelSprite
+                    assetLibrary.collectionPanelBackground ?? assetLibrary.deckPanelSprite
                 );
                 
                 CreateAvailableCardsArea(availablePanel.transform, userCollection);
@@ -1477,7 +1477,7 @@ namespace PotatoCardGame.UI
                     parent,
                     new Vector2(0.52f, 0.15f),
                     new Vector2(0.98f, 0.98f),
-                    assetLibrary.cardsPanelSprite
+                    assetLibrary.deckPanelBackground ?? assetLibrary.cardsPanelSprite
                 );
                 
                 // Load active deck if available
@@ -2840,8 +2840,16 @@ namespace PotatoCardGame.UI
             library.deckBuilderBackground = Resources.Load<Sprite>("UI/Backgrounds/deck-builder-bg");
             library.heroHallBackground = Resources.Load<Sprite>("UI/Backgrounds/hero-hall-bg");
             
+            // Load deck builder specific panel backgrounds
+            library.collectionPanelBackground = Resources.Load<Sprite>("UI/Backgrounds/collection-panel-bg");
+            library.deckPanelBackground = Resources.Load<Sprite>("UI/Backgrounds/deck-panel-bg");
+            library.deckManagementBarBackground = Resources.Load<Sprite>("UI/Backgrounds/deck-management-bar-bg");
+            
             // Debug background loads
             Debug.Log($"🔍 Main menu background: {(library.mainMenuBackground != null ? "FOUND" : "NOT FOUND")}");
+            Debug.Log($"🔍 Collection panel background: {(library.collectionPanelBackground != null ? "FOUND" : "NOT FOUND")}");
+            Debug.Log($"🔍 Deck panel background: {(library.deckPanelBackground != null ? "FOUND" : "NOT FOUND")}");
+            Debug.Log($"🔍 Deck management bar background: {(library.deckManagementBarBackground != null ? "FOUND" : "NOT FOUND")}");
             
             // Auto-load buttons
             library.primaryButtonSprite = Resources.Load<Sprite>("UI/Buttons/primary-button");
