@@ -440,6 +440,81 @@ public class RealSupabaseClient : MonoBehaviour
             }
         }
         
+        public async Task<List<Hero>> LoadAvailableHeroes()
+        {
+            Debug.Log("🦸 Loading available heroes...");
+            
+            try
+            {
+                var heroes = await GetData<List<Hero>>("/rest/v1/heroes?order=name.asc");
+                Debug.Log($"✅ Loaded {heroes?.Count ?? 0} available heroes");
+                return heroes ?? new List<Hero>();
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"❌ Error loading heroes: {e.Message}");
+                return new List<Hero>();
+            }
+        }
+        
+        public async Task<Hero> LoadActiveHero()
+        {
+            Debug.Log("👑 Loading active hero...");
+            
+            try
+            {
+                var userHeroes = await GetData<List<UserHero>>($"/rest/v1/user_heroes?user_id=eq.{userId}&is_active=eq.true");
+                if (userHeroes != null && userHeroes.Count > 0)
+                {
+                    var heroData = await GetData<List<Hero>>($"/rest/v1/heroes?id=eq.{userHeroes[0].hero_id}");
+                    if (heroData != null && heroData.Count > 0)
+                    {
+                        Debug.Log($"✅ Loaded active hero: {heroData[0].name}");
+                        return heroData[0];
+                    }
+                }
+                
+                Debug.LogWarning("⚠️ No active hero found");
+                return null;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"❌ Error loading active hero: {e.Message}");
+                return null;
+            }
+        }
+        
+        public async Task<bool> SetActiveHero(string heroId)
+        {
+            Debug.Log($"👑 Setting active hero: {heroId}");
+            
+            try
+            {
+                // Deactivate current hero
+                await PatchData("/rest/v1/user_heroes", new { is_active = false }, $"user_id=eq.{userId}");
+                
+                // Set new active hero
+                var heroData = new
+                {
+                    user_id = userId,
+                    hero_id = heroId,
+                    is_active = true,
+                    level = 1,
+                    experience = 0
+                };
+                
+                await PostData<object>("/rest/v1/user_heroes", heroData);
+                
+                Debug.Log("✅ Active hero updated successfully");
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"❌ Error setting active hero: {e.Message}");
+                return false;
+            }
+        }
+        
         private List<CollectionItem> ParseCollectionData(object data)
         {
             // Parse collection data exactly like web version

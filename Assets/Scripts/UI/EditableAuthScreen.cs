@@ -387,7 +387,7 @@ namespace PotatoCardGame.UI
             placeholderText.text = text;
             placeholderText.fontSize = formTextSize;
             placeholderText.color = new Color(0.7f, 0.7f, 0.7f, 0.8f);
-            placeholderText.alignment = TextAlignmentOptions.MiddleLeft;
+            placeholderText.alignment = TextAlignmentOptions.MidlineLeft;
             
             RectTransform placeholderRect = placeholderObj.GetComponent<RectTransform>();
             placeholderRect.anchorMin = new Vector2(0.1f, 0f);
@@ -407,7 +407,7 @@ namespace PotatoCardGame.UI
             TextMeshProUGUI inputText = textObj.AddComponent<TextMeshProUGUI>();
             inputText.fontSize = formTextSize;
             inputText.color = Color.white;
-            inputText.alignment = TextAlignmentOptions.MiddleLeft;
+            inputText.alignment = TextAlignmentOptions.MidlineLeft;
             
             RectTransform textRect = textObj.GetComponent<RectTransform>();
             textRect.anchorMin = new Vector2(0.1f, 0f);

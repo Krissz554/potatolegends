@@ -396,7 +396,7 @@ namespace PotatoCardGame.UI
             cardObj.layer = 5;
             
             Image cardImg = cardObj.AddComponent<Image>();
-            cardImg.color = GetElementalColor(collectionItem.card.element);
+            cardImg.color = GetElementalColor(collectionItem.card.potato_type);
             
             Button cardButton = cardObj.AddComponent<Button>();
             cardButton.onClick.AddListener(() => {
@@ -416,7 +416,7 @@ namespace PotatoCardGame.UI
             // Card stats
             CreateText("Mana", $"⚡{collectionItem.card.mana_cost}", cardObj.transform, new Vector2(0.05f, 0.75f), new Vector2(0.35f, 0.95f), 8, Color.blue);
             CreateText("Attack", $"⚔️{collectionItem.card.attack}", cardObj.transform, new Vector2(0.35f, 0.75f), new Vector2(0.65f, 0.95f), 8, Color.red);
-            CreateText("Health", $"❤️{collectionItem.card.health}", cardObj.transform, new Vector2(0.65f, 0.75f), new Vector2(0.95f, 0.95f), 8, Color.green);
+            CreateText("Health", $"❤️{collectionItem.card.hp}", cardObj.transform, new Vector2(0.65f, 0.75f), new Vector2(0.95f, 0.95f), 8, Color.green);
             
             // Quantity badge
             if (collectionItem.quantity > 1)
@@ -499,7 +499,7 @@ namespace PotatoCardGame.UI
             placeholderText.text = placeholder;
             placeholderText.fontSize = 14;
             placeholderText.color = new Color(0.7f, 0.7f, 0.7f, 0.8f);
-            placeholderText.alignment = TextAlignmentOptions.MiddleLeft;
+            placeholderText.alignment = TextAlignmentOptions.MidlineLeft;
             
             RectTransform placeholderRect = placeholderObj.GetComponent<RectTransform>();
             placeholderRect.anchorMin = new Vector2(0.05f, 0f);

@@ -343,7 +343,7 @@ namespace PotatoCardGame.UI
             cardObj.layer = 5;
             
             Image cardImg = cardObj.AddComponent<Image>();
-            cardImg.color = GetElementalColor(collectionItem.card.element);
+            cardImg.color = GetElementalColor(collectionItem.card.potato_type);
             
             // Card name
             GameObject nameObj = new GameObject("Name");
@@ -380,7 +380,7 @@ namespace PotatoCardGame.UI
             cardObj.layer = 5;
             
             Image cardImg = cardObj.AddComponent<Image>();
-            cardImg.color = GetElementalColor(card.element);
+            cardImg.color = GetElementalColor(card.potato_type);
             
             // Card name
             GameObject nameObj = new GameObject("Name");
@@ -441,7 +441,7 @@ namespace PotatoCardGame.UI
             CreateStatDisplay("ATK", card.attack.ToString(), new Vector2(0.35f, 0.7f), new Vector2(0.65f, 0.9f), Color.red, parent);
             
             // Health
-            CreateStatDisplay("HP", card.health.ToString(), new Vector2(0.7f, 0.7f), new Vector2(1f, 0.9f), Color.green, parent);
+            CreateStatDisplay("HP", card.hp.ToString(), new Vector2(0.7f, 0.7f), new Vector2(1f, 0.9f), Color.green, parent);
         }
         
         private void CreateStatDisplay(string label, string value, Vector2 anchorMin, Vector2 anchorMax, Color color, Transform parent)
@@ -802,6 +802,53 @@ namespace PotatoCardGame.UI
             statRect.offsetMax = Vector2.zero;
         }
         
+        public void RefreshScreen()
+        {
+            Debug.Log("🔄 Refreshing editable deck builder...");
+            ApplyInspectorSettings();
+            
+            // Reload data and recreate content
+            _ = LoadDeckBuilderData();
+            
+            // Recreate content if areas exist
+            if (collectionPanelArea != null && deckPanelArea != null)
+            {
+                CreateDeckBuilderContent();
+            }
+        }
+        
+        public void ResetToDefaults()
+        {
+            Debug.Log("🔄 Resetting deck builder to defaults...");
+            
+            // Reset visual settings
+            collectionCardSize = 100f;
+            deckCardSize = 80f;
+            collectionColumnsPerRow = 3;
+            deckColumnsPerRow = 5;
+            cardTint = Color.white;
+            
+            // Reset layout if areas exist
+            if (managementBarArea != null)
+            {
+                managementBarArea.anchorMin = new Vector2(0.02f, 0.9f);
+                managementBarArea.anchorMax = new Vector2(0.98f, 0.98f);
+            }
+            
+            if (collectionPanelArea != null)
+            {
+                collectionPanelArea.anchorMin = new Vector2(0.02f, 0.15f);
+                collectionPanelArea.anchorMax = new Vector2(0.48f, 0.88f);
+            }
+            
+            if (deckPanelArea != null)
+            {
+                deckPanelArea.anchorMin = new Vector2(0.52f, 0.15f);
+                deckPanelArea.anchorMax = new Vector2(0.98f, 0.88f);
+            }
+            
+            ApplyInspectorSettings();
+        }
         
         private void SetupButtonEvents()
         {

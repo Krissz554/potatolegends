@@ -243,11 +243,11 @@ namespace PotatoCardGame.UI
             // Create mock heroes for testing
             availableHeroes = new List<RealSupabaseClient.Hero>
             {
-                new RealSupabaseClient.Hero { id = "1", name = "Fire Mage", element = "fire", health = 30, hero_power = "Deal 2 damage to any target" },
-                new RealSupabaseClient.Hero { id = "2", name = "Ice Guardian", element = "ice", health = 35, hero_power = "Freeze an enemy for 1 turn" },
-                new RealSupabaseClient.Hero { id = "3", name = "Storm Lord", element = "lightning", health = 28, hero_power = "Deal 1 damage to all enemies" },
-                new RealSupabaseClient.Hero { id = "4", name = "Light Paladin", element = "light", health = 32, hero_power = "Heal 3 health" },
-                new RealSupabaseClient.Hero { id = "5", name = "Void Assassin", element = "void", health = 25, hero_power = "Destroy a random enemy card" }
+                new RealSupabaseClient.Hero { id = "1", name = "Fire Mage", element_type = "fire", base_hp = 30, hero_power_description = "Deal 2 damage to any target" },
+                new RealSupabaseClient.Hero { id = "2", name = "Ice Guardian", element_type = "ice", base_hp = 35, hero_power_description = "Freeze an enemy for 1 turn" },
+                new RealSupabaseClient.Hero { id = "3", name = "Storm Lord", element_type = "lightning", base_hp = 28, hero_power_description = "Deal 1 damage to all enemies" },
+                new RealSupabaseClient.Hero { id = "4", name = "Light Paladin", element_type = "light", base_hp = 32, hero_power_description = "Heal 3 health" },
+                new RealSupabaseClient.Hero { id = "5", name = "Void Assassin", element_type = "void", base_hp = 25, hero_power_description = "Destroy a random enemy card" }
             };
             
             activeHero = availableHeroes[0]; // Default to first hero
@@ -303,8 +303,8 @@ namespace PotatoCardGame.UI
             CreateText("Active Hero Name", activeHero.name, activeHeroArea, new Vector2(0.35f, 0.5f), new Vector2(0.7f, 1f), 18, Color.white);
             
             // Active hero element
-            Color elementColor = GetElementalColor(activeHero.element);
-            CreateText("Active Hero Element", $"{GetElementIcon(activeHero.element)} {activeHero.element?.ToUpper()}", 
+            Color elementColor = GetElementalColor(activeHero.element_type);
+            CreateText("Active Hero Element", $"{GetElementIcon(activeHero.element_type)} {activeHero.element_type?.ToUpper()}", 
                 activeHeroArea, new Vector2(0.75f, 0.5f), new Vector2(0.95f, 1f), 14, elementColor);
         }
         
@@ -361,11 +361,11 @@ namespace PotatoCardGame.UI
             CreateText("Hero Name", hero.name, heroObj.transform, new Vector2(0.05f, 0.05f), new Vector2(0.95f, 0.2f), 12, Color.white);
             
             // Hero element
-            Color elementColor = GetElementalColor(hero.element);
-            CreateText("Hero Element", GetElementIcon(hero.element), heroObj.transform, new Vector2(0.05f, 0.8f), new Vector2(0.25f, 0.95f), 16, elementColor);
+            Color elementColor = GetElementalColor(hero.element_type);
+            CreateText("Hero Element", GetElementIcon(hero.element_type), heroObj.transform, new Vector2(0.05f, 0.8f), new Vector2(0.25f, 0.95f), 16, elementColor);
             
             // Hero health
-            CreateText("Hero Health", $"❤️{hero.health}", heroObj.transform, new Vector2(0.75f, 0.8f), new Vector2(0.95f, 0.95f), 12, Color.red);
+            CreateText("Hero Health", $"❤️{hero.base_hp}", heroObj.transform, new Vector2(0.75f, 0.8f), new Vector2(0.95f, 0.95f), 12, Color.red);
             
             // Active indicator
             if (hero.id == activeHero?.id)
@@ -381,7 +381,7 @@ namespace PotatoCardGame.UI
             portraitObj.layer = 5;
             
             Image portraitImg = portraitObj.AddComponent<Image>();
-            portraitImg.color = GetElementalColor(hero.element);
+            portraitImg.color = GetElementalColor(hero.element_type);
             
             RectTransform portraitRect = portraitObj.GetComponent<RectTransform>();
             portraitRect.anchorMin = new Vector2(0.15f, 0.25f);
@@ -418,14 +418,14 @@ namespace PotatoCardGame.UI
             // Hero power
             if (showHeroPower)
             {
-                CreateText("Hero Power", $"Power: {selectedHero.hero_power}", detailsPanel.transform, new Vector2(0.05f, 0.4f), new Vector2(0.95f, 0.65f), 12, Color.cyan);
+                CreateText("Hero Power", $"Power: {selectedHero.hero_power_description}", detailsPanel.transform, new Vector2(0.05f, 0.4f), new Vector2(0.95f, 0.65f), 12, Color.cyan);
             }
             
             // Hero stats
             if (showHeroStats)
             {
-                CreateText("Hero Health", $"Health: {selectedHero.health}", detailsPanel.transform, new Vector2(0.45f, 0.7f), new Vector2(0.7f, 0.95f), 14, Color.red);
-                CreateText("Hero Element", $"Element: {selectedHero.element}", detailsPanel.transform, new Vector2(0.75f, 0.7f), new Vector2(0.95f, 0.95f), 14, GetElementalColor(selectedHero.element));
+                CreateText("Hero Health", $"Health: {selectedHero.base_hp}", detailsPanel.transform, new Vector2(0.45f, 0.7f), new Vector2(0.7f, 0.95f), 14, Color.red);
+                CreateText("Hero Element", $"Element: {selectedHero.element_type}", detailsPanel.transform, new Vector2(0.75f, 0.7f), new Vector2(0.95f, 0.95f), 14, GetElementalColor(selectedHero.element_type));
             }
             
             // Set as active button
