@@ -2122,6 +2122,7 @@ namespace PotatoCardGame.UI
             {
                 panelImage.sprite = panelSprite;
                 panelImage.type = Image.Type.Sliced; // 9-slice scaling
+                panelImage.color = Color.white; // Full opacity for custom sprite
             }
             else
             {
@@ -2135,8 +2136,11 @@ namespace PotatoCardGame.UI
             panelRect.offsetMin = Vector2.zero;
             panelRect.offsetMax = Vector2.zero;
             
-            // Add shadow effect
-            CreatePanelShadow(panel.transform);
+            // Add shadow effect only for fallback panels (not custom sprites)
+            if (panelSprite == null)
+            {
+                CreatePanelShadow(panel.transform);
+            }
             
             return panel;
         }
@@ -2847,6 +2851,7 @@ namespace PotatoCardGame.UI
             
             // Debug background loads
             Debug.Log($"🔍 Main menu background: {(library.mainMenuBackground != null ? "FOUND" : "NOT FOUND")}");
+            Debug.Log($"🔍 Deck builder background: {(library.deckBuilderBackground != null ? "FOUND" : "NOT FOUND")}");
             Debug.Log($"🔍 Collection panel background: {(library.collectionPanelBackground != null ? "FOUND" : "NOT FOUND")}");
             Debug.Log($"🔍 Deck panel background: {(library.deckPanelBackground != null ? "FOUND" : "NOT FOUND")}");
             Debug.Log($"🔍 Deck management bar background: {(library.deckManagementBarBackground != null ? "FOUND" : "NOT FOUND")}");
