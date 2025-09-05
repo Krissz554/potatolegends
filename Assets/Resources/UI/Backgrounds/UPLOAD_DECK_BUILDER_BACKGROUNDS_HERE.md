@@ -5,10 +5,10 @@ Upload your custom deck builder background images here!
 ## 📁 Required Background Assets:
 
 ### **Main Deck Builder Backgrounds:**
-- `deck-builder-bg.png` - Main background for entire deck builder screen
-- `collection-panel-bg.png` - Background for left panel (Your Collection)
-- `deck-panel-bg.png` - Background for right panel (Current Deck)
-- `deck-management-bar-bg.png` - Background for top management bar
+- `deck-builder-bg.png` - **MAIN BACKGROUND** (replaces purple background)
+- `collection-panel-bg.png` - Left panel background (Your Collection) ✅ UPLOADED
+- `deck-panel-bg.png` - Right panel background (Current Deck) ✅ UPLOADED  
+- `deck-management-bar-bg.png` - Top management bar background
 
 ### **📏 Recommended Specifications:**
 - **Format:** PNG (supports transparency)
