@@ -2490,7 +2490,7 @@ namespace PotatoCardGame.UI
             Debug.Log("🔧 Opening YOUR CUSTOM deck builder...");
             
             // Hide all ProductionUIManager screens
-            foreach (Transform child in productionCanvas.transform)
+            foreach (Transform child in gameCanvas.transform)
             {
                 child.gameObject.SetActive(false);
             }
