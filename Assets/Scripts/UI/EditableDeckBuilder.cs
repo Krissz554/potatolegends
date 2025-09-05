@@ -108,8 +108,7 @@ namespace PotatoCardGame.UI
         
         void Start()
         {
-            // Hide initially - only show when deck builder button is clicked
-            gameObject.SetActive(false);
+            // Don't hide immediately - wait for proper initialization
             InitializeEditableDeckBuilder();
         }
         
@@ -129,7 +128,387 @@ namespace PotatoCardGame.UI
             // Create UI content
             CreateEditableUI();
             
+            // Create the actual UI content
+            CreateDeckBuilderContent();
+            
             Debug.Log("✅ Editable Deck Builder ready! Edit in Inspector for instant changes.");
+        }
+        
+        private void CreateDeckBuilderContent()
+        {
+            Debug.Log("🎨 Creating deck builder content with your custom backgrounds...");
+            
+            // Create collection panel with your custom background
+            if (collectionPanelArea != null)
+            {
+                // Apply your custom collection background
+                Image collectionImg = collectionPanelArea.GetComponent<Image>();
+                if (collectionImg == null) collectionImg = collectionPanelArea.gameObject.AddComponent<Image>();
+                
+                if (collectionPanelBackground != null)
+                {
+                    collectionImg.sprite = collectionPanelBackground;
+                    collectionImg.color = Color.white;
+                    Debug.Log("✅ Applied your custom collection panel background!");
+                }
+                else
+                {
+                    collectionImg.color = new Color(0.1f, 0.1f, 0.1f, 0.8f); // Fallback
+                }
+                
+                // Create collection content
+                CreateCollectionCards(collectionPanelArea);
+            }
+            
+            // Create deck panel with your custom background  
+            if (deckPanelArea != null)
+            {
+                // Apply your custom deck background
+                Image deckImg = deckPanelArea.GetComponent<Image>();
+                if (deckImg == null) deckImg = deckPanelArea.gameObject.AddComponent<Image>();
+                
+                if (deckPanelBackground != null)
+                {
+                    deckImg.sprite = deckPanelBackground;
+                    deckImg.color = Color.white;
+                    Debug.Log("✅ Applied your custom deck panel background!");
+                }
+                else
+                {
+                    deckImg.color = new Color(0.1f, 0.1f, 0.1f, 0.8f); // Fallback
+                }
+                
+                // Create deck content
+                CreateDeckCards(deckPanelArea);
+            }
+        }
+        
+        private void CreateCollectionCards(RectTransform parent)
+        {
+            if (userCollection == null || userCollection.Count == 0)
+            {
+                Debug.LogWarning("⚠️ No collection data available for display");
+                return;
+            }
+            
+            Debug.Log($"🃏 Creating collection display with {userCollection.Count} cards");
+            
+            // Create scroll view for collection
+            GameObject scrollView = new GameObject("Collection Scroll View");
+            scrollView.transform.SetParent(parent, false);
+            scrollView.layer = 5;
+            
+            RectTransform scrollRect = scrollView.AddComponent<RectTransform>();
+            scrollRect.anchorMin = new Vector2(0.05f, 0.1f);
+            scrollRect.anchorMax = new Vector2(0.95f, 0.9f);
+            scrollRect.offsetMin = Vector2.zero;
+            scrollRect.offsetMax = Vector2.zero;
+            
+            ScrollRect scroll = scrollView.AddComponent<ScrollRect>();
+            Image scrollBg = scrollView.AddComponent<Image>();
+            scrollBg.color = Color.clear;
+            
+            // Viewport
+            GameObject viewport = new GameObject("Viewport");
+            viewport.transform.SetParent(scrollView.transform, false);
+            viewport.layer = 5;
+            
+            RectTransform viewportRect = viewport.AddComponent<RectTransform>();
+            viewportRect.anchorMin = Vector2.zero;
+            viewportRect.anchorMax = Vector2.one;
+            viewportRect.offsetMin = Vector2.zero;
+            viewportRect.offsetMax = Vector2.zero;
+            viewport.AddComponent<RectMask2D>();
+            
+            // Content
+            GameObject content = new GameObject("Content");
+            content.transform.SetParent(viewport.transform, false);
+            content.layer = 5;
+            
+            RectTransform contentRect = content.AddComponent<RectTransform>();
+            contentRect.anchorMin = new Vector2(0f, 1f);
+            contentRect.anchorMax = new Vector2(1f, 1f);
+            contentRect.pivot = new Vector2(0.5f, 1f);
+            
+            // Grid layout
+            GridLayoutGroup grid = content.AddComponent<GridLayoutGroup>();
+            grid.cellSize = new Vector2(collectionCardSize, collectionCardSize * 1.4f);
+            grid.spacing = new Vector2(5, 5);
+            grid.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
+            grid.constraintCount = collectionColumnsPerRow;
+            
+            ContentSizeFitter fitter = content.AddComponent<ContentSizeFitter>();
+            fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            
+            scroll.content = contentRect;
+            scroll.viewport = viewportRect;
+            scroll.horizontal = false;
+            scroll.vertical = true;
+            
+            // Create card displays
+            int cardsCreated = 0;
+            foreach (var collectionItem in userCollection.Where(item => item.quantity > 0))
+            {
+                CreateCollectionCard(collectionItem, content.transform);
+                cardsCreated++;
+                
+                if (cardsCreated >= 50) break; // Limit for performance
+            }
+            
+            Debug.Log($"✅ Created {cardsCreated} collection cards");
+        }
+        
+        private void CreateDeckCards(RectTransform parent)
+        {
+            if (currentDeck == null || currentDeck.cards == null)
+            {
+                Debug.LogWarning("⚠️ No deck data available for display");
+                CreateDeckPlaceholders(parent);
+                return;
+            }
+            
+            Debug.Log($"🃏 Creating deck display with {currentDeck.cards.Count} unique cards");
+            
+            // Create 30-slot grid for deck
+            GameObject deckGrid = new GameObject("Deck Grid");
+            deckGrid.transform.SetParent(parent, false);
+            deckGrid.layer = 5;
+            
+            RectTransform deckGridRect = deckGrid.AddComponent<RectTransform>();
+            deckGridRect.anchorMin = new Vector2(0.05f, 0.1f);
+            deckGridRect.anchorMax = new Vector2(0.95f, 0.9f);
+            deckGridRect.offsetMin = Vector2.zero;
+            deckGridRect.offsetMax = Vector2.zero;
+            
+            GridLayoutGroup grid = deckGrid.AddComponent<GridLayoutGroup>();
+            grid.cellSize = new Vector2(deckCardSize, deckCardSize * 1.4f);
+            grid.spacing = new Vector2(3, 3);
+            grid.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
+            grid.constraintCount = deckColumnsPerRow;
+            
+            // Create deck cards
+            int totalCards = 0;
+            foreach (var deckCard in currentDeck.cards)
+            {
+                for (int i = 0; i < deckCard.quantity; i++)
+                {
+                    CreateDeckCard(deckCard.card, deckGrid.transform);
+                    totalCards++;
+                    
+                    if (totalCards >= 30) break;
+                }
+                if (totalCards >= 30) break;
+            }
+            
+            // Fill remaining slots with placeholders
+            for (int i = totalCards; i < 30; i++)
+            {
+                CreateEmptyDeckSlot(deckGrid.transform);
+            }
+            
+            Debug.Log($"✅ Created deck display with {totalCards} cards");
+        }
+        
+        private void CreateDeckPlaceholders(RectTransform parent)
+        {
+            Debug.Log("📋 Creating deck placeholders (no active deck)");
+            
+            GameObject deckGrid = new GameObject("Empty Deck Grid");
+            deckGrid.transform.SetParent(parent, false);
+            deckGrid.layer = 5;
+            
+            RectTransform deckGridRect = deckGrid.AddComponent<RectTransform>();
+            deckGridRect.anchorMin = new Vector2(0.05f, 0.1f);
+            deckGridRect.anchorMax = new Vector2(0.95f, 0.9f);
+            deckGridRect.offsetMin = Vector2.zero;
+            deckGridRect.offsetMax = Vector2.zero;
+            
+            GridLayoutGroup grid = deckGrid.AddComponent<GridLayoutGroup>();
+            grid.cellSize = new Vector2(deckCardSize, deckCardSize * 1.4f);
+            grid.spacing = new Vector2(3, 3);
+            grid.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
+            grid.constraintCount = deckColumnsPerRow;
+            
+            // Create 30 empty slots
+            for (int i = 0; i < 30; i++)
+            {
+                CreateEmptyDeckSlot(deckGrid.transform);
+            }
+        }
+        
+        private void CreateCollectionCard(RealSupabaseClient.CollectionItem collectionItem, Transform parent)
+        {
+            GameObject cardObj = new GameObject($"Card: {collectionItem.card.name}");
+            cardObj.transform.SetParent(parent, false);
+            cardObj.layer = 5;
+            
+            Image cardImg = cardObj.AddComponent<Image>();
+            cardImg.color = GetElementalColor(collectionItem.card.element);
+            
+            // Card name
+            GameObject nameObj = new GameObject("Name");
+            nameObj.transform.SetParent(cardObj.transform, false);
+            nameObj.layer = 5;
+            
+            TextMeshProUGUI nameText = nameObj.AddComponent<TextMeshProUGUI>();
+            nameText.text = collectionItem.card.name;
+            nameText.fontSize = 8;
+            nameText.color = Color.white;
+            nameText.alignment = TextAlignmentOptions.Center;
+            nameText.fontStyle = FontStyles.Bold;
+            
+            RectTransform nameRect = nameObj.GetComponent<RectTransform>();
+            nameRect.anchorMin = new Vector2(0f, 0f);
+            nameRect.anchorMax = new Vector2(1f, 0.2f);
+            nameRect.offsetMin = Vector2.zero;
+            nameRect.offsetMax = Vector2.zero;
+            
+            // Stats
+            CreateCardStats(collectionItem.card, cardObj.transform);
+            
+            // Quantity badge if multiple
+            if (collectionItem.quantity > 1)
+            {
+                CreateQuantityBadge(collectionItem.quantity, cardObj.transform);
+            }
+        }
+        
+        private void CreateDeckCard(RealSupabaseClient.EnhancedCard card, Transform parent)
+        {
+            GameObject cardObj = new GameObject($"Deck Card: {card.name}");
+            cardObj.transform.SetParent(parent, false);
+            cardObj.layer = 5;
+            
+            Image cardImg = cardObj.AddComponent<Image>();
+            cardImg.color = GetElementalColor(card.element);
+            
+            // Card name
+            GameObject nameObj = new GameObject("Name");
+            nameObj.transform.SetParent(cardObj.transform, false);
+            nameObj.layer = 5;
+            
+            TextMeshProUGUI nameText = nameObj.AddComponent<TextMeshProUGUI>();
+            nameText.text = card.name;
+            nameText.fontSize = 7;
+            nameText.color = Color.white;
+            nameText.alignment = TextAlignmentOptions.Center;
+            nameText.fontStyle = FontStyles.Bold;
+            
+            RectTransform nameRect = nameObj.GetComponent<RectTransform>();
+            nameRect.anchorMin = new Vector2(0f, 0f);
+            nameRect.anchorMax = new Vector2(1f, 0.2f);
+            nameRect.offsetMin = Vector2.zero;
+            nameRect.offsetMax = Vector2.zero;
+            
+            // Stats
+            CreateCardStats(card, cardObj.transform);
+        }
+        
+        private void CreateEmptyDeckSlot(Transform parent)
+        {
+            GameObject slotObj = new GameObject("Empty Slot");
+            slotObj.transform.SetParent(parent, false);
+            slotObj.layer = 5;
+            
+            Image slotImg = slotObj.AddComponent<Image>();
+            slotImg.color = new Color(0.2f, 0.2f, 0.2f, 0.5f); // Gray empty slot
+            
+            // Plus icon for empty slots
+            GameObject plusObj = new GameObject("Plus");
+            plusObj.transform.SetParent(slotObj.transform, false);
+            plusObj.layer = 5;
+            
+            TextMeshProUGUI plusText = plusObj.AddComponent<TextMeshProUGUI>();
+            plusText.text = "+";
+            plusText.fontSize = 20;
+            plusText.color = new Color(0.5f, 0.5f, 0.5f, 0.8f);
+            plusText.alignment = TextAlignmentOptions.Center;
+            plusText.fontStyle = FontStyles.Bold;
+            
+            RectTransform plusRect = plusObj.GetComponent<RectTransform>();
+            plusRect.anchorMin = Vector2.zero;
+            plusRect.anchorMax = Vector2.one;
+            plusRect.offsetMin = Vector2.zero;
+            plusRect.offsetMax = Vector2.zero;
+        }
+        
+        private void CreateCardStats(RealSupabaseClient.EnhancedCard card, Transform parent)
+        {
+            // Mana cost
+            CreateStatDisplay("MANA", card.mana_cost.ToString(), new Vector2(0f, 0.7f), new Vector2(0.3f, 0.9f), Color.blue, parent);
+            
+            // Attack
+            CreateStatDisplay("ATK", card.attack.ToString(), new Vector2(0.35f, 0.7f), new Vector2(0.65f, 0.9f), Color.red, parent);
+            
+            // Health
+            CreateStatDisplay("HP", card.health.ToString(), new Vector2(0.7f, 0.7f), new Vector2(1f, 0.9f), Color.green, parent);
+        }
+        
+        private void CreateStatDisplay(string label, string value, Vector2 anchorMin, Vector2 anchorMax, Color color, Transform parent)
+        {
+            GameObject statObj = new GameObject($"{label}: {value}");
+            statObj.transform.SetParent(parent, false);
+            statObj.layer = 5;
+            
+            TextMeshProUGUI statText = statObj.AddComponent<TextMeshProUGUI>();
+            statText.text = $"{label}:{value}";
+            statText.fontSize = 6;
+            statText.color = color;
+            statText.alignment = TextAlignmentOptions.Center;
+            statText.fontStyle = FontStyles.Bold;
+            
+            RectTransform statRect = statObj.GetComponent<RectTransform>();
+            statRect.anchorMin = anchorMin;
+            statRect.anchorMax = anchorMax;
+            statRect.offsetMin = Vector2.zero;
+            statRect.offsetMax = Vector2.zero;
+        }
+        
+        private void CreateQuantityBadge(int quantity, Transform parent)
+        {
+            GameObject badgeObj = new GameObject($"x{quantity}");
+            badgeObj.transform.SetParent(parent, false);
+            badgeObj.layer = 5;
+            
+            Image badgeImg = badgeObj.AddComponent<Image>();
+            badgeImg.color = new Color(1f, 0.8f, 0f, 0.9f); // Gold badge
+            
+            RectTransform badgeRect = badgeObj.GetComponent<RectTransform>();
+            badgeRect.anchorMin = new Vector2(0.7f, 0.8f);
+            badgeRect.anchorMax = new Vector2(1f, 1f);
+            badgeRect.offsetMin = Vector2.zero;
+            badgeRect.offsetMax = Vector2.zero;
+            
+            GameObject badgeText = new GameObject("Badge Text");
+            badgeText.transform.SetParent(badgeObj.transform, false);
+            badgeText.layer = 5;
+            
+            TextMeshProUGUI badgeTextComp = badgeText.AddComponent<TextMeshProUGUI>();
+            badgeTextComp.text = $"x{quantity}";
+            badgeTextComp.fontSize = 8;
+            badgeTextComp.color = Color.black;
+            badgeTextComp.alignment = TextAlignmentOptions.Center;
+            badgeTextComp.fontStyle = FontStyles.Bold;
+            
+            RectTransform badgeTextRect = badgeText.GetComponent<RectTransform>();
+            badgeTextRect.anchorMin = Vector2.zero;
+            badgeTextRect.anchorMax = Vector2.one;
+            badgeTextRect.offsetMin = Vector2.zero;
+            badgeTextRect.offsetMax = Vector2.zero;
+        }
+        
+        private Color GetElementalColor(string element)
+        {
+            return element?.ToLower() switch
+            {
+                "fire" => new Color(1f, 0.3f, 0.1f, 1f),      // Red-orange
+                "ice" => new Color(0.1f, 0.6f, 1f, 1f),       // Light blue
+                "lightning" => new Color(1f, 1f, 0.2f, 1f),   // Yellow
+                "light" => new Color(1f, 1f, 0.8f, 1f),       // Light yellow
+                "void" => new Color(0.4f, 0.1f, 0.6f, 1f),    // Purple
+                "exotic" => new Color(1f, 0.5f, 1f, 1f),      // Pink
+                _ => new Color(0.5f, 0.5f, 0.5f, 1f)          // Gray default
+            };
         }
         
         private void ApplyInspectorSettings()
@@ -164,9 +543,17 @@ namespace PotatoCardGame.UI
         
         private async System.Threading.Tasks.Task LoadDeckBuilderData()
         {
+            // Wait for RealSupabaseClient to be ready
+            int attempts = 0;
+            while (RealSupabaseClient.Instance == null && attempts < 50) // Wait up to 5 seconds
+            {
+                await System.Threading.Tasks.Task.Delay(100);
+                attempts++;
+            }
+            
             if (RealSupabaseClient.Instance == null)
             {
-                Debug.LogError("❌ RealSupabaseClient not found!");
+                Debug.LogError("❌ RealSupabaseClient not found after waiting!");
                 return;
             }
             
