@@ -2487,8 +2487,41 @@ namespace PotatoCardGame.UI
         
         private void ShowFunctionalDeckBuilder()
         {
-            Debug.Log("🔧 Opening REAL deck builder with beautiful UI...");
-            _ = ShowScreen(GameScreen.DeckBuilder);
+            Debug.Log("🔧 Opening YOUR CUSTOM deck builder...");
+            
+            // Hide all ProductionUIManager screens
+            foreach (Transform child in productionCanvas.transform)
+            {
+                child.gameObject.SetActive(false);
+            }
+            
+            // Find and show the user's editable deck builder
+            GameObject editableDeckBuilder = GameObject.Find("🎮 EDITABLE_DECK_BUILDER");
+            if (editableDeckBuilder != null)
+            {
+                editableDeckBuilder.SetActive(true);
+                Debug.Log("✅ Showing YOUR custom editable deck builder!");
+            }
+            else
+            {
+                Debug.LogWarning("⚠️ Editable deck builder not found - falling back to old system");
+                _ = ShowScreen(GameScreen.DeckBuilder);
+            }
+        }
+        
+        public void ReturnToMainMenuFromCustomDeckBuilder()
+        {
+            Debug.Log("🔄 Returning to main menu from custom deck builder...");
+            
+            // Hide the custom deck builder
+            GameObject editableDeckBuilder = GameObject.Find("🎮 EDITABLE_DECK_BUILDER");
+            if (editableDeckBuilder != null)
+            {
+                editableDeckBuilder.SetActive(false);
+            }
+            
+            // Show main menu
+            _ = ShowScreen(GameScreen.MainMenu);
         }
         
         private void ShowFunctionalHeroHall()

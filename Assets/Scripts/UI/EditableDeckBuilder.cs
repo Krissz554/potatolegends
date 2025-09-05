@@ -108,6 +108,8 @@ namespace PotatoCardGame.UI
         
         void Start()
         {
+            // Hide initially - only show when deck builder button is clicked
+            gameObject.SetActive(false);
             InitializeEditableDeckBuilder();
         }
         
@@ -117,6 +119,9 @@ namespace PotatoCardGame.UI
             
             // Apply visual settings from Inspector
             ApplyInspectorSettings();
+            
+            // Add back button for navigation
+            CreateBackButton();
             
             // Load data from database
             await LoadDeckBuilderData();
@@ -472,6 +477,60 @@ namespace PotatoCardGame.UI
             {
                 ApplyInspectorSettings();
             }
+        }
+        
+        private void CreateBackButton()
+        {
+            // Create back button
+            GameObject backButton = new GameObject("🔙 Back to Main Menu");
+            backButton.transform.SetParent(transform, false);
+            backButton.layer = 5;
+            
+            RectTransform backRect = backButton.AddComponent<RectTransform>();
+            backRect.anchorMin = new Vector2(0.02f, 0.92f);
+            backRect.anchorMax = new Vector2(0.15f, 0.98f);
+            backRect.offsetMin = Vector2.zero;
+            backRect.offsetMax = Vector2.zero;
+            
+            Button backBtn = backButton.AddComponent<Button>();
+            Image backImg = backButton.AddComponent<Image>();
+            backImg.color = new Color(0.8f, 0.2f, 0.2f, 0.9f); // Red back button
+            
+            // Back button text
+            GameObject backText = new GameObject("Back Text");
+            backText.transform.SetParent(backButton.transform, false);
+            backText.layer = 5;
+            
+            TextMeshProUGUI backTextComp = backText.AddComponent<TextMeshProUGUI>();
+            backTextComp.text = "← BACK";
+            backTextComp.fontSize = 14;
+            backTextComp.color = Color.white;
+            backTextComp.alignment = TextAlignmentOptions.Center;
+            backTextComp.fontStyle = FontStyles.Bold;
+            
+            RectTransform backTextRect = backText.GetComponent<RectTransform>();
+            backTextRect.anchorMin = Vector2.zero;
+            backTextRect.anchorMax = Vector2.one;
+            backTextRect.offsetMin = Vector2.zero;
+            backTextRect.offsetMax = Vector2.zero;
+            
+            // Back button click handler
+            backBtn.onClick.AddListener(() => {
+                Debug.Log("🔙 Back button clicked - returning to main menu");
+                
+                // Find ProductionUIManager and call return method
+                ProductionUIManager uiManager = FindObjectOfType<ProductionUIManager>();
+                if (uiManager != null)
+                {
+                    uiManager.ReturnToMainMenuFromCustomDeckBuilder();
+                }
+                else
+                {
+                    Debug.LogError("❌ ProductionUIManager not found!");
+                }
+            });
+            
+            Debug.Log("✅ Back button added to editable deck builder");
         }
     }
 }
