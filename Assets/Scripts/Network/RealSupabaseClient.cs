@@ -628,28 +628,6 @@ public class RealSupabaseClient : MonoBehaviour
         
         #region Hero System (Real Implementation)
         
-        public async Task<List<Hero>> LoadAvailableHeroes()
-        {
-            try
-            {
-                var heroes = await GetData<List<Hero>>("heroes?select=*&order=name.asc");
-                
-                if (heroes != null)
-                {
-                    Debug.Log($"🦸 Loaded {heroes.Count} available heroes");
-                    return heroes;
-                }
-                
-                return new List<Hero>();
-                
-            }
-            catch (Exception e)
-            {
-                Debug.LogError($"❌ Error loading heroes: {e.Message}");
-                return new List<Hero>();
-            }
-        }
-        
         public async Task<List<UserHero>> LoadUserHeroes()
         {
             try
