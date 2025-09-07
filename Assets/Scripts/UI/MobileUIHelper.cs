@@ -1,8 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
-using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.UI;
 
 namespace PotatoLegends.UI
 {
@@ -32,7 +30,7 @@ namespace PotatoLegends.UI
                 {
                     GameObject eventSystemGO = new GameObject("EventSystem");
                     eventSystem = eventSystemGO.AddComponent<EventSystem>();
-                    eventSystemGO.AddComponent<InputSystemUIInputModule>();
+                    eventSystemGO.AddComponent<StandaloneInputModule>();
                 }
             }
 
@@ -59,16 +57,6 @@ namespace PotatoLegends.UI
             // Set up mobile-specific UI settings
             if (Application.isMobilePlatform)
             {
-                // Increase touch sensitivity
-                if (eventSystem != null)
-                {
-                    var inputModule = eventSystem.GetComponent<InputSystemUIInputModule>();
-                    if (inputModule != null)
-                    {
-                        // Mobile-specific input module settings
-                    }
-                }
-
                 // Configure Canvas for mobile
                 Canvas canvas = FindFirstObjectByType<Canvas>();
                 if (canvas != null)
@@ -91,14 +79,10 @@ namespace PotatoLegends.UI
         {
             if (enableHapticFeedback && Application.isMobilePlatform)
             {
-                // Unity 6 haptic feedback
-                if (InputSystem.settings != null)
-                {
-                    // Trigger haptic feedback for mobile devices
-                    #if UNITY_ANDROID || UNITY_IOS
-                    Handheld.Vibrate();
-                    #endif
-                }
+                // Trigger haptic feedback for mobile devices
+                #if UNITY_ANDROID || UNITY_IOS
+                Handheld.Vibrate();
+                #endif
             }
         }
 
