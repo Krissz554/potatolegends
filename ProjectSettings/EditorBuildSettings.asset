@@ -4,5 +4,15 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/MainMenu.unity
+  - enabled: 1
+    path: Assets/Scenes/Collection.unity
+  - enabled: 1
+    path: Assets/Scenes/DeckBuilder.unity
+  - enabled: 1
+    path: Assets/Scenes/HeroHall.unity
+  - enabled: 1
+    path: Assets/Scenes/Battle.unity
   m_configObjects: {}
