@@ -27,7 +27,7 @@ namespace PotatoLegends.UI
             // Ensure we have an EventSystem
             if (eventSystem == null)
             {
-                eventSystem = FindObjectOfType<EventSystem>();
+                eventSystem = FindFirstObjectByType<EventSystem>();
                 if (eventSystem == null)
                 {
                     GameObject eventSystemGO = new GameObject("EventSystem");
@@ -39,7 +39,7 @@ namespace PotatoLegends.UI
             // Ensure we have a GraphicRaycaster on the Canvas
             if (graphicRaycaster == null)
             {
-                Canvas canvas = FindObjectOfType<Canvas>();
+                Canvas canvas = FindFirstObjectByType<Canvas>();
                 if (canvas != null)
                 {
                     graphicRaycaster = canvas.GetComponent<GraphicRaycaster>();
@@ -70,7 +70,7 @@ namespace PotatoLegends.UI
                 }
 
                 // Configure Canvas for mobile
-                Canvas canvas = FindObjectOfType<Canvas>();
+                Canvas canvas = FindFirstObjectByType<Canvas>();
                 if (canvas != null)
                 {
                     CanvasScaler scaler = canvas.GetComponent<CanvasScaler>();

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using PotatoLegends.Data;
 using PotatoLegends.Cards;
 using PotatoLegends.Collection;
+using PotatoLegends.Network;
 
 namespace PotatoLegends.UI
 {

@@ -3,6 +3,10 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
 using PotatoLegends.Data;
+using PotatoLegends.UI;
+using PotatoLegends.Core;
+using PotatoLegends.Battle;
+using PotatoLegends.Network;
 
 namespace PotatoLegends.Cards
 {

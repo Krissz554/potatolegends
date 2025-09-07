@@ -178,7 +178,7 @@ namespace PotatoLegends.UI
             Debug.Log($"BattleScreen: Card {card.cardName} removed from slot {slotIndex}");
             if (slotIndex >= 0 && slotIndex < playerBattlefieldSlots.Count)
             {
-                playerBattlefieldSlots[slotIndex].ClearCard();
+                playerBattlefieldSlots[slotIndex].SetEmpty();
             }
             UpdateBattleUI();
         }
@@ -204,7 +204,7 @@ namespace PotatoLegends.UI
                 int emptySlotIndex = -1;
                 for (int i = 0; i < playerBattlefieldSlots.Count; i++)
                 {
-                    if (playerBattlefieldSlots[i].IsEmpty)
+                    if (playerBattlefieldSlots[i].IsEmpty())
                     {
                         emptySlotIndex = i;
                         break;

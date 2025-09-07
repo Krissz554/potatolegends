@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
 using PotatoLegends.Data;
+using PotatoLegends.Core;
 
 namespace PotatoLegends.UI
 {

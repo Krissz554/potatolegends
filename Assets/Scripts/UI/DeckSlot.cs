@@ -5,6 +5,7 @@ using TMPro;
 using System;
 using PotatoLegends.Data;
 using PotatoLegends.Cards;
+using PotatoLegends.Collection;
 
 namespace PotatoLegends.UI
 {
@@ -35,7 +36,9 @@ namespace PotatoLegends.UI
                 Destroy(currentCardDisplay.gameObject);
             }
 
-            GameObject cardObj = Instantiate(UIManager.Instance.cardDisplayPrefab, transform);
+            GameObject cardObj = new GameObject("CardDisplay");
+            cardObj.transform.SetParent(transform);
+            cardObj.AddComponent<CardDisplay>();
             currentCardDisplay = cardObj.GetComponent<CardDisplay>();
             if (currentCardDisplay != null)
             {

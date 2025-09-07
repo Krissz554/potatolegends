@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System;
 using PotatoLegends.Data;
+using PotatoLegends.Network;
 
 namespace PotatoLegends.Collection
 {

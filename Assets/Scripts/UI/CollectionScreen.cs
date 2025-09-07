@@ -4,6 +4,8 @@ using TMPro;
 using System.Collections.Generic;
 using PotatoLegends.Cards;
 using PotatoLegends.Collection;
+using PotatoLegends.Data;
+using PotatoLegends.Network;
 
 namespace PotatoLegends.UI
 {

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System;
 using PotatoLegends.Utils;
 using PotatoLegends.Data;
+using PotatoLegends.Network;
 
 namespace PotatoLegends.Battle
 {
