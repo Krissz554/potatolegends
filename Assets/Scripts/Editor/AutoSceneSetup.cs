@@ -376,13 +376,19 @@ namespace PotatoLegends.Editor
             var inputObj = new GameObject(name);
             inputObj.transform.SetParent(parent.transform, false);
             
-            var inputField = inputObj.AddComponent<TMP_InputField>();
-            
-            var inputRect = inputObj.GetComponent<RectTransform>();
+            // Add RectTransform first
+            var inputRect = inputObj.AddComponent<RectTransform>();
             inputRect.anchorMin = anchorMin;
             inputRect.anchorMax = anchorMax;
             inputRect.offsetMin = Vector2.zero;
             inputRect.offsetMax = Vector2.zero;
+            
+            // Add Image component for background
+            var inputImage = inputObj.AddComponent<Image>();
+            inputImage.color = new Color(0.1f, 0.1f, 0.1f, 0.8f);
+            
+            // Add TMP_InputField
+            var inputField = inputObj.AddComponent<TMP_InputField>();
             
             // Create text area
             var textAreaObj = new GameObject("Text Area");
@@ -407,7 +413,9 @@ namespace PotatoLegends.Editor
             textRect.offsetMin = Vector2.zero;
             textRect.offsetMax = Vector2.zero;
             
+            // Set up input field
             inputField.textComponent = textComponent;
+            inputField.textViewport = textAreaRect;
             
             return inputField;
         }
