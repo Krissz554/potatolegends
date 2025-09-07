@@ -46,7 +46,9 @@ namespace PotatoLegends.Editor
                 "Assets/Scripts/Editor/InputManagerSetup.cs",
                 "Assets/Scripts/Editor/WebVersionReplicator.cs",
                 "Assets/Scripts/Editor/CompleteWebReplicator.cs",
-                "Assets/Scripts/Editor/CleanupOldScripts.cs"
+                "Assets/Scripts/Editor/CompleteGameSceneGenerator.cs",
+                "Assets/Scripts/Editor/SceneCreator.cs",
+                "Assets/Scripts/Editor/SceneHierarchyBuilder.cs"
             };
             
             foreach (string script in oldScripts)
