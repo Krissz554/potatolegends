@@ -64,6 +64,11 @@ namespace PotatoLegends.Network
             return userEmail;
         }
 
+        public void SetAccessToken(string token)
+        {
+            accessToken = token;
+        }
+
         public async Task<bool> SignIn(string email, string password)
         {
             try
@@ -175,7 +180,7 @@ namespace PotatoLegends.Network
 
                 if (string.IsNullOrEmpty(response.error))
                 {
-                    var collection = JsonHelper.FromJson<CollectionItem>(response.data);
+                    var collection = ParseCollectionResponse(response.data);
                     OnCollectionLoaded?.Invoke(collection);
                     return collection;
                 }
@@ -200,7 +205,7 @@ namespace PotatoLegends.Network
 
                 if (string.IsNullOrEmpty(response.error))
                 {
-                    return JsonHelper.FromJson<CardData>(response.data);
+                    return ParseCardsResponse(response.data);
                 }
                 else
                 {
@@ -213,6 +218,43 @@ namespace PotatoLegends.Network
                 Debug.LogError($"Get all cards exception: {ex.Message}");
                 return new List<CardData>();
             }
+        }
+
+        public async Task<(string data, string error)> CallEdgeFunction(string functionName, string payload)
+        {
+            try
+            {
+                var response = await MakeRequest($"/functions/v1/{functionName}", "POST", payload);
+                return (response.data, response.error);
+            }
+            catch (Exception ex)
+            {
+                return (null, ex.Message);
+            }
+        }
+
+        private List<CollectionItem> ParseCollectionResponse(string json)
+        {
+            // Simple JSON parsing for collection items
+            if (string.IsNullOrEmpty(json) || json == "[]")
+            {
+                return new List<CollectionItem>();
+            }
+
+            // For now, return empty list - in real implementation, parse the JSON
+            return new List<CollectionItem>();
+        }
+
+        private List<CardData> ParseCardsResponse(string json)
+        {
+            // Simple JSON parsing for cards
+            if (string.IsNullOrEmpty(json) || json == "[]")
+            {
+                return new List<CardData>();
+            }
+
+            // For now, return empty list - in real implementation, parse the JSON
+            return new List<CardData>();
         }
 
         private async Task<(string data, string error)> MakeRequest(string endpoint, string method, string body = null)

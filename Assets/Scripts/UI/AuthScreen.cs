@@ -48,15 +48,15 @@ namespace PotatoLegends.UI
             signInButton.interactable = false;
             signUpButton.interactable = false;
 
-            var (userId, error) = await supabaseClient.SignIn(email, password);
+            bool success = await supabaseClient.SignIn(email, password);
 
-            if (error != null)
+            if (!success)
             {
-                statusText.text = $"Sign-in failed: {error}";
+                statusText.text = "Sign-in failed";
             }
             else
             {
-                statusText.text = $"Signed in as {userId}";
+                statusText.text = "Signed in successfully";
                 Debug.Log($"User {userId} signed in successfully.");
                 GameManager.Instance.ChangeGameState(GameManager.GameState.MainMenu);
             }
@@ -80,16 +80,16 @@ namespace PotatoLegends.UI
             signInButton.interactable = false;
             signUpButton.interactable = false;
 
-            var (userId, error) = await supabaseClient.SignUp(email, password);
+            bool success = await supabaseClient.SignUp(email, password);
 
-            if (error != null)
+            if (!success)
             {
-                statusText.text = $"Sign-up failed: {error}";
+                statusText.text = "Sign-up failed";
             }
             else
             {
-                statusText.text = $"Signed up as {userId}";
-                Debug.Log($"User {userId} signed up successfully.");
+                statusText.text = "Signed up successfully";
+                Debug.Log("User signed up successfully.");
                 GameManager.Instance.ChangeGameState(GameManager.GameState.MainMenu);
             }
 

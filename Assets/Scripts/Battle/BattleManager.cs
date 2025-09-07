@@ -85,7 +85,7 @@ namespace PotatoLegends.Battle
         {
             if (string.IsNullOrEmpty(battleSessionId)) return;
 
-            var (data, error) = await SupabaseClient.Instance.CallEdgeFunction("get-active-battle", new { battleId = battleSessionId });
+            var (data, error) = await SupabaseClient.Instance.CallEdgeFunction("get-active-battle", JsonUtility.ToJson(new { battleId = battleSessionId }));
 
             if (error != null)
             {
@@ -157,7 +157,7 @@ namespace PotatoLegends.Battle
             }
 
             var payload = new { battleId = battleSessionId, cardId = card.cardId, slotIndex = slotIndex };
-            var (data, error) = await SupabaseClient.Instance.CallEdgeFunction("battle-deploy-card", payload);
+            var (data, error) = await SupabaseClient.Instance.CallEdgeFunction("battle-deploy-card", JsonUtility.ToJson(payload));
 
             if (error != null)
             {
@@ -187,7 +187,7 @@ namespace PotatoLegends.Battle
             }
 
             var payload = new { battleId = battleSessionId, playerId = CurrentPlayerId, isAutoEnd = false };
-            var (data, error) = await SupabaseClient.Instance.CallEdgeFunction("battle-end-turn", payload);
+            var (data, error) = await SupabaseClient.Instance.CallEdgeFunction("battle-end-turn", JsonUtility.ToJson(payload));
 
             if (error != null)
             {

@@ -57,15 +57,8 @@ namespace PotatoLegends.Collection
 
             try
             {
-                var (collection, error) = await SupabaseClient.Instance.GetUserCollection(userId);
+                var collection = await SupabaseClient.Instance.GetUserCollection();
                 
-                if (error != null)
-                {
-                    Debug.LogError($"CollectionManager: Failed to load collection: {error}");
-                    OnCollectionError?.Invoke(error);
-                    return;
-                }
-
                 userCollection.Clear();
                 if (collection != null)
                 {
@@ -96,15 +89,8 @@ namespace PotatoLegends.Collection
 
             try
             {
-                var (cards, error) = await SupabaseClient.Instance.GetAllCards();
+                var cards = await SupabaseClient.Instance.GetAllCards();
                 
-                if (error != null)
-                {
-                    Debug.LogError($"CollectionManager: Failed to load cards: {error}");
-                    OnCollectionError?.Invoke(error);
-                    return;
-                }
-
                 allCards.Clear();
                 if (cards != null)
                 {
