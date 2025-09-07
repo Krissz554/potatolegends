@@ -127,7 +127,15 @@ namespace PotatoLegends.UI
         {
             if (CollectionManager.Instance != null && SupabaseClient.Instance != null && !string.IsNullOrEmpty(SupabaseClient.Instance.GetAccessToken()))
             {
-                _ = CollectionManager.Instance.SaveCurrentDeck(SupabaseClient.Instance.GetAccessToken());
+                bool success = CollectionManager.Instance.SaveCurrentDeck();
+                if (success)
+                {
+                    Debug.Log("Deck saved successfully!");
+                }
+                else
+                {
+                    Debug.LogError("Failed to save deck!");
+                }
             }
         }
 
