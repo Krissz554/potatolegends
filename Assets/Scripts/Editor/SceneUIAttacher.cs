@@ -63,6 +63,11 @@ namespace PotatoLegends.Editor
 
         private static void AttachAuthUIScript()
         {
+            // Add GameInitializer to ensure managers exist
+            GameObject gameInitializerGO = new GameObject("GameInitializer");
+            gameInitializerGO.AddComponent<GameInitializer>();
+            Debug.Log("GameInitializer added to Auth scene.");
+
             // Find the Canvas
             Canvas canvas = Object.FindObjectOfType<Canvas>();
             if (canvas == null) return;

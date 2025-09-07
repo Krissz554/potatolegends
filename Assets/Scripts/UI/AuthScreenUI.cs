@@ -61,10 +61,7 @@ namespace PotatoLegends.UI
             {
                 ShowLoading(true);
                 HideError();
-                
-                // TODO: Implement actual authentication
-                // For now, simulate authentication
-                StartCoroutine(SimulateAuthentication(true));
+                PerformAuthentication(true);
             }
         }
 
@@ -76,10 +73,7 @@ namespace PotatoLegends.UI
             {
                 ShowLoading(true);
                 HideError();
-                
-                // TODO: Implement actual registration
-                // For now, simulate registration
-                StartCoroutine(SimulateAuthentication(false));
+                PerformAuthentication(false);
             }
         }
 
@@ -151,31 +145,74 @@ namespace PotatoLegends.UI
             }
         }
 
-        private System.Collections.IEnumerator SimulateAuthentication(bool isSignIn)
+        private async void PerformAuthentication(bool isSignIn)
         {
-            // Simulate network delay
-            yield return new WaitForSeconds(1.5f);
+            string email = emailInput.text.Trim();
+            string password = passwordInput.text;
 
-            // Simulate random success/failure for demo
-            bool success = Random.Range(0f, 1f) > 0.3f; // 70% success rate
-
-            if (success)
+            try
             {
-                Debug.Log($"✅ {(isSignIn ? "Sign In" : "Sign Up")} successful!");
-                
-                // Notify GameSceneManager of successful authentication
-                if (PotatoLegends.Core.GameSceneManager.Instance != null)
+                string userId;
+                string error;
+
+                if (isSignIn)
                 {
-                    PotatoLegends.Core.GameSceneManager.Instance.OnAuthenticationSuccess("demo_token_123");
+                    (userId, error) = await PotatoLegends.Network.SupabaseClient.Instance.SignIn(email, password);
+                }
+                else
+                {
+                    (userId, error) = await PotatoLegends.Network.SupabaseClient.Instance.SignUp(email, password);
+                }
+
+                if (error != null)
+                {
+                    Debug.LogError($"❌ {(isSignIn ? "Sign In" : "Sign Up")} failed: {error}");
+                    ShowError(ParseErrorMessage(error));
+                }
+                else
+                {
+                    Debug.Log($"✅ {(isSignIn ? "Sign In" : "Sign Up")} successful!");
+                    
+                    // Save user data
+                    PlayerPrefs.SetString("user_id", userId);
+                    PlayerPrefs.SetString("user_email", email);
+                    PlayerPrefs.Save();
+                    
+                    // Notify GameSceneManager of successful authentication
+                    if (PotatoLegends.Core.GameSceneManager.Instance != null)
+                    {
+                        PotatoLegends.Core.GameSceneManager.Instance.OnAuthenticationSuccess(
+                            PotatoLegends.Network.SupabaseClient.Instance.GetAccessToken()
+                        );
+                    }
                 }
             }
-            else
+            catch (Exception e)
             {
-                Debug.Log($"❌ {(isSignIn ? "Sign In" : "Sign Up")} failed!");
-                ShowError(isSignIn ? "Invalid email or password" : "Email already exists");
+                Debug.LogError($"❌ Authentication error: {e.Message}");
+                ShowError("Network error. Please try again.");
             }
+            finally
+            {
+                ShowLoading(false);
+            }
+        }
 
-            ShowLoading(false);
+        private string ParseErrorMessage(string error)
+        {
+            // Parse Supabase error messages to user-friendly text
+            if (error.Contains("Invalid login credentials"))
+                return "Invalid email or password";
+            else if (error.Contains("User already registered"))
+                return "Email already exists";
+            else if (error.Contains("Password should be at least"))
+                return "Password must be at least 6 characters";
+            else if (error.Contains("Invalid email"))
+                return "Please enter a valid email address";
+            else if (error.Contains("Network"))
+                return "Network error. Please check your connection.";
+            else
+                return "Authentication failed. Please try again.";
         }
 
         private void ShowError(string message)

@@ -58,8 +58,21 @@ namespace PotatoLegends.Core
         private bool IsUserAuthenticated()
         {
             // Check if user has valid authentication token
-            // This should integrate with your Supabase authentication
-            return PlayerPrefs.HasKey("user_token") && !string.IsNullOrEmpty(PlayerPrefs.GetString("user_token"));
+            string token = PlayerPrefs.GetString("user_token");
+            string userId = PlayerPrefs.GetString("user_id");
+            
+            if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(userId))
+            {
+                return false;
+            }
+
+            // Set the token in SupabaseClient if it exists
+            if (PotatoLegends.Network.SupabaseClient.Instance != null)
+            {
+                PotatoLegends.Network.SupabaseClient.Instance.SetAccessToken(token);
+            }
+
+            return true;
         }
 
         #region Public Scene Loading Methods
@@ -233,10 +246,20 @@ namespace PotatoLegends.Core
             // TODO: Show error message to user
         }
 
-        public void Logout()
+        public async void Logout()
         {
-            // Clear authentication data
+            Debug.Log("👋 User logging out");
+            
+            // Sign out from Supabase
+            if (PotatoLegends.Network.SupabaseClient.Instance != null)
+            {
+                await PotatoLegends.Network.SupabaseClient.Instance.SignOut();
+            }
+            
+            // Clear local authentication data
             PlayerPrefs.DeleteKey("user_token");
+            PlayerPrefs.DeleteKey("user_id");
+            PlayerPrefs.DeleteKey("user_email");
             PlayerPrefs.Save();
             
             Debug.Log("👋 User logged out");

@@ -207,12 +207,12 @@ namespace PotatoLegends.UI
 
         private void UpdateUserInfo()
         {
-            // Get player name from saved data or use default
-            string playerName = PlayerPrefs.GetString("player_name", "Player");
+            // Get player email from saved data or use default
+            string playerEmail = PlayerPrefs.GetString("user_email", "Player");
             
             if (playerNameText != null)
             {
-                playerNameText.text = playerName;
+                playerNameText.text = playerEmail;
             }
 
             if (statusMessageText != null)
