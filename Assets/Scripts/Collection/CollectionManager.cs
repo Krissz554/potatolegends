@@ -130,17 +130,17 @@ namespace PotatoLegends.Collection
             return item?.quantity ?? 0;
         }
 
-        public List<CollectionItem> GetCardsByRarity(CardData.Rarity rarity)
+        public List<CollectionItem> GetCardsByRarity(Rarity rarity)
         {
             return userCollection.FindAll(item => item.card.rarity == rarity);
         }
 
-        public List<CollectionItem> GetCardsByType(CardData.CardType cardType)
+        public List<CollectionItem> GetCardsByType(CardType cardType)
         {
             return userCollection.FindAll(item => item.card.card_type == cardType);
         }
 
-        public List<CollectionItem> GetCardsByElement(CardData.PotatoType elementType)
+        public List<CollectionItem> GetCardsByElement(PotatoType elementType)
         {
             return userCollection.FindAll(item => item.card.potato_type == elementType);
         }
@@ -161,19 +161,19 @@ namespace PotatoLegends.Collection
                 
                 switch (item.card.rarity)
                 {
-                    case CardData.Rarity.common:
+                    case Rarity.common:
                         commonCards++;
                         break;
-                    case CardData.Rarity.uncommon:
+                    case Rarity.uncommon:
                         uncommonCards++;
                         break;
-                    case CardData.Rarity.rare:
+                    case Rarity.rare:
                         rareCards++;
                         break;
-                    case CardData.Rarity.legendary:
+                    case Rarity.legendary:
                         legendaryCards++;
                         break;
-                    case CardData.Rarity.exotic:
+                    case Rarity.exotic:
                         exoticCards++;
                         break;
                 }

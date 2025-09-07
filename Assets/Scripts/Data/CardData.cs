@@ -65,12 +65,6 @@ namespace PotatoLegends.Data
         public Sprite rarityFrame;
         public Sprite elementFrame;
 
-        public enum CardType { unit, spell, structure, relic }
-        public enum Rarity { common, uncommon, rare, legendary, exotic }
-        public enum PotatoType { ice, fire, lightning, light, void }
-        public enum UnitClass { warrior, tank, mage, healer, mixed, none }
-        public enum TargetType { none, enemy_unit, ally_unit, any_unit, enemy_hero, ally_hero, all_enemies, all_allies, all_units, random_enemy, random_ally }
-
         [System.NonSerialized] public int currentHealth;
         [System.NonSerialized] public int currentAttack;
         [System.NonSerialized] public bool hasAttackedThisTurn;
@@ -114,4 +108,10 @@ namespace PotatoLegends.Data
             return currentHealth > 0;
         }
     }
+
+    public enum CardType { unit, spell, structure, relic }
+    public enum Rarity { common, uncommon, rare, legendary, exotic }
+    public enum PotatoType { ice, fire, lightning, light, void }
+    public enum UnitClass { warrior, tank, mage, healer, mixed, none }
+    public enum TargetType { none, enemy_unit, ally_unit, any_unit, enemy_hero, ally_hero, all_enemies, all_allies, all_units, random_enemy, random_ally }
 }

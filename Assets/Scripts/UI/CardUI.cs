@@ -72,7 +72,7 @@ namespace PotatoLegends.UI
                 flavorTextText.text = cardData.flavor_text;
 
             // Set stats based on card type
-            if (cardData.card_type == CardData.CardType.unit)
+            if (cardData.card_type == CardType.unit)
             {
                 if (attackText != null)
                 {
@@ -116,38 +116,38 @@ namespace PotatoLegends.UI
             }
         }
 
-        private Color GetRarityColor(CardData.Rarity rarity)
+        private Color GetRarityColor(Rarity rarity)
         {
             switch (rarity)
             {
-                case CardData.Rarity.common:
+                case Rarity.common:
                     return commonColor;
-                case CardData.Rarity.uncommon:
+                case Rarity.uncommon:
                     return uncommonColor;
-                case CardData.Rarity.rare:
+                case Rarity.rare:
                     return rareColor;
-                case CardData.Rarity.legendary:
+                case Rarity.legendary:
                     return legendaryColor;
-                case CardData.Rarity.exotic:
+                case Rarity.exotic:
                     return exoticColor;
                 default:
                     return commonColor;
             }
         }
 
-        private Color GetElementColor(CardData.PotatoType elementType)
+        private Color GetElementColor(PotatoType elementType)
         {
             switch (elementType)
             {
-                case CardData.PotatoType.fire:
+                case PotatoType.fire:
                     return fireColor;
-                case CardData.PotatoType.ice:
+                case PotatoType.ice:
                     return iceColor;
-                case CardData.PotatoType.lightning:
+                case PotatoType.lightning:
                     return lightningColor;
-                case CardData.PotatoType.light:
+                case PotatoType.light:
                     return lightColor;
-                case CardData.PotatoType.void:
+                case PotatoType.void:
                     return voidColor;
                 default:
                     return Color.white;

@@ -221,16 +221,16 @@ namespace PotatoLegends.UI
             return collection.ToList();
         }
 
-        private CardData.Rarity GetRarityFromFilter(string filter)
+        private Rarity GetRarityFromFilter(string filter)
         {
             switch (filter)
             {
-                case "Common": return CardData.Rarity.common;
-                case "Uncommon": return CardData.Rarity.uncommon;
-                case "Rare": return CardData.Rarity.rare;
-                case "Legendary": return CardData.Rarity.legendary;
-                case "Exotic": return CardData.Rarity.exotic;
-                default: return CardData.Rarity.common;
+                case "Common": return Rarity.common;
+                case "Uncommon": return Rarity.uncommon;
+                case "Rare": return Rarity.rare;
+                case "Legendary": return Rarity.legendary;
+                case "Exotic": return Rarity.exotic;
+                default: return Rarity.common;
             }
         }
 
