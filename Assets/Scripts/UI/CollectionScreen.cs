@@ -25,7 +25,7 @@ namespace PotatoLegends.UI
                 CollectionManager.Instance.OnCollectionUpdated += DisplayCollection;
                 if (SupabaseClient.Instance != null && !string.IsNullOrEmpty(SupabaseClient.Instance.GetAccessToken()))
                 {
-                    CollectionManager.Instance.LoadUserCollection(SupabaseClient.Instance.GetAccessToken());
+                    _ = CollectionManager.Instance.LoadUserCollection(SupabaseClient.Instance.GetAccessToken());
                 }
                 else
                 {

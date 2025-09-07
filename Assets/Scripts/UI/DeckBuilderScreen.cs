@@ -30,10 +30,10 @@ namespace PotatoLegends.UI
                 CollectionManager.Instance.OnCollectionUpdated += DisplayAvailableCards;
                 CollectionManager.Instance.OnDeckUpdated += UpdateDeckDisplay;
                 
-                CollectionManager.Instance.LoadAllCards();
+                _ = CollectionManager.Instance.LoadAllCards();
                 if (SupabaseClient.Instance != null && !string.IsNullOrEmpty(SupabaseClient.Instance.GetAccessToken()))
                 {
-                    CollectionManager.Instance.LoadActiveDeck(SupabaseClient.Instance.GetAccessToken());
+                    _ = CollectionManager.Instance.LoadActiveDeck(SupabaseClient.Instance.GetAccessToken());
                 }
             }
 
@@ -127,7 +127,7 @@ namespace PotatoLegends.UI
         {
             if (CollectionManager.Instance != null && SupabaseClient.Instance != null && !string.IsNullOrEmpty(SupabaseClient.Instance.GetAccessToken()))
             {
-                CollectionManager.Instance.SaveCurrentDeck(SupabaseClient.Instance.GetAccessToken());
+                _ = CollectionManager.Instance.SaveCurrentDeck(SupabaseClient.Instance.GetAccessToken());
             }
         }
 

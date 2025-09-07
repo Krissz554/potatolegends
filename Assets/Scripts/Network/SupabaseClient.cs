@@ -89,7 +89,7 @@ namespace PotatoLegends.Network
                 url += $"?{query}";
             }
 
-            var (data, error) = await MakeRequest(url, UnityWebRequest.kHttpVerbGET);
+            var (data, error) = await MakeRequest(url, "GET");
 
             if (error != null)
             {
@@ -113,7 +113,7 @@ namespace PotatoLegends.Network
             string url = $"/functions/v1/{functionName}";
             string body = payload != null ? JsonHelper.ToJson(payload) : null;
 
-            var (data, error) = await MakeRequest(url, UnityWebRequest.kHttpVerbPOST, body);
+            var (data, error) = await MakeRequest(url, "POST", body);
 
             return (data, error);
         }
