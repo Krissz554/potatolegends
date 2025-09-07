@@ -147,7 +147,7 @@ namespace PotatoLegends.UI
                     return lightningColor;
                 case PotatoType.light:
                     return lightColor;
-                case PotatoType.void:
+                case PotatoType.shadow:
                     return voidColor;
                 default:
                     return Color.white;
