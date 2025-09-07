@@ -20,6 +20,12 @@ namespace PotatoLegends.Collection
         public System.Action<CollectionItem[]> OnCollectionLoaded;
         public System.Action<CardData[]> OnAllCardsLoaded;
         public System.Action<string> OnCollectionError;
+        public System.Action OnCollectionUpdated;
+        public System.Action OnDeckUpdated;
+
+        [Header("Deck Management")]
+        public List<CardData> currentDeck = new List<CardData>();
+        public List<CardData> allAvailableCards = new List<CardData>();
 
         void Awake()
         {
@@ -192,6 +198,45 @@ namespace PotatoLegends.Collection
                 exoticCards = exoticCards,
                 completionPercentage = completionPercentage
             };
+        }
+
+        // Legacy properties for backward compatibility
+        public List<CollectionItem> UserCollection => userCollection;
+        public List<CardData> AllAvailableCards => allCards;
+        public List<CardData> CurrentDeck => currentDeck;
+
+        // Deck management methods
+        public void AddCardToDeck(CardData card)
+        {
+            if (currentDeck.Count < 30) // Max deck size
+            {
+                currentDeck.Add(card);
+                OnDeckUpdated?.Invoke();
+            }
+        }
+
+        public void RemoveCardFromDeck(CardData card)
+        {
+            currentDeck.Remove(card);
+            OnDeckUpdated?.Invoke();
+        }
+
+        public void SaveCurrentDeck()
+        {
+            // TODO: Implement deck saving to Supabase
+            Debug.Log("Deck saved!");
+        }
+
+        public void ClearDeck()
+        {
+            currentDeck.Clear();
+            OnDeckUpdated?.Invoke();
+        }
+
+        public async Task LoadActiveDeck()
+        {
+            // TODO: Implement deck loading from Supabase
+            Debug.Log("Loading active deck...");
         }
     }
 

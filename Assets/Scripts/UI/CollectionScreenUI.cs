@@ -33,6 +33,8 @@ namespace PotatoLegends.UI
         private string currentSearchTerm = "";
         private string currentFilter = "All";
         private int totalCards = 150; // Mock data
+        private List<CollectionItem> filteredCollection = new List<CollectionItem>();
+        private List<GameObject> cardObjects = new List<GameObject>();
 
         private void Start()
         {
@@ -214,7 +216,7 @@ namespace PotatoLegends.UI
             // Apply rarity filter
             if (currentFilter != "All")
             {
-                CardData.Rarity targetRarity = GetRarityFromFilter(currentFilter);
+                Rarity targetRarity = GetRarityFromFilter(currentFilter);
                 collection = collection.Where(item => item.card.rarity == targetRarity).ToList();
             }
 

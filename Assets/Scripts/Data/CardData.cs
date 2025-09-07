@@ -70,37 +70,35 @@ namespace PotatoLegends.Data
         [System.NonSerialized] public bool hasAttackedThisTurn;
         [System.NonSerialized] public int deployedTurn;
 
+        // Legacy property aliases for backward compatibility
+        public string cardId => id;
+        public string cardName => name;
+        public int manaCost => mana_cost;
+        public int health => hp;
+        public CardType cardType => card_type;
+        public Rarity rarityType => rarity;
+        public PotatoType elementType => potato_type;
+
         public void InitializeRuntimeStats()
         {
-            currentHealth = health;
+            currentHealth = hp;
             currentAttack = attack;
             hasAttackedThisTurn = false;
             deployedTurn = 0;
-            isFrozen = false;
-            isSilenced = false;
         }
 
         public void TakeDamage(int damage)
         {
-            if (hasImmune) return;
-
-            if (hasDivineShield)
-            {
-                hasDivineShield = false;
-                Debug.Log($"{cardName} divine shield absorbed {damage} damage!");
-                return;
-            }
-
             currentHealth -= damage;
             if (currentHealth < 0) currentHealth = 0;
-            Debug.Log($"{cardName} took {damage} damage. Remaining HP: {currentHealth}");
+            Debug.Log($"{name} took {damage} damage. Remaining HP: {currentHealth}");
         }
 
         public void Heal(int amount)
         {
             currentHealth += amount;
-            if (currentHealth > health) currentHealth = health;
-            Debug.Log($"{cardName} healed for {amount}. Current HP: {currentHealth}");
+            if (currentHealth > hp) currentHealth = hp;
+            Debug.Log($"{name} healed for {amount}. Current HP: {currentHealth}");
         }
 
         public bool IsAlive()
