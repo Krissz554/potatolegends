@@ -82,27 +82,51 @@ namespace PotatoLegends.Editor
             Debug.Log("🚀 Starting generation of all game scenes...");
             
             // Generate Auth Scene
-            GenerateAuthScene();
+            GenerateScene("Auth", () => {
+                CreateCamera();
+                GameObject canvas = CreateUICanvas();
+                CreateAuthScreen(canvas);
+            });
             Debug.Log("✅ Auth scene generated");
             
             // Generate Main Menu Scene
-            GenerateMainMenuScene();
+            GenerateScene("MainMenu", () => {
+                CreateCamera();
+                GameObject canvas = CreateUICanvas();
+                CreateMainMenu(canvas);
+            });
             Debug.Log("✅ Main Menu scene generated");
             
             // Generate Collection Scene
-            GenerateCollectionScene();
+            GenerateScene("Collection", () => {
+                CreateCamera();
+                GameObject canvas = CreateUICanvas();
+                CreateCollectionScreen(canvas);
+            });
             Debug.Log("✅ Collection scene generated");
             
             // Generate Deck Builder Scene
-            GenerateDeckBuilderScene();
+            GenerateScene("DeckBuilder", () => {
+                CreateCamera();
+                GameObject canvas = CreateUICanvas();
+                CreateDeckBuilderScreen(canvas);
+            });
             Debug.Log("✅ Deck Builder scene generated");
             
             // Generate Hero Hall Scene
-            GenerateHeroHallScene();
+            GenerateScene("HeroHall", () => {
+                CreateCamera();
+                GameObject canvas = CreateUICanvas();
+                CreateHeroHallScreen(canvas);
+            });
             Debug.Log("✅ Hero Hall scene generated");
             
             // Generate Battle Scene
-            GenerateBattleScene();
+            GenerateScene("Battle", () => {
+                CreateCamera();
+                GameObject canvas = CreateUICanvas();
+                CreateBattleScreen(canvas);
+            });
             Debug.Log("✅ Battle scene generated");
             
             // Add all scenes to build settings
@@ -112,93 +136,77 @@ namespace PotatoLegends.Editor
             EditorUtility.DisplayDialog("Success", "All 6 game scenes have been generated with complete UI structure!\n\nScenes created:\n• Auth\n• MainMenu\n• Collection\n• DeckBuilder\n• HeroHall\n• Battle\n\nAll scenes have been added to Build Settings!", "OK");
         }
 
-        private void GenerateAuthScene()
+        private void GenerateScene(string sceneName, System.Action sceneContent)
         {
             // Create new scene
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             ClearCurrentScene();
             
-            // Create Camera
-            CreateCamera();
-            
-            // Create UI Canvas
-            GameObject canvas = CreateUICanvas();
-            
-            // Create Auth Screen
-            CreateAuthScreen(canvas);
+            // Create scene content
+            sceneContent();
             
             // Save Scene
-            SaveScene("Auth");
+            SaveScene(sceneName);
+            Debug.Log($"✅ {sceneName} scene generated and saved!");
+        }
+
+        private void GenerateAuthScene()
+        {
+            GenerateScene("Auth", () => {
+                CreateCamera();
+                GameObject canvas = CreateUICanvas();
+                CreateAuthScreen(canvas);
+            });
             Debug.Log("🔐 Auth scene generated!");
         }
 
         private void GenerateMainMenuScene()
         {
-            // Create new scene
-            EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
-            ClearCurrentScene();
-            
-            CreateCamera();
-            GameObject canvas = CreateUICanvas();
-            CreateMainMenu(canvas);
-            
-            SaveScene("MainMenu");
+            GenerateScene("MainMenu", () => {
+                CreateCamera();
+                GameObject canvas = CreateUICanvas();
+                CreateMainMenu(canvas);
+            });
             Debug.Log("🏠 Main Menu scene generated!");
         }
 
         private void GenerateCollectionScene()
         {
-            // Create new scene
-            EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
-            ClearCurrentScene();
-            
-            CreateCamera();
-            GameObject canvas = CreateUICanvas();
-            CreateCollectionScreen(canvas);
-            
-            SaveScene("Collection");
+            GenerateScene("Collection", () => {
+                CreateCamera();
+                GameObject canvas = CreateUICanvas();
+                CreateCollectionScreen(canvas);
+            });
             Debug.Log("📚 Collection scene generated!");
         }
 
         private void GenerateDeckBuilderScene()
         {
-            // Create new scene
-            EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
-            ClearCurrentScene();
-            
-            CreateCamera();
-            GameObject canvas = CreateUICanvas();
-            CreateDeckBuilderScreen(canvas);
-            
-            SaveScene("DeckBuilder");
+            GenerateScene("DeckBuilder", () => {
+                CreateCamera();
+                GameObject canvas = CreateUICanvas();
+                CreateDeckBuilderScreen(canvas);
+            });
             Debug.Log("🃏 Deck Builder scene generated!");
         }
 
         private void GenerateHeroHallScene()
         {
-            // Create new scene
-            EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
-            ClearCurrentScene();
-            
-            CreateCamera();
-            GameObject canvas = CreateUICanvas();
-            CreateHeroHallScreen(canvas);
-            
-            SaveScene("HeroHall");
+            GenerateScene("HeroHall", () => {
+                CreateCamera();
+                GameObject canvas = CreateUICanvas();
+                CreateHeroHallScreen(canvas);
+            });
             Debug.Log("👑 Hero Hall scene generated!");
         }
 
         private void GenerateBattleScene()
         {
-            // Create new scene
-            EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
-            ClearCurrentScene();
-            
-            CreateCamera();
-            GameObject canvas = CreateUICanvas();
-            CreateBattleScreen(canvas);
-            
-            SaveScene("Battle");
+            GenerateScene("Battle", () => {
+                CreateCamera();
+                GameObject canvas = CreateUICanvas();
+                CreateBattleScreen(canvas);
+            });
             Debug.Log("⚔️ Battle scene generated!");
         }
 
