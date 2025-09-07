@@ -4,6 +4,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.EventSystems;
 using PotatoLegends.Core;
 using PotatoLegends.Network;
 using PotatoLegends.UI;

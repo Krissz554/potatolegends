@@ -4,6 +4,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.EventSystems;
 using PotatoLegends.Core;
 using PotatoLegends.Network;
 using PotatoLegends.UI;
@@ -30,7 +31,7 @@ namespace PotatoLegends.Editor
 
         private static void SetupCurrentScene()
         {
-            var currentScene = SceneManager.GetActiveScene();
+            var currentScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
             var sceneName = currentScene.name;
 
             switch (sceneName)
@@ -135,11 +136,11 @@ namespace PotatoLegends.Editor
                 canvas.AddComponent<GraphicRaycaster>();
 
                 // Create EventSystem if it doesn't exist
-                if (FindObjectOfType<UnityEngine.EventSystems.EventSystem>() == null)
+                if (Object.FindObjectOfType<EventSystem>() == null)
                 {
                     var eventSystemObj = new GameObject("EventSystem");
-                    eventSystemObj.AddComponent<UnityEngine.EventSystems.EventSystem>();
-                    eventSystemObj.AddComponent<UnityEngine.EventSystems.StandaloneInputModule>();
+                    eventSystemObj.AddComponent<EventSystem>();
+                    eventSystemObj.AddComponent<StandaloneInputModule>();
                 }
             }
             return canvas;
@@ -147,7 +148,7 @@ namespace PotatoLegends.Editor
 
         private static void EnsureGameInitializer()
         {
-            if (FindObjectOfType<GameInitializer>() == null)
+            if (Object.FindObjectOfType<GameInitializer>() == null)
             {
                 var initializerObj = new GameObject("GameInitializer");
                 initializerObj.AddComponent<GameInitializer>();
