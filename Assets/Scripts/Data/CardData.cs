@@ -78,6 +78,7 @@ namespace PotatoLegends.Data
         public CardType cardType => card_type;
         public Rarity rarityType => rarity;
         public PotatoType elementType => potato_type;
+        public string flavorText => flavor_text;
 
         public void InitializeRuntimeStats()
         {

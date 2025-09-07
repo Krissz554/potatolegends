@@ -118,13 +118,13 @@ namespace PotatoLegends.UI
             for (int i = 0; i < 5; i++)
             {
                 CardData dummyCard = ScriptableObject.CreateInstance<CardData>();
-                dummyCard.cardId = $"hand_card_{i}";
-                dummyCard.cardName = $"Hand Card {i+1}";
-                dummyCard.manaCost = Random.Range(1, 5);
+                dummyCard.id = $"hand_card_{i}";
+                dummyCard.name = $"Hand Card {i+1}";
+                dummyCard.mana_cost = Random.Range(1, 5);
                 dummyCard.attack = Random.Range(1, 5);
-                dummyCard.health = Random.Range(1, 5);
-                dummyCard.cardType = (i % 2 == 0) ? CardData.CardType.Unit : CardData.CardType.Spell;
-                dummyCard.rarity = CardData.Rarity.Common;
+                dummyCard.hp = Random.Range(1, 5);
+                dummyCard.card_type = (i % 2 == 0) ? CardType.unit : CardType.spell;
+                dummyCard.rarity = Rarity.common;
 
                 GameObject cardObj = Instantiate(cardDisplayPrefab, playerHandParent);
                 CardDisplay display = cardObj.GetComponent<CardDisplay>();
@@ -199,7 +199,7 @@ namespace PotatoLegends.UI
         private async void HandleCardPlayed(CardData card, int targetSlot = -1)
         {
             Debug.Log($"Card {card.cardName} played. Target slot: {targetSlot}");
-            if (card.cardType == CardData.CardType.Unit || card.cardType == CardData.CardType.Structure)
+            if (card.cardType == CardType.unit || card.cardType == CardType.structure)
             {
                 int emptySlotIndex = -1;
                 for (int i = 0; i < playerBattlefieldSlots.Count; i++)
@@ -220,7 +220,7 @@ namespace PotatoLegends.UI
                     Debug.LogWarning("No empty battlefield slot available!");
                 }
             }
-            else if (card.cardType == CardData.CardType.Spell)
+            else if (card.cardType == CardType.spell)
             {
                 Debug.Log($"Spell {card.cardName} cast (logic not implemented yet).");
                 UpdatePlayerHandUI();

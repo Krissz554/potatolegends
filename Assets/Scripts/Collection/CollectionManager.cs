@@ -221,10 +221,11 @@ namespace PotatoLegends.Collection
             OnDeckUpdated?.Invoke();
         }
 
-        public void SaveCurrentDeck()
+        public bool SaveCurrentDeck()
         {
             // TODO: Implement deck saving to Supabase
             Debug.Log("Deck saved!");
+            return true;
         }
 
         public void ClearDeck()
@@ -233,7 +234,7 @@ namespace PotatoLegends.Collection
             OnDeckUpdated?.Invoke();
         }
 
-        public async Task LoadActiveDeck()
+        public async Task LoadActiveDeck(string userId = null)
         {
             // TODO: Implement deck loading from Supabase
             Debug.Log("Loading active deck...");

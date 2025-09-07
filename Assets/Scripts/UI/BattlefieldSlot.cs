@@ -103,7 +103,7 @@ namespace PotatoLegends.UI
                 cardNameText.text = currentCard.cardName;
             }
             
-            if (currentCard.cardType == CardData.CardType.Unit || currentCard.cardType == CardData.CardType.Structure)
+            if (currentCard.cardType == CardType.unit || currentCard.cardType == CardType.structure)
             {
                 if (attackText != null)
                 {

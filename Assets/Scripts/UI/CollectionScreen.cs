@@ -25,7 +25,7 @@ namespace PotatoLegends.UI
                 CollectionManager.Instance.OnCollectionUpdated += DisplayCollection;
                 if (SupabaseClient.Instance != null && !string.IsNullOrEmpty(SupabaseClient.Instance.GetAccessToken()))
                 {
-                    _ = CollectionManager.Instance.LoadUserCollection(SupabaseClient.Instance.GetAccessToken());
+                    _ = CollectionManager.Instance.LoadUserCollection();
                 }
                 else
                 {
@@ -54,13 +54,13 @@ namespace PotatoLegends.UI
                 return;
             }
 
-            foreach (CardData card in CollectionManager.Instance.UserCollection)
+            foreach (CollectionItem item in CollectionManager.Instance.UserCollection)
             {
                 GameObject cardObj = Instantiate(cardDisplayPrefab, cardGridParent);
                 CardDisplay display = cardObj.GetComponent<CardDisplay>();
                 if (display != null)
                 {
-                    display.SetupCard(card);
+                    display.SetupCard(item.card);
                     displayedCards.Add(display);
                 }
             }

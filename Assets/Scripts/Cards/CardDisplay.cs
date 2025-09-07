@@ -59,7 +59,7 @@ namespace PotatoLegends.Cards
             descriptionText.text = cardData.description;
             flavorText.text = cardData.flavorText;
 
-            if (cardData.cardType == CardData.CardType.Unit || cardData.cardType == CardData.CardType.Structure)
+            if (cardData.cardType == CardType.unit || cardData.cardType == CardType.structure)
             {
                 attackText.gameObject.SetActive(true);
                 healthText.gameObject.SetActive(true);
@@ -74,11 +74,11 @@ namespace PotatoLegends.Cards
 
             switch (cardData.rarity)
             {
-                case CardData.Rarity.Common: rarityBorder.color = Color.gray; break;
-                case CardData.Rarity.Uncommon: rarityBorder.color = Color.green; break;
-                case CardData.Rarity.Rare: rarityBorder.color = Color.blue; break;
-                case CardData.Rarity.Legendary: rarityBorder.color = Color.magenta; break;
-                case CardData.Rarity.Exotic: rarityBorder.color = Color.yellow; break;
+                case Rarity.common: rarityBorder.color = Color.gray; break;
+                case Rarity.uncommon: rarityBorder.color = Color.green; break;
+                case Rarity.rare: rarityBorder.color = Color.blue; break;
+                case Rarity.legendary: rarityBorder.color = Color.magenta; break;
+                case Rarity.exotic: rarityBorder.color = Color.yellow; break;
             }
 
             if (cardData.illustration != null)
@@ -152,7 +152,7 @@ namespace PotatoLegends.Cards
         {
             if (cardData == null || isDragging) return;
 
-            if (cardData.cardType == CardData.CardType.Spell && CanBePlayed())
+            if (cardData.cardType == CardType.spell && CanBePlayed())
             {
                 OnCardPlayed?.Invoke(cardData);
             }
