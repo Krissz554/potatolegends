@@ -2,6 +2,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System;
+using PotatoLegends.Network;
+using PotatoLegends.Core;
 
 namespace PotatoLegends.UI
 {
@@ -12,6 +14,7 @@ namespace PotatoLegends.UI
         [SerializeField] private TMP_InputField passwordInput;
         [SerializeField] private Button signInButton;
         [SerializeField] private Button signUpButton;
+        [SerializeField] private Button googleSignInButton;
         [SerializeField] private TextMeshProUGUI errorMessage;
         [SerializeField] private GameObject loadingIndicator;
 
@@ -27,10 +30,17 @@ namespace PotatoLegends.UI
         private void SetupEventListeners()
         {
             // Subscribe to SupabaseClient events
-            if (PotatoLegends.Network.SupabaseClient.Instance != null)
+            if (SupabaseClient.Instance != null)
             {
-                PotatoLegends.Network.SupabaseClient.Instance.OnAuthenticationSuccess += OnAuthenticationSuccess;
-                PotatoLegends.Network.SupabaseClient.Instance.OnAuthenticationError += OnAuthenticationError;
+                SupabaseClient.Instance.OnAuthenticationSuccess += OnAuthenticationSuccess;
+                SupabaseClient.Instance.OnAuthenticationError += OnAuthenticationError;
+            }
+
+            // Subscribe to Google Sign-In events
+            if (GoogleSignIn.Instance != null)
+            {
+                GoogleSignIn.Instance.OnGoogleSignInSuccess += OnGoogleSignInSuccess;
+                GoogleSignIn.Instance.OnGoogleSignInError += OnGoogleSignInError;
             }
         }
 
@@ -295,7 +305,55 @@ namespace PotatoLegends.UI
             
             if (signUpButton != null)
                 signUpButton.interactable = !show;
+
+            if (googleSignInButton != null)
+                googleSignInButton.interactable = !show;
         }
 
+        // Google Sign-In methods
+        private void OnGoogleSignInSuccess(string email, string token)
+        {
+            Debug.Log($"✅ Google Sign-In successful: {email}");
+            ShowLoading(false);
+            ShowError("");
+            
+            // Save user data
+            PlayerPrefs.SetString("user_email", email);
+            PlayerPrefs.SetString("user_token", token);
+            PlayerPrefs.SetString("auth_provider", "google");
+            PlayerPrefs.Save();
+            
+            // Notify GameSceneManager
+            if (GameSceneManager.Instance != null)
+            {
+                GameSceneManager.Instance.OnAuthenticationSuccess(email);
+            }
+        }
+
+        private void OnGoogleSignInError(string error)
+        {
+            Debug.LogError($"❌ Google Sign-In failed: {error}");
+            ShowLoading(false);
+            ShowError($"Google Sign-In failed: {error}");
+        }
+
+        public async void OnGoogleSignInButtonClicked()
+        {
+            if (GoogleSignIn.Instance != null)
+            {
+                ShowLoading(true);
+                ShowError("");
+                
+                bool success = await GoogleSignIn.Instance.SignInWithGoogle();
+                if (!success)
+                {
+                    ShowLoading(false);
+                }
+            }
+            else
+            {
+                ShowError("Google Sign-In not available");
+            }
+        }
     }
 }

@@ -58,6 +58,13 @@ namespace PotatoLegends.Core
                 GameObject ablyClient = new GameObject("AblyClient");
                 ablyClient.AddComponent<PotatoLegends.Network.AblyClient>();
             }
+
+            // Ensure GoogleSignIn exists
+            if (PotatoLegends.Network.GoogleSignIn.Instance == null)
+            {
+                GameObject googleSignIn = new GameObject("GoogleSignIn");
+                googleSignIn.AddComponent<PotatoLegends.Network.GoogleSignIn>();
+            }
         }
     }
 }
