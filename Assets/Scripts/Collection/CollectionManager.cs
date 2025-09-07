@@ -66,7 +66,7 @@ namespace PotatoLegends.Collection
                 }
 
                 isCollectionLoaded = true;
-                OnCollectionLoaded?.Invoke(collection);
+                OnCollectionLoaded?.Invoke(collection.ToArray());
                 Debug.Log($"CollectionManager: Loaded {userCollection.Count} collection items");
             }
             catch (System.Exception e)
@@ -97,7 +97,7 @@ namespace PotatoLegends.Collection
                     allCards.AddRange(cards);
                 }
 
-                OnAllCardsLoaded?.Invoke(cards);
+                OnAllCardsLoaded?.Invoke(cards.ToArray());
                 Debug.Log($"CollectionManager: Loaded {allCards.Count} cards");
             }
             catch (System.Exception e)

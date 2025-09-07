@@ -57,7 +57,7 @@ namespace PotatoLegends.UI
             else
             {
                 statusText.text = "Signed in successfully";
-                Debug.Log($"User {userId} signed in successfully.");
+                Debug.Log("User signed in successfully.");
                 GameManager.Instance.ChangeGameState(GameManager.GameState.MainMenu);
             }
 
