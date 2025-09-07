@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using PotatoLegends.Data;
 
 namespace PotatoLegends.UI
 {

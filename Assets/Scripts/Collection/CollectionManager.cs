@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System;
+using PotatoLegends.Data;
 
 namespace PotatoLegends.Collection
 {

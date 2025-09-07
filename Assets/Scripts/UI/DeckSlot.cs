@@ -3,6 +3,8 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using TMPro;
 using System;
+using PotatoLegends.Data;
+using PotatoLegends.Cards;
 
 namespace PotatoLegends.UI
 {

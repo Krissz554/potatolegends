@@ -2,6 +2,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
+using PotatoLegends.Data;
+using PotatoLegends.Cards;
+using PotatoLegends.Collection;
 
 namespace PotatoLegends.UI
 {

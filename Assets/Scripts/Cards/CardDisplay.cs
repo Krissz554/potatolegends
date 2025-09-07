@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
+using PotatoLegends.Data;
 
 namespace PotatoLegends.Cards
 {

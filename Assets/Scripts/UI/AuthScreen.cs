@@ -2,6 +2,8 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using System.Threading.Tasks;
+using PotatoLegends.Network;
+using PotatoLegends.Core;
 
 namespace PotatoLegends.UI
 {

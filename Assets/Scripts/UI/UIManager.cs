@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using PotatoLegends.Core;
 
 namespace PotatoLegends.UI
 {
