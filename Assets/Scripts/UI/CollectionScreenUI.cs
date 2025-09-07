@@ -1,6 +1,12 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using PotatoLegends.Core;
+using PotatoLegends.Collection;
+using PotatoLegends.Data;
+using PotatoLegends.Network;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace PotatoLegends.UI
 {
@@ -138,9 +144,23 @@ namespace PotatoLegends.UI
             // TODO: Implement infinite scroll or load more cards
         }
 
-        private void LoadCollection()
+        private async void LoadCollection()
         {
             Debug.Log($"📚 Loading collection - Filter: {currentFilter}, Search: {currentSearchTerm}");
+            
+            // Ensure CollectionManager exists
+            if (CollectionManager.Instance == null)
+            {
+                GameObject collectionManagerGO = new GameObject("CollectionManager");
+                collectionManagerGO.AddComponent<CollectionManager>();
+            }
+
+            // Load user collection
+            await CollectionManager.Instance.LoadUserCollection();
+            
+            // Subscribe to collection loaded event
+            CollectionManager.Instance.OnCollectionLoaded += OnCollectionLoaded;
+            CollectionManager.Instance.OnCollectionError += OnCollectionError;
             
             // Clear existing cards
             ClearCardGrid();
@@ -165,9 +185,86 @@ namespace PotatoLegends.UI
 
         private void LoadCardsForCurrentFilter()
         {
-            // TODO: Load actual cards from your data source
-            // For now, create mock cards
-            CreateMockCards();
+            if (CollectionManager.Instance == null || !CollectionManager.Instance.isCollectionLoaded)
+            {
+                Debug.Log("Collection not loaded yet, waiting...");
+                return;
+            }
+
+            // Get filtered collection
+            filteredCollection = GetFilteredCollection();
+            
+            // Create card UI objects
+            CreateCardObjects();
+        }
+
+        private List<CollectionItem> GetFilteredCollection()
+        {
+            var collection = CollectionManager.Instance.userCollection;
+            
+            // Apply search filter
+            if (!string.IsNullOrEmpty(currentSearchTerm))
+            {
+                collection = collection.Where(item => 
+                    item.card.name.ToLower().Contains(currentSearchTerm.ToLower()) ||
+                    item.card.description.ToLower().Contains(currentSearchTerm.ToLower())
+                ).ToList();
+            }
+
+            // Apply rarity filter
+            if (currentFilter != "All")
+            {
+                CardData.Rarity targetRarity = GetRarityFromFilter(currentFilter);
+                collection = collection.Where(item => item.card.rarity == targetRarity).ToList();
+            }
+
+            return collection.ToList();
+        }
+
+        private CardData.Rarity GetRarityFromFilter(string filter)
+        {
+            switch (filter)
+            {
+                case "Common": return CardData.Rarity.common;
+                case "Uncommon": return CardData.Rarity.uncommon;
+                case "Rare": return CardData.Rarity.rare;
+                case "Legendary": return CardData.Rarity.legendary;
+                case "Exotic": return CardData.Rarity.exotic;
+                default: return CardData.Rarity.common;
+            }
+        }
+
+        private void CreateCardObjects()
+        {
+            if (cardPrefab == null || cardGridParent == null)
+            {
+                Debug.LogError("Card prefab or grid parent not assigned!");
+                return;
+            }
+
+            foreach (var item in filteredCollection)
+            {
+                GameObject cardObj = Instantiate(cardPrefab, cardGridParent);
+                CardUI cardUI = cardObj.GetComponent<CardUI>();
+                if (cardUI != null)
+                {
+                    cardUI.SetCollectionItem(item);
+                }
+                cardObjects.Add(cardObj);
+            }
+        }
+
+        private void OnCollectionLoaded(CollectionItem[] collection)
+        {
+            Debug.Log($"Collection loaded: {collection.Length} items");
+            LoadCardsForCurrentFilter();
+            UpdateStats();
+        }
+
+        private void OnCollectionError(string error)
+        {
+            Debug.LogError($"Collection error: {error}");
+            // TODO: Show error message to user
         }
 
         private void CreateMockCards()
@@ -223,9 +320,12 @@ namespace PotatoLegends.UI
 
         private void UpdateStats()
         {
-            if (statsText != null)
+            if (statsText != null && CollectionManager.Instance != null)
             {
-                statsText.text = $"Cards: {totalCards}/500";
+                var stats = CollectionManager.Instance.GetCollectionStats();
+                statsText.text = $"Cards: {stats.uniqueCards} / {CollectionManager.Instance.allCards.Count} | " +
+                               $"Total: {stats.totalCards} | " +
+                               $"Completion: {stats.completionPercentage:F1}%";
             }
         }
 

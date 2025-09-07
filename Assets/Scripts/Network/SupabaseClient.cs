@@ -215,33 +215,54 @@ namespace PotatoLegends.Network
             return (data, error);
         }
 
-        public async Task<(CardData[] cards, string error)> GetUserCollection(string userId)
+        public async Task<(CollectionItem[] collection, string error)> GetUserCollection(string userId)
         {
             Debug.Log($"SupabaseClient: Fetching collection for {userId}");
-            await Task.Delay(500);
             
-            CardData[] dummyCards = new CardData[]
+            var (data, error) = await MakeRequest($"/rest/v1/rpc/get_user_collection?user_uuid={userId}", "GET");
+            
+            if (error != null)
             {
-                ScriptableObject.CreateInstance<CardData>(),
-                ScriptableObject.CreateInstance<CardData>()
-            };
-            dummyCards[0].cardName = "Dummy Card 1";
-            dummyCards[0].cardId = "dummy_001";
-            dummyCards[0].manaCost = 1;
-            dummyCards[0].attack = 1;
-            dummyCards[0].health = 2;
-            dummyCards[0].cardType = CardData.CardType.Unit;
-            dummyCards[0].rarity = CardData.Rarity.Common;
+                Debug.LogError($"SupabaseClient: Failed to fetch collection: {error}");
+                return (null, error);
+            }
 
-            dummyCards[1].cardName = "Dummy Card 2";
-            dummyCards[1].cardId = "dummy_002";
-            dummyCards[1].manaCost = 2;
-            dummyCards[1].attack = 3;
-            dummyCards[1].health = 2;
-            dummyCards[1].cardType = CardData.CardType.Unit;
-            dummyCards[1].rarity = CardData.Rarity.Uncommon;
+            try
+            {
+                var collectionData = JsonHelper.FromJsonArray<CollectionItem>(data);
+                Debug.Log($"SupabaseClient: Loaded {collectionData.Length} collection items");
+                return (collectionData, null);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"SupabaseClient: Collection JSON parsing error: {e.Message}");
+                return (null, $"Collection parsing error: {e.Message}");
+            }
+        }
 
-            return (dummyCards, null);
+        public async Task<(CardData[] cards, string error)> GetAllCards()
+        {
+            Debug.Log($"SupabaseClient: Fetching all cards");
+            
+            var (data, error) = await MakeRequest("/rest/v1/card_complete?order=rarity.desc,name.asc", "GET");
+            
+            if (error != null)
+            {
+                Debug.LogError($"SupabaseClient: Failed to fetch cards: {error}");
+                return (null, error);
+            }
+
+            try
+            {
+                var cardsData = JsonHelper.FromJsonArray<CardData>(data);
+                Debug.Log($"SupabaseClient: Loaded {cardsData.Length} cards");
+                return (cardsData, null);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"SupabaseClient: Cards JSON parsing error: {e.Message}");
+                return (null, $"Cards parsing error: {e.Message}");
+            }
         }
     }
 
@@ -262,5 +283,14 @@ namespace PotatoLegends.Network
         public string email;
         public string created_at;
         public string updated_at;
+    }
+
+    [System.Serializable]
+    public class CollectionItem
+    {
+        public CardData card;
+        public int quantity;
+        public string acquired_at;
+        public string source;
     }
 }

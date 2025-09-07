@@ -1,7 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System;
 using PotatoLegends.Data;
 using PotatoLegends.Network;
 
@@ -11,12 +10,16 @@ namespace PotatoLegends.Collection
     {
         public static CollectionManager Instance { get; private set; }
 
-        public List<CardData> UserCollection { get; private set; } = new List<CardData>();
-        public List<CardData> AllAvailableCards { get; private set; } = new List<CardData>();
-        public List<CardData> CurrentDeck { get; private set; } = new List<CardData>();
+        [Header("Collection Data")]
+        public List<CollectionItem> userCollection = new List<CollectionItem>();
+        public List<CardData> allCards = new List<CardData>();
+        public bool isCollectionLoaded = false;
+        public bool isLoading = false;
 
-        public event System.Action OnCollectionUpdated;
-        public event System.Action OnDeckUpdated;
+        [Header("Events")]
+        public System.Action<CollectionItem[]> OnCollectionLoaded;
+        public System.Action<CardData[]> OnAllCardsLoaded;
+        public System.Action<string> OnCollectionError;
 
         void Awake()
         {
@@ -27,116 +30,181 @@ namespace PotatoLegends.Collection
             else
             {
                 Instance = this;
+                DontDestroyOnLoad(gameObject);
             }
         }
 
-        public async Task LoadUserCollection(string userId)
+        public async Task LoadUserCollection()
         {
-            Debug.Log($"CollectionManager: Loading collection for user: {userId}");
-            var (cards, error) = await SupabaseClient.Instance.GetUserCollection(userId);
+            if (isLoading) return;
 
-            if (error != null)
+            string userId = PlayerPrefs.GetString("user_id");
+            if (string.IsNullOrEmpty(userId))
             {
-                Debug.LogError($"Failed to load user collection: {error}");
-                UserCollection.Clear();
+                Debug.LogError("CollectionManager: No user ID found");
+                OnCollectionError?.Invoke("No user ID found");
+                return;
             }
-            else
+
+            isLoading = true;
+            Debug.Log($"CollectionManager: Loading collection for user {userId}");
+
+            try
             {
-                UserCollection = new List<CardData>(cards);
-                Debug.Log($"CollectionManager: Loaded {UserCollection.Count} cards for user {userId}.");
+                var (collection, error) = await SupabaseClient.Instance.GetUserCollection(userId);
+                
+                if (error != null)
+                {
+                    Debug.LogError($"CollectionManager: Failed to load collection: {error}");
+                    OnCollectionError?.Invoke(error);
+                    return;
+                }
+
+                userCollection.Clear();
+                if (collection != null)
+                {
+                    userCollection.AddRange(collection);
+                }
+
+                isCollectionLoaded = true;
+                OnCollectionLoaded?.Invoke(collection);
+                Debug.Log($"CollectionManager: Loaded {userCollection.Count} collection items");
             }
-            OnCollectionUpdated?.Invoke();
+            catch (System.Exception e)
+            {
+                Debug.LogError($"CollectionManager: Exception loading collection: {e.Message}");
+                OnCollectionError?.Invoke($"Exception: {e.Message}");
+            }
+            finally
+            {
+                isLoading = false;
+            }
         }
 
         public async Task LoadAllCards()
         {
-            Debug.Log("CollectionManager: Loading all available cards.");
-            await Task.Delay(500);
-            AllAvailableCards.Clear();
-            
-            CardData dummyCard1 = ScriptableObject.CreateInstance<CardData>();
-            dummyCard1.cardId = "dummy_001";
-            dummyCard1.cardName = "Basic Potato";
-            dummyCard1.description = "A humble potato, ready for battle.";
-            dummyCard1.manaCost = 1;
-            dummyCard1.attack = 1;
-            dummyCard1.health = 2;
-            dummyCard1.cardType = CardData.CardType.Unit;
-            dummyCard1.rarity = CardData.Rarity.Common;
-            AllAvailableCards.Add(dummyCard1);
+            if (isLoading) return;
 
-            CardData dummyCard2 = ScriptableObject.CreateInstance<CardData>();
-            dummyCard2.cardId = "dummy_002";
-            dummyCard2.cardName = "Spud Warrior";
-            dummyCard2.description = "A potato trained in the art of combat.";
-            dummyCard2.manaCost = 2;
-            dummyCard2.attack = 3;
-            dummyCard2.health = 2;
-            dummyCard2.cardType = CardData.CardType.Unit;
-            dummyCard2.rarity = CardData.Rarity.Uncommon;
-            AllAvailableCards.Add(dummyCard2);
+            isLoading = true;
+            Debug.Log("CollectionManager: Loading all cards");
 
-            CardData dummyCard3 = ScriptableObject.CreateInstance<CardData>();
-            dummyCard3.cardId = "dummy_003";
-            dummyCard3.cardName = "Mana Sprout";
-            dummyCard3.description = "Generates extra mana.";
-            dummyCard3.manaCost = 0;
-            dummyCard3.cardType = CardData.CardType.Spell;
-            dummyCard3.rarity = CardData.Rarity.Common;
-            AllAvailableCards.Add(dummyCard3);
-
-            Debug.Log($"CollectionManager: Loaded {AllAvailableCards.Count} total cards.");
-        }
-
-        public void AddCardToDeck(CardData card)
-        {
-            if (CurrentDeck.Count < 30)
+            try
             {
-                CurrentDeck.Add(card);
-                OnDeckUpdated?.Invoke();
-                Debug.Log($"Added {card.cardName} to deck. Current size: {CurrentDeck.Count}");
+                var (cards, error) = await SupabaseClient.Instance.GetAllCards();
+                
+                if (error != null)
+                {
+                    Debug.LogError($"CollectionManager: Failed to load cards: {error}");
+                    OnCollectionError?.Invoke(error);
+                    return;
+                }
+
+                allCards.Clear();
+                if (cards != null)
+                {
+                    allCards.AddRange(cards);
+                }
+
+                OnAllCardsLoaded?.Invoke(cards);
+                Debug.Log($"CollectionManager: Loaded {allCards.Count} cards");
             }
-            else
+            catch (System.Exception e)
             {
-                Debug.LogWarning("Deck is full!");
+                Debug.LogError($"CollectionManager: Exception loading cards: {e.Message}");
+                OnCollectionError?.Invoke($"Exception: {e.Message}");
+            }
+            finally
+            {
+                isLoading = false;
             }
         }
 
-        public void RemoveCardFromDeck(CardData card)
+        public CollectionItem GetCollectionItem(string cardId)
         {
-            if (CurrentDeck.Remove(card))
+            return userCollection.Find(item => item.card.id == cardId);
+        }
+
+        public int GetCardQuantity(string cardId)
+        {
+            var item = GetCollectionItem(cardId);
+            return item?.quantity ?? 0;
+        }
+
+        public List<CollectionItem> GetCardsByRarity(CardData.Rarity rarity)
+        {
+            return userCollection.FindAll(item => item.card.rarity == rarity);
+        }
+
+        public List<CollectionItem> GetCardsByType(CardData.CardType cardType)
+        {
+            return userCollection.FindAll(item => item.card.card_type == cardType);
+        }
+
+        public List<CollectionItem> GetCardsByElement(CardData.PotatoType elementType)
+        {
+            return userCollection.FindAll(item => item.card.potato_type == elementType);
+        }
+
+        public CollectionStats GetCollectionStats()
+        {
+            int totalCards = 0;
+            int uniqueCards = userCollection.Count;
+            int commonCards = 0;
+            int uncommonCards = 0;
+            int rareCards = 0;
+            int legendaryCards = 0;
+            int exoticCards = 0;
+
+            foreach (var item in userCollection)
             {
-                OnDeckUpdated?.Invoke();
-                Debug.Log($"Removed {card.cardName} from deck. Current size: {CurrentDeck.Count}");
+                totalCards += item.quantity;
+                
+                switch (item.card.rarity)
+                {
+                    case CardData.Rarity.common:
+                        commonCards++;
+                        break;
+                    case CardData.Rarity.uncommon:
+                        uncommonCards++;
+                        break;
+                    case CardData.Rarity.rare:
+                        rareCards++;
+                        break;
+                    case CardData.Rarity.legendary:
+                        legendaryCards++;
+                        break;
+                    case CardData.Rarity.exotic:
+                        exoticCards++;
+                        break;
+                }
             }
-        }
 
-        public void ClearDeck()
-        {
-            CurrentDeck.Clear();
-            OnDeckUpdated?.Invoke();
-            Debug.Log("Deck cleared.");
-        }
+            float completionPercentage = allCards.Count > 0 ? (float)uniqueCards / allCards.Count * 100f : 0f;
 
-        public async Task SaveCurrentDeck(string userId, string deckName = "Default Deck")
-        {
-            Debug.Log($"CollectionManager: Saving deck for user {userId}.");
-            await Task.Delay(1000);
-            Debug.Log("Deck saved successfully (simulated).");
-        }
-
-        public async Task LoadActiveDeck(string userId)
-        {
-            Debug.Log($"CollectionManager: Loading active deck for user {userId}.");
-            await Task.Delay(1000);
-            CurrentDeck.Clear();
-            if (AllAvailableCards.Count >= 2)
+            return new CollectionStats
             {
-                CurrentDeck.Add(AllAvailableCards[0]);
-                CurrentDeck.Add(AllAvailableCards[1]);
-            }
-            Debug.Log($"CollectionManager: Loaded dummy active deck with {CurrentDeck.Count} cards.");
-            OnDeckUpdated?.Invoke();
+                totalCards = totalCards,
+                uniqueCards = uniqueCards,
+                commonCards = commonCards,
+                uncommonCards = uncommonCards,
+                rareCards = rareCards,
+                legendaryCards = legendaryCards,
+                exoticCards = exoticCards,
+                completionPercentage = completionPercentage
+            };
         }
+    }
+
+    [System.Serializable]
+    public class CollectionStats
+    {
+        public int totalCards;
+        public int uniqueCards;
+        public int commonCards;
+        public int uncommonCards;
+        public int rareCards;
+        public int legendaryCards;
+        public int exoticCards;
+        public float completionPercentage;
     }
 }

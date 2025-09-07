@@ -1,47 +1,75 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace PotatoLegends.Data
 {
     [CreateAssetMenu(fileName = "New Card", menuName = "Potato Card Game/Card Data")]
     public class CardData : ScriptableObject
     {
-        public string cardId;
-        public string cardName;
+        [Header("Core Identifiers")]
+        public string id;
+        public string registry_id;
+        public string name;
         [TextArea] public string description;
-        [TextArea] public string flavorText;
+        public string set_id;
+        public string[] format_legalities;
 
-        public int manaCost;
+        [Header("Gameplay Stats")]
+        public int mana_cost;
         public int attack;
-        public int health;
-        public int spellDamage;
-        public int healAmount;
+        public int hp;
+        public int structure_hp;
+        public int spell_damage;
+        public int heal_amount;
 
-        public CardType cardType;
+        [Header("Card Classification")]
         public Rarity rarity;
-        public ElementType elementType;
-        public UnitClass unitClass;
+        public CardType card_type;
+        public UnitClass unit_class;
 
+        [Header("Potato/Element System")]
+        public PotatoType potato_type;
+        public string trait;
+        public string adjective;
+
+        [Header("Abilities & Keywords")]
+        public string[] keywords;
+        [TextArea] public string ability_text;
+        public Dictionary<string, object> passive_effects;
+        public Dictionary<string, object> triggered_effects;
+        public string passive_effect;
+        public TargetType target_type;
+
+        [Header("Metadata / Cosmetic")]
+        public string illustration_url;
+        public string frame_style;
+        [TextArea] public string flavor_text;
+
+        [Header("Balance / Dev Data")]
+        public bool exotic;
+        public bool is_exotic;
+        public bool is_legendary;
+        public string release_date;
+        public string[] tags;
+
+        [Header("Advanced")]
+        public object[] alternate_skins;
+        public string voice_line_url;
+        public int craft_cost;
+        public int dust_value;
+        public Dictionary<string, object> level_up_conditions;
+        public string[] token_spawns;
+
+        [Header("Unity Specific")]
         public Sprite illustration;
+        public Sprite rarityFrame;
+        public Sprite elementFrame;
 
-        [Header("Keywords & Abilities")]
-        public bool hasCharge;
-        public bool hasTaunt;
-        public bool hasLifesteal;
-        public bool hasPoison;
-        public bool hasDivineShield;
-        public bool hasDoubleStrike;
-        public bool hasWindfury;
-        public bool hasRush;
-        public bool hasStealth;
-        public bool hasImmune;
-        public bool isFrozen;
-        public bool isSilenced;
-        [TextArea] public string abilityText;
-
-        public enum CardType { Unit, Spell, Structure, Relic }
-        public enum Rarity { Common, Uncommon, Rare, Legendary, Exotic }
-        public enum ElementType { Light, Void, Fire, Ice, Lightning }
-        public enum UnitClass { Warrior, Tank, Mage, Healer, Mixed, None }
+        public enum CardType { unit, spell, structure, relic }
+        public enum Rarity { common, uncommon, rare, legendary, exotic }
+        public enum PotatoType { ice, fire, lightning, light, void }
+        public enum UnitClass { warrior, tank, mage, healer, mixed, none }
+        public enum TargetType { none, enemy_unit, ally_unit, any_unit, enemy_hero, ally_hero, all_enemies, all_allies, all_units, random_enemy, random_ally }
 
         [System.NonSerialized] public int currentHealth;
         [System.NonSerialized] public int currentAttack;
