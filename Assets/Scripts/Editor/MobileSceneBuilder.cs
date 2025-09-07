@@ -32,7 +32,7 @@ namespace PotatoLegends.Editor
         [MenuItem("Potato Legends/Build Auth Scene")]
         public static void BuildAuthScene()
         {
-            var scene = EditorSceneManager.NewScene(NewSceneMode.Single);
+            var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             scene.name = "Auth";
             
             // Create Main Camera
@@ -58,7 +58,7 @@ namespace PotatoLegends.Editor
         [MenuItem("Potato Legends/Build Main Menu Scene")]
         public static void BuildMainMenuScene()
         {
-            var scene = EditorSceneManager.NewScene(NewSceneMode.Single);
+            var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             scene.name = "MainMenu";
             
             CreateMainCamera();
@@ -74,7 +74,7 @@ namespace PotatoLegends.Editor
         [MenuItem("Potato Legends/Build Collection Scene")]
         public static void BuildCollectionScene()
         {
-            var scene = EditorSceneManager.NewScene(NewSceneMode.Single);
+            var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             scene.name = "Collection";
             
             CreateMainCamera();
@@ -90,7 +90,7 @@ namespace PotatoLegends.Editor
         [MenuItem("Potato Legends/Build Deck Builder Scene")]
         public static void BuildDeckBuilderScene()
         {
-            var scene = EditorSceneManager.NewScene(NewSceneMode.Single);
+            var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             scene.name = "DeckBuilder";
             
             CreateMainCamera();
@@ -106,7 +106,7 @@ namespace PotatoLegends.Editor
         [MenuItem("Potato Legends/Build Hero Hall Scene")]
         public static void BuildHeroHallScene()
         {
-            var scene = EditorSceneManager.NewScene(NewSceneMode.Single);
+            var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             scene.name = "HeroHall";
             
             CreateMainCamera();
@@ -122,7 +122,7 @@ namespace PotatoLegends.Editor
         [MenuItem("Potato Legends/Build Battle Scene")]
         public static void BuildBattleScene()
         {
-            var scene = EditorSceneManager.NewScene(NewSceneMode.Single);
+            var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             scene.name = "Battle";
             
             CreateMainCamera();

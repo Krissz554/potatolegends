@@ -23,34 +23,34 @@ namespace PotatoLegends.Editor
             Debug.Log($"✅ SceneManager works: {scene.name}");
             
             // Test UI types
-            var canvas = Object.FindObjectOfType<Canvas>();
+            var canvas = Object.FindFirstObjectByType<Canvas>();
             if (canvas != null)
             {
                 Debug.Log($"✅ Canvas found: {canvas.name}");
             }
             
             // Test EventSystem types
-            var eventSystem = Object.FindObjectOfType<EventSystem>();
+            var eventSystem = Object.FindFirstObjectByType<EventSystem>();
             if (eventSystem != null)
             {
                 Debug.Log($"✅ EventSystem found: {eventSystem.name}");
             }
             
             // Test our custom types
-            var gameInitializer = Object.FindObjectOfType<GameInitializer>();
+            var gameInitializer = Object.FindFirstObjectByType<GameInitializer>();
             if (gameInitializer != null)
             {
                 Debug.Log($"✅ GameInitializer found: {gameInitializer.name}");
             }
             
             // Test UI scripts
-            var authScreenUI = Object.FindObjectOfType<AuthScreenUI>();
+            var authScreenUI = Object.FindFirstObjectByType<AuthScreenUI>();
             if (authScreenUI != null)
             {
                 Debug.Log($"✅ AuthScreenUI found: {authScreenUI.name}");
             }
             
-            var mainMenuUI = Object.FindObjectOfType<MainMenuUI>();
+            var mainMenuUI = Object.FindFirstObjectByType<MainMenuUI>();
             if (mainMenuUI != null)
             {
                 Debug.Log($"✅ MainMenuUI found: {mainMenuUI.name}");

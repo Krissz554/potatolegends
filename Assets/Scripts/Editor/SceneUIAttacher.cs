@@ -70,7 +70,7 @@ namespace PotatoLegends.Editor
             Debug.Log("GameInitializer added to Auth scene.");
 
             // Find the Canvas
-            Canvas canvas = Object.FindObjectOfType<Canvas>();
+            Canvas canvas = Object.FindFirstObjectByType<Canvas>();
             if (canvas == null) return;
 
             // Add AuthScreenUI script
@@ -87,7 +87,7 @@ namespace PotatoLegends.Editor
         private static void AttachMainMenuUIScript()
         {
             // Find the Canvas
-            Canvas canvas = Object.FindObjectOfType<Canvas>();
+            Canvas canvas = Object.FindFirstObjectByType<Canvas>();
             if (canvas == null) return;
 
             // Add MainMenuUI script
@@ -104,7 +104,7 @@ namespace PotatoLegends.Editor
         private static void AttachCollectionUIScript()
         {
             // Find the Canvas
-            Canvas canvas = Object.FindObjectOfType<Canvas>();
+            Canvas canvas = Object.FindFirstObjectByType<Canvas>();
             if (canvas == null) return;
 
             // Add CollectionScreenUI script
@@ -121,7 +121,7 @@ namespace PotatoLegends.Editor
         private static void AttachDeckBuilderUIScript()
         {
             // Find the Canvas
-            Canvas canvas = Object.FindObjectOfType<Canvas>();
+            Canvas canvas = Object.FindFirstObjectByType<Canvas>();
             if (canvas == null) return;
 
             // Add DeckBuilderScreenUI script (to be created)
@@ -132,7 +132,7 @@ namespace PotatoLegends.Editor
         private static void AttachHeroHallUIScript()
         {
             // Find the Canvas
-            Canvas canvas = Object.FindObjectOfType<Canvas>();
+            Canvas canvas = Object.FindFirstObjectByType<Canvas>();
             if (canvas == null) return;
 
             // Add HeroHallScreenUI script (to be created)
@@ -143,7 +143,7 @@ namespace PotatoLegends.Editor
         private static void AttachBattleUIScript()
         {
             // Find the Canvas
-            Canvas canvas = Object.FindObjectOfType<Canvas>();
+            Canvas canvas = Object.FindFirstObjectByType<Canvas>();
             if (canvas == null) return;
 
             // Add BattleScreenUI script (to be created)
