@@ -2,10 +2,10 @@ using UnityEngine;
 using UnityEngine.Networking;
 using System.Collections;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using System;
 using System.Text;
 using UnityEngine.InputSystem;
+using PotatoLegends.Utils;
 
 namespace PotatoLegends.Network
 {
@@ -115,7 +115,7 @@ namespace PotatoLegends.Network
 
             try
             {
-                T[] result = JsonConvert.DeserializeObject<T[]>(data);
+                T[] result = JsonHelper.FromJsonArray<T>(data);
                 return (result, null);
             }
             catch (Exception e)
@@ -128,7 +128,7 @@ namespace PotatoLegends.Network
         public async Task<(string data, string error)> CallEdgeFunction(string functionName, object payload = null)
         {
             string url = $"/functions/v1/{functionName}";
-            string body = payload != null ? JsonConvert.SerializeObject(payload) : null;
+            string body = payload != null ? JsonHelper.ToJson(payload) : null;
 
             var (data, error) = await MakeRequest(url, UnityWebRequest.kHttpVerbPOST, body);
 

@@ -1,8 +1,8 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using System;
+using PotatoLegends.Utils;
 
 namespace PotatoLegends.Battle
 {
@@ -93,7 +93,7 @@ namespace PotatoLegends.Battle
 
             try
             {
-                var response = JsonConvert.DeserializeObject<SupabaseBattleResponse>(data);
+                var response = JsonHelper.FromJson<SupabaseBattleResponse>(data);
                 if (response.success && response.activeBattle != null)
                 {
                     currentBattleSession = response.activeBattle;
@@ -162,7 +162,7 @@ namespace PotatoLegends.Battle
                 return (false, error);
             }
 
-            var response = JsonConvert.DeserializeObject<SupabaseFunctionResponse>(data);
+            var response = JsonHelper.FromJson<SupabaseFunctionResponse>(data);
             if (response.success)
             {
                 Debug.Log($"Card {card.cardName} deployed to slot {slotIndex}.");
@@ -192,7 +192,7 @@ namespace PotatoLegends.Battle
                 return (false, error);
             }
 
-            var response = JsonConvert.DeserializeObject<SupabaseFunctionResponse>(data);
+            var response = JsonHelper.FromJson<SupabaseFunctionResponse>(data);
             if (response.success)
             {
                 Debug.Log("Turn ended.");
