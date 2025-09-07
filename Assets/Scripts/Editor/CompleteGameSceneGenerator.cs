@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
+using System.Collections.Generic;
 
 namespace PotatoLegends.Editor
 {
@@ -78,19 +79,43 @@ namespace PotatoLegends.Editor
 
         private void GenerateAllScenes()
         {
+            Debug.Log("🚀 Starting generation of all game scenes...");
+            
+            // Generate Auth Scene
             GenerateAuthScene();
+            Debug.Log("✅ Auth scene generated");
+            
+            // Generate Main Menu Scene
             GenerateMainMenuScene();
+            Debug.Log("✅ Main Menu scene generated");
+            
+            // Generate Collection Scene
             GenerateCollectionScene();
+            Debug.Log("✅ Collection scene generated");
+            
+            // Generate Deck Builder Scene
             GenerateDeckBuilderScene();
+            Debug.Log("✅ Deck Builder scene generated");
+            
+            // Generate Hero Hall Scene
             GenerateHeroHallScene();
+            Debug.Log("✅ Hero Hall scene generated");
+            
+            // Generate Battle Scene
             GenerateBattleScene();
+            Debug.Log("✅ Battle scene generated");
+            
+            // Add all scenes to build settings
+            AddScenesToBuildSettings();
             
             Debug.Log("🎮 All game scenes generated successfully!");
-            EditorUtility.DisplayDialog("Success", "All game scenes have been generated with complete UI structure!", "OK");
+            EditorUtility.DisplayDialog("Success", "All 6 game scenes have been generated with complete UI structure!\n\nScenes created:\n• Auth\n• MainMenu\n• Collection\n• DeckBuilder\n• HeroHall\n• Battle\n\nAll scenes have been added to Build Settings!", "OK");
         }
 
         private void GenerateAuthScene()
         {
+            // Create new scene
+            EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             ClearCurrentScene();
             
             // Create Camera
@@ -109,6 +134,8 @@ namespace PotatoLegends.Editor
 
         private void GenerateMainMenuScene()
         {
+            // Create new scene
+            EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             ClearCurrentScene();
             
             CreateCamera();
@@ -121,6 +148,8 @@ namespace PotatoLegends.Editor
 
         private void GenerateCollectionScene()
         {
+            // Create new scene
+            EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             ClearCurrentScene();
             
             CreateCamera();
@@ -133,6 +162,8 @@ namespace PotatoLegends.Editor
 
         private void GenerateDeckBuilderScene()
         {
+            // Create new scene
+            EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             ClearCurrentScene();
             
             CreateCamera();
@@ -145,6 +176,8 @@ namespace PotatoLegends.Editor
 
         private void GenerateHeroHallScene()
         {
+            // Create new scene
+            EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             ClearCurrentScene();
             
             CreateCamera();
@@ -157,6 +190,8 @@ namespace PotatoLegends.Editor
 
         private void GenerateBattleScene()
         {
+            // Create new scene
+            EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             ClearCurrentScene();
             
             CreateCamera();
@@ -723,6 +758,29 @@ namespace PotatoLegends.Editor
         {
             EditorSceneManager.SaveOpenScenes();
             Debug.Log("💾 All scenes saved!");
+        }
+
+        private void AddScenesToBuildSettings()
+        {
+            // Get current build settings
+            var scenes = new List<EditorBuildSettingsScene>();
+            
+            // Add all generated scenes
+            string[] sceneNames = { "Auth", "MainMenu", "Collection", "DeckBuilder", "HeroHall", "Battle" };
+            
+            foreach (string sceneName in sceneNames)
+            {
+                string scenePath = $"Assets/Scenes/{sceneName}.unity";
+                if (System.IO.File.Exists(scenePath))
+                {
+                    scenes.Add(new EditorBuildSettingsScene(scenePath, true));
+                    Debug.Log($"✅ Added {sceneName} to Build Settings");
+                }
+            }
+            
+            // Update build settings
+            EditorBuildSettings.scenes = scenes.ToArray();
+            Debug.Log("🎯 All scenes added to Build Settings!");
         }
     }
 }
