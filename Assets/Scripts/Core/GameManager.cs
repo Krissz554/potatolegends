@@ -65,7 +65,7 @@ namespace PotatoLegends.Core
                 case GameState.Collection:
                 case GameState.DeckBuilder:
                 case GameState.HeroHall:
-                    if (SceneManager.GetActiveScene().name != mainMenuSceneName)
+                    if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name != mainMenuSceneName)
                     {
                         LoadScene(mainMenuSceneName);
                     }
@@ -75,14 +75,14 @@ namespace PotatoLegends.Core
 
         private void LoadScene(string sceneName)
         {
-            if (SceneManager.GetActiveScene().name == sceneName)
+            if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == sceneName)
             {
                 Debug.Log($"Scene {sceneName} is already active.");
                 return;
             }
 
             Debug.Log($"GameManager: Loading scene: {sceneName}");
-            SceneManager.LoadScene(sceneName);
+            UnityEngine.SceneManagement.SceneManager.LoadScene(sceneName);
         }
 
         public GameState GetCurrentGameState()

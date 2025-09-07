@@ -83,9 +83,9 @@ namespace PotatoLegends.UI
         {
             Debug.Log("🔙 Back button clicked");
             
-            if (PotatoLegends.Core.SceneManager.Instance != null)
+            if (PotatoLegends.Core.GameSceneManager.Instance != null)
             {
-                PotatoLegends.Core.SceneManager.Instance.LoadMainMenu();
+                PotatoLegends.Core.GameSceneManager.Instance.LoadMainMenu();
             }
         }
 

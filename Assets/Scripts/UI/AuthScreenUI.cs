@@ -163,10 +163,10 @@ namespace PotatoLegends.UI
             {
                 Debug.Log($"✅ {(isSignIn ? "Sign In" : "Sign Up")} successful!");
                 
-                // Notify SceneManager of successful authentication
-                if (PotatoLegends.Core.SceneManager.Instance != null)
+                // Notify GameSceneManager of successful authentication
+                if (PotatoLegends.Core.GameSceneManager.Instance != null)
                 {
-                    PotatoLegends.Core.SceneManager.Instance.OnAuthenticationSuccess("demo_token_123");
+                    PotatoLegends.Core.GameSceneManager.Instance.OnAuthenticationSuccess("demo_token_123");
                 }
             }
             else

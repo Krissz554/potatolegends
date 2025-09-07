@@ -4,9 +4,9 @@ using System.Collections;
 
 namespace PotatoLegends.Core
 {
-    public class SceneManager : MonoBehaviour
+    public class GameSceneManager : MonoBehaviour
     {
-        public static SceneManager Instance { get; private set; }
+        public static GameSceneManager Instance { get; private set; }
 
         [Header("Scene Names")]
         [SerializeField] private string authSceneName = "Auth";

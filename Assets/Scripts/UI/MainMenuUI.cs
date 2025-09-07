@@ -115,18 +115,18 @@ namespace PotatoLegends.UI
         {
             Debug.Log($"🧭 Navigating to {sceneName}");
             
-            if (PotatoLegends.Core.SceneManager.Instance != null)
+            if (PotatoLegends.Core.GameSceneManager.Instance != null)
             {
                 switch (sceneName)
                 {
                     case "Collection":
-                        PotatoLegends.Core.SceneManager.Instance.LoadCollection();
+                        PotatoLegends.Core.GameSceneManager.Instance.LoadCollection();
                         break;
                     case "DeckBuilder":
-                        PotatoLegends.Core.SceneManager.Instance.LoadDeckBuilder();
+                        PotatoLegends.Core.GameSceneManager.Instance.LoadDeckBuilder();
                         break;
                     case "HeroHall":
-                        PotatoLegends.Core.SceneManager.Instance.LoadHeroHall();
+                        PotatoLegends.Core.GameSceneManager.Instance.LoadHeroHall();
                         break;
                 }
             }
@@ -136,9 +136,9 @@ namespace PotatoLegends.UI
         {
             Debug.Log("⚔️ Battle button clicked - Starting matchmaking");
             
-            if (PotatoLegends.Core.SceneManager.Instance != null)
+            if (PotatoLegends.Core.GameSceneManager.Instance != null)
             {
-                PotatoLegends.Core.SceneManager.Instance.StartMatchmaking();
+                PotatoLegends.Core.GameSceneManager.Instance.StartMatchmaking();
             }
         }
 
@@ -175,9 +175,9 @@ namespace PotatoLegends.UI
         {
             // TODO: Implement proper confirmation dialog
             // For now, just logout directly
-            if (PotatoLegends.Core.SceneManager.Instance != null)
+            if (PotatoLegends.Core.GameSceneManager.Instance != null)
             {
-                PotatoLegends.Core.SceneManager.Instance.Logout();
+                PotatoLegends.Core.GameSceneManager.Instance.Logout();
             }
         }
 
