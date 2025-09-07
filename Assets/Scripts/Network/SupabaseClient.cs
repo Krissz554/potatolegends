@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System;
 using System.Text;
+using UnityEngine.InputSystem;
 
 namespace PotatoLegends.Network
 {
