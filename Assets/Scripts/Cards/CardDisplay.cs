@@ -133,7 +133,7 @@ namespace PotatoLegends.Cards
             if (droppedOn != null && droppedOn.CompareTag("BattlefieldSlot"))
             {
                 BattlefieldSlot slot = droppedOn.GetComponent<BattlefieldSlot>();
-                if (slot != null && slot.IsEmpty)
+                if (slot != null && slot.IsEmpty())
                 {
                     OnCardPlayed?.Invoke(cardData, slot.slotIndex);
                 }

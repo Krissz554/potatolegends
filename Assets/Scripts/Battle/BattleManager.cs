@@ -124,7 +124,7 @@ namespace PotatoLegends.Battle
                 CurrentTurnPlayerId = session.game_state.current_turn_player_id;
                 CurrentTurnNumber = session.game_state.turn_count;
                 
-                if (session.game_state.player1_id == CurrentPlayerId)
+                if (session.player1_id == CurrentPlayerId)
                 {
                     CurrentPlayerMana = session.game_state.player1_hero?.mana ?? 0;
                     OpponentPlayerMana = session.game_state.player2_hero?.mana ?? 0;
