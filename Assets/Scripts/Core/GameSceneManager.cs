@@ -251,13 +251,13 @@ namespace PotatoLegends.Core
 
         #region Authentication Methods
 
-        public void OnAuthenticationSuccess(string userToken)
+        public void OnAuthenticationSuccess(string userEmail)
         {
-            // Save authentication token
-            PlayerPrefs.SetString("user_token", userToken);
+            // Save user email
+            PlayerPrefs.SetString("user_email", userEmail);
             PlayerPrefs.Save();
             
-            Debug.Log("✅ User authenticated successfully");
+            Debug.Log($"✅ User authenticated successfully: {userEmail}");
             
             // Load main menu after successful authentication
             LoadMainMenu();

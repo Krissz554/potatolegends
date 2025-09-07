@@ -12,14 +12,14 @@ using PotatoLegends.Collection;
 
 namespace PotatoLegends.Editor
 {
-    public class CompleteWebReplicator : EditorWindow
+    public class SimpleGameCreator : EditorWindow
     {
-        [MenuItem("Potato Legends/Create Complete Mobile Game (Web Style)")]
+        [MenuItem("Potato Legends/Create Complete Mobile Game")]
         public static void CreateCompleteMobileGame()
         {
-            Debug.Log("🎮 Creating Complete Mobile Game - Replicating Web Version...");
+            Debug.Log("🎮 Creating Complete Mobile Game...");
             
-            // Create all scenes with web-style UI
+            // Create all scenes
             CreateAuthScene();
             CreateMainMenuScene();
             CreateCollectionScene();
@@ -31,7 +31,37 @@ namespace PotatoLegends.Editor
             UpdateBuildSettings();
             
             Debug.Log("✅ Complete Mobile Game Created Successfully!");
-            Debug.Log("🎯 All scenes replicate the web version exactly for mobile!");
+        }
+
+        [MenuItem("Potato Legends/Cleanup & Reset")]
+        public static void CleanupAndReset()
+        {
+            Debug.Log("🧹 Cleaning up old scripts...");
+            
+            // List of old scripts to remove
+            string[] oldScripts = {
+                "Assets/Scripts/Editor/MobileSceneBuilder.cs",
+                "Assets/Scripts/Editor/SceneUIAttacher.cs",
+                "Assets/Scripts/Editor/CompilationTest.cs",
+                "Assets/Scripts/Editor/InputManagerSetup.cs",
+                "Assets/Scripts/Editor/WebVersionReplicator.cs",
+                "Assets/Scripts/Editor/CompleteWebReplicator.cs",
+                "Assets/Scripts/Editor/CleanupOldScripts.cs"
+            };
+            
+            foreach (string script in oldScripts)
+            {
+                if (System.IO.File.Exists(script))
+                {
+                    System.IO.File.Delete(script);
+                    Debug.Log($"✅ Removed: {script}");
+                }
+            }
+            
+            // Refresh asset database
+            AssetDatabase.Refresh();
+            
+            Debug.Log("✅ Cleanup complete! Only essential scripts remain.");
         }
 
         private static void CreateAuthScene()
@@ -39,24 +69,14 @@ namespace PotatoLegends.Editor
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             scene.name = "Auth";
             
-            // Create Main Camera
             CreateMainCamera();
-            
-            // Create Canvas
             var canvas = CreateMobileCanvas("AuthCanvas");
-            
-            // Create Background with main pixel art
             CreateBackgroundWithImage(canvas, "Images/art/main-pixel");
-            
-            // Create Auth Modal (replicating web modal style)
-            var authModal = CreateAuthModal(canvas);
-            
-            // Create GameInitializer
+            CreateAuthModal(canvas);
             CreateGameInitializer();
             
-            // Save scene
             EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene(), "Assets/Scenes/Auth.unity");
-            Debug.Log("✅ Auth scene created with web-style modal!");
+            Debug.Log("✅ Auth scene created!");
         }
 
         private static void CreateMainMenuScene()
@@ -71,7 +91,7 @@ namespace PotatoLegends.Editor
             CreateGameInitializer();
             
             EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene(), "Assets/Scenes/MainMenu.unity");
-            Debug.Log("✅ Main Menu scene created with web-style layout!");
+            Debug.Log("✅ Main Menu scene created!");
         }
 
         private static void CreateCollectionScene()
@@ -86,7 +106,7 @@ namespace PotatoLegends.Editor
             CreateGameInitializer();
             
             EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene(), "Assets/Scenes/Collection.unity");
-            Debug.Log("✅ Collection scene created with web-style layout!");
+            Debug.Log("✅ Collection scene created!");
         }
 
         private static void CreateDeckBuilderScene()
@@ -101,7 +121,7 @@ namespace PotatoLegends.Editor
             CreateGameInitializer();
             
             EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene(), "Assets/Scenes/DeckBuilder.unity");
-            Debug.Log("✅ Deck Builder scene created with web-style layout!");
+            Debug.Log("✅ Deck Builder scene created!");
         }
 
         private static void CreateHeroHallScene()
@@ -116,7 +136,7 @@ namespace PotatoLegends.Editor
             CreateGameInitializer();
             
             EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene(), "Assets/Scenes/HeroHall.unity");
-            Debug.Log("✅ Hero Hall scene created with web-style layout!");
+            Debug.Log("✅ Hero Hall scene created!");
         }
 
         private static void CreateBattleScene()
@@ -131,7 +151,7 @@ namespace PotatoLegends.Editor
             CreateGameInitializer();
             
             EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene(), "Assets/Scenes/Battle.unity");
-            Debug.Log("✅ Battle scene created with web-style layout!");
+            Debug.Log("✅ Battle scene created!");
         }
 
         private static void CreateMainCamera()
@@ -152,13 +172,12 @@ namespace PotatoLegends.Editor
 
             var canvasScaler = canvasObj.AddComponent<CanvasScaler>();
             canvasScaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            canvasScaler.referenceResolution = new Vector2(1080, 1920); // Mobile portrait
+            canvasScaler.referenceResolution = new Vector2(1080, 1920);
             canvasScaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
             canvasScaler.matchWidthOrHeight = 0.5f;
 
             canvasObj.AddComponent<GraphicRaycaster>();
 
-            // Create EventSystem
             var eventSystemObj = new GameObject("EventSystem");
             eventSystemObj.AddComponent<EventSystem>();
             eventSystemObj.AddComponent<StandaloneInputModule>();
@@ -192,7 +211,6 @@ namespace PotatoLegends.Editor
 
         private static GameObject CreateAuthModal(GameObject canvas)
         {
-            // Create Modal Background
             var modalBg = new GameObject("ModalBackground");
             modalBg.transform.SetParent(canvas.transform, false);
             
@@ -205,7 +223,6 @@ namespace PotatoLegends.Editor
             modalBgRect.offsetMin = Vector2.zero;
             modalBgRect.offsetMax = Vector2.zero;
 
-            // Create Modal Panel
             var modalPanel = new GameObject("ModalPanel");
             modalPanel.transform.SetParent(modalBg.transform, false);
             
@@ -218,31 +235,21 @@ namespace PotatoLegends.Editor
             var panelImage = modalPanel.AddComponent<Image>();
             panelImage.color = new Color(0.1f, 0.1f, 0.2f, 0.95f);
 
-            // Create Title
             CreateText(modalPanel, "Title", "Join the Potato Club! 🥔", 36, new Vector2(0.1f, 0.8f), new Vector2(0.9f, 0.9f), new Color(1f, 0.8f, 0f, 1f));
-
-            // Create Subtitle
             CreateText(modalPanel, "Subtitle", "Create an account to save your favorite potato personalities", 18, new Vector2(0.1f, 0.75f), new Vector2(0.9f, 0.8f), new Color(0.8f, 0.8f, 0.8f, 1f));
 
-            // Create Tab System
             CreateTabSystem(modalPanel);
 
-            // Create Email Input
             var emailInput = CreateInputField(modalPanel, "EmailInput", "Email", "your@email.com", new Vector2(0.1f, 0.5f), new Vector2(0.9f, 0.6f));
-
-            // Create Password Input
             var passwordInput = CreateInputField(modalPanel, "PasswordInput", "Password", "••••••••", new Vector2(0.1f, 0.35f), new Vector2(0.9f, 0.45f));
             passwordInput.contentType = TMP_InputField.ContentType.Password;
 
-            // Create Buttons
             var signInButton = CreateButton(modalPanel, "SignInButton", "Sign In", new Vector2(0.1f, 0.2f), new Vector2(0.45f, 0.3f), new Color(0.2f, 0.6f, 0.2f, 1f));
             var signUpButton = CreateButton(modalPanel, "SignUpButton", "Create Account", new Vector2(0.55f, 0.2f), new Vector2(0.9f, 0.3f), new Color(0.2f, 0.4f, 0.8f, 1f));
             var googleButton = CreateButton(modalPanel, "GoogleSignInButton", "Sign in with Google", new Vector2(0.1f, 0.1f), new Vector2(0.9f, 0.18f), new Color(0.9f, 0.9f, 0.9f, 1f));
 
-            // Create Error Message
             var errorMessage = CreateText(modalPanel, "ErrorMessage", "", 16, new Vector2(0.1f, 0.05f), new Vector2(0.9f, 0.1f), new Color(1f, 0.3f, 0.3f, 1f));
 
-            // Add AuthScreenUI script
             var authScreenUI = modalPanel.AddComponent<AuthScreenUI>();
             AssignAuthReferences(authScreenUI, emailInput, passwordInput, signInButton, signUpButton, googleButton, errorMessage, null);
 
@@ -251,7 +258,6 @@ namespace PotatoLegends.Editor
 
         private static void CreateMainMenuContent(GameObject canvas)
         {
-            // Create Top Navigation Bar
             var navBar = new GameObject("NavigationBar");
             navBar.transform.SetParent(canvas.transform, false);
             
@@ -264,25 +270,16 @@ namespace PotatoLegends.Editor
             var navImage = navBar.AddComponent<Image>();
             navImage.color = new Color(0f, 0f, 0f, 0.2f);
 
-            // Create Logo/Title
             CreateText(navBar, "Logo", "What's My Potato?", 32, new Vector2(0.1f, 0.2f), new Vector2(0.9f, 0.8f), Color.white);
-
-            // Create Main Title
             CreateText(canvas, "MainTitle", "POTATO LEGENDS", 72, new Vector2(0.1f, 0.6f), new Vector2(0.9f, 0.75f), new Color(1f, 0.8f, 0f, 1f));
-
-            // Create Subtitle
             CreateText(canvas, "Subtitle", "Enter the mystical realm of trading card warfare", 24, new Vector2(0.1f, 0.55f), new Vector2(0.9f, 0.6f), new Color(0.8f, 0.8f, 0.8f, 1f));
 
-            // Create Menu Buttons
             CreateButton(canvas, "CollectionButton", "Collection", new Vector2(0.1f, 0.4f), new Vector2(0.9f, 0.48f), new Color(0.2f, 0.6f, 0.4f, 0.8f));
             CreateButton(canvas, "DeckBuilderButton", "Deck Builder", new Vector2(0.1f, 0.32f), new Vector2(0.9f, 0.4f), new Color(0.2f, 0.4f, 0.8f, 0.8f));
             CreateButton(canvas, "HeroHallButton", "Hero Hall", new Vector2(0.1f, 0.24f), new Vector2(0.9f, 0.32f), new Color(0.8f, 0.6f, 0.2f, 0.8f));
             CreateButton(canvas, "SettingsButton", "Settings", new Vector2(0.1f, 0.16f), new Vector2(0.9f, 0.24f), new Color(0.6f, 0.6f, 0.6f, 0.8f));
-
-            // Create Battle Button
-            var battleButton = CreateButton(canvas, "BattleButton", "BATTLE", new Vector2(0.1f, 0.05f), new Vector2(0.9f, 0.15f), new Color(0.8f, 0.2f, 0.2f, 1f));
+            CreateButton(canvas, "BattleButton", "BATTLE", new Vector2(0.1f, 0.05f), new Vector2(0.9f, 0.15f), new Color(0.8f, 0.2f, 0.2f, 1f));
             
-            // Add MainMenuUI script
             var mainMenuPanel = new GameObject("MainMenuPanel");
             mainMenuPanel.transform.SetParent(canvas.transform, false);
             var mainMenuRect = mainMenuPanel.GetComponent<RectTransform>();
@@ -296,7 +293,6 @@ namespace PotatoLegends.Editor
 
         private static void CreateCollectionContent(GameObject canvas)
         {
-            // Create Collection Panel
             var collectionPanel = new GameObject("CollectionPanel");
             collectionPanel.transform.SetParent(canvas.transform, false);
             
@@ -306,22 +302,15 @@ namespace PotatoLegends.Editor
             panelRect.offsetMin = Vector2.zero;
             panelRect.offsetMax = Vector2.zero;
             
-            // Create Back Button
             CreateButton(collectionPanel, "BackButton", "← Back", new Vector2(0.05f, 0.9f), new Vector2(0.2f, 0.95f), new Color(0.4f, 0.2f, 0.2f, 0.8f));
-            
-            // Create Title
             CreateText(collectionPanel, "Title", "COLLECTION", 48, new Vector2(0.2f, 0.9f), new Vector2(0.8f, 0.95f), Color.white);
-            
-            // Create Search Bar
             CreateInputField(collectionPanel, "SearchInput", "Search cards...", "Search cards...", new Vector2(0.1f, 0.8f), new Vector2(0.9f, 0.85f));
             
-            // Create Filter Buttons
             CreateButton(collectionPanel, "AllFilterButton", "All", new Vector2(0.1f, 0.75f), new Vector2(0.2f, 0.8f), new Color(0.3f, 0.3f, 0.3f, 0.8f));
             CreateButton(collectionPanel, "CommonFilterButton", "Common", new Vector2(0.25f, 0.75f), new Vector2(0.35f, 0.8f), new Color(0.3f, 0.3f, 0.3f, 0.8f));
             CreateButton(collectionPanel, "RareFilterButton", "Rare", new Vector2(0.4f, 0.75f), new Vector2(0.5f, 0.8f), new Color(0.3f, 0.3f, 0.3f, 0.8f));
             CreateButton(collectionPanel, "LegendaryFilterButton", "Legendary", new Vector2(0.55f, 0.75f), new Vector2(0.7f, 0.8f), new Color(0.3f, 0.3f, 0.3f, 0.8f));
             
-            // Add CollectionScreenUI script
             collectionPanel.AddComponent<CollectionScreenUI>();
         }
 
@@ -377,7 +366,6 @@ namespace PotatoLegends.Editor
 
         private static void CreateTabSystem(GameObject parent)
         {
-            // Create Tab Container
             var tabContainer = new GameObject("TabContainer");
             tabContainer.transform.SetParent(parent.transform, false);
             
@@ -387,10 +375,7 @@ namespace PotatoLegends.Editor
             tabRect.offsetMin = Vector2.zero;
             tabRect.offsetMax = Vector2.zero;
 
-            // Create Sign In Tab
             CreateButton(tabContainer, "SignInTab", "Sign In", new Vector2(0f, 0f), new Vector2(0.5f, 1f), new Color(0.3f, 0.3f, 0.3f, 1f));
-
-            // Create Sign Up Tab
             CreateButton(tabContainer, "SignUpTab", "Sign Up", new Vector2(0.5f, 0f), new Vector2(1f, 1f), new Color(0.3f, 0.3f, 0.3f, 1f));
         }
 
@@ -464,7 +449,6 @@ namespace PotatoLegends.Editor
             
             var inputField = inputObj.AddComponent<TMP_InputField>();
             
-            // Create text area
             var textAreaObj = new GameObject("Text Area");
             textAreaObj.transform.SetParent(inputObj.transform, false);
             var textAreaRect = textAreaObj.AddComponent<RectTransform>();
@@ -473,7 +457,6 @@ namespace PotatoLegends.Editor
             textAreaRect.offsetMin = Vector2.zero;
             textAreaRect.offsetMax = Vector2.zero;
             
-            // Create text
             var textObj = new GameObject("Text");
             textObj.transform.SetParent(textAreaObj.transform, false);
             var textComponent = textObj.AddComponent<TextMeshProUGUI>();
@@ -487,7 +470,6 @@ namespace PotatoLegends.Editor
             textRect.offsetMin = Vector2.zero;
             textRect.offsetMax = Vector2.zero;
             
-            // Create placeholder
             var placeholderObj = new GameObject("Placeholder");
             placeholderObj.transform.SetParent(textAreaObj.transform, false);
             var placeholderComponent = placeholderObj.AddComponent<TextMeshProUGUI>();
@@ -541,7 +523,6 @@ namespace PotatoLegends.Editor
 
         private static void UpdateBuildSettings()
         {
-            // Update EditorBuildSettings to include all scenes
             var scenes = new EditorBuildSettingsScene[]
             {
                 new EditorBuildSettingsScene("Assets/Scenes/Auth.unity", true),
@@ -553,7 +534,7 @@ namespace PotatoLegends.Editor
             };
             
             EditorBuildSettings.scenes = scenes;
-            Debug.Log("✅ Build settings updated with all scenes!");
+            Debug.Log("✅ Build settings updated!");
         }
     }
 }
