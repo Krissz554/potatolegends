@@ -42,6 +42,19 @@ namespace PotatoLegends.UI
                 PotatoLegends.Network.SupabaseClient.Instance.OnAuthenticationSuccess -= OnAuthenticationSuccess;
                 PotatoLegends.Network.SupabaseClient.Instance.OnAuthenticationError -= OnAuthenticationError;
             }
+
+            // Clean up listeners
+            if (signInButton != null)
+                signInButton.onClick.RemoveAllListeners();
+            
+            if (signUpButton != null)
+                signUpButton.onClick.RemoveAllListeners();
+
+            if (emailInput != null)
+                emailInput.onValueChanged.RemoveAllListeners();
+
+            if (passwordInput != null)
+                passwordInput.onValueChanged.RemoveAllListeners();
         }
 
         private void OnAuthenticationSuccess(string userEmail)
@@ -284,20 +297,5 @@ namespace PotatoLegends.UI
                 signUpButton.interactable = !show;
         }
 
-        private void OnDestroy()
-        {
-            // Clean up listeners
-            if (signInButton != null)
-                signInButton.onClick.RemoveAllListeners();
-            
-            if (signUpButton != null)
-                signUpButton.onClick.RemoveAllListeners();
-
-            if (emailInput != null)
-                emailInput.onValueChanged.RemoveAllListeners();
-
-            if (passwordInput != null)
-                passwordInput.onValueChanged.RemoveAllListeners();
-        }
     }
 }
