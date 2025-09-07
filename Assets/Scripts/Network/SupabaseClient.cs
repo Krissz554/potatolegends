@@ -6,6 +6,7 @@ using System;
 using System.Text;
 using UnityEngine.InputSystem;
 using PotatoLegends.Utils;
+using PotatoLegends.Data;
 
 namespace PotatoLegends.Network
 {
