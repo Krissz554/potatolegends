@@ -117,9 +117,32 @@ namespace PotatoLegends.Core
         {
             if (isLoading) return;
             Debug.Log("🔍 Starting matchmaking...");
-            // TODO: Implement actual matchmaking logic
-            // For now, just load battle scene after a delay
-            StartCoroutine(StartMatchmakingCoroutine());
+            
+            if (PotatoLegends.Network.AblyClient.Instance != null)
+            {
+                // Subscribe to matchmaking events
+                PotatoLegends.Network.AblyClient.Instance.OnMatchmakingFound += OnMatchFound;
+                PotatoLegends.Network.AblyClient.Instance.JoinMatchmaking();
+            }
+            else
+            {
+                // Fallback to simulated matchmaking
+                StartCoroutine(StartMatchmakingCoroutine());
+            }
+        }
+
+        private void OnMatchFound(string opponentId)
+        {
+            Debug.Log($"🎯 Match found with opponent: {opponentId}");
+            
+            // Unsubscribe from events
+            if (PotatoLegends.Network.AblyClient.Instance != null)
+            {
+                PotatoLegends.Network.AblyClient.Instance.OnMatchmakingFound -= OnMatchFound;
+            }
+            
+            // Load battle scene
+            StartCoroutine(LoadSceneCoroutine(battleSceneName));
         }
 
         #endregion

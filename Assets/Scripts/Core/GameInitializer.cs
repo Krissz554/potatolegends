@@ -10,6 +10,13 @@ namespace PotatoLegends.Core
 
         private void Awake()
         {
+            // Ensure HttpClient exists first
+            if (PotatoLegends.Network.HttpClient.Instance == null)
+            {
+                GameObject httpClient = new GameObject("HttpClient");
+                httpClient.AddComponent<PotatoLegends.Network.HttpClient>();
+            }
+
             // Ensure GameSceneManager exists
             if (GameSceneManager.Instance == null)
             {
@@ -36,6 +43,20 @@ namespace PotatoLegends.Core
                     GameObject supabaseClient = new GameObject("SupabaseClient");
                     supabaseClient.AddComponent<PotatoLegends.Network.SupabaseClient>();
                 }
+            }
+
+            // Ensure CollectionManager exists
+            if (PotatoLegends.Collection.CollectionManager.Instance == null)
+            {
+                GameObject collectionManager = new GameObject("CollectionManager");
+                collectionManager.AddComponent<PotatoLegends.Collection.CollectionManager>();
+            }
+
+            // Ensure AblyClient exists
+            if (PotatoLegends.Network.AblyClient.Instance == null)
+            {
+                GameObject ablyClient = new GameObject("AblyClient");
+                ablyClient.AddComponent<PotatoLegends.Network.AblyClient>();
             }
         }
     }

@@ -33,7 +33,7 @@ namespace PotatoLegends.UI
                 _ = CollectionManager.Instance.LoadAllCards();
                 if (SupabaseClient.Instance != null && !string.IsNullOrEmpty(SupabaseClient.Instance.GetAccessToken()))
                 {
-                    _ = CollectionManager.Instance.LoadActiveDeck(SupabaseClient.Instance.GetAccessToken());
+                    _ = CollectionManager.Instance.LoadActiveDeck();
                 }
             }
 

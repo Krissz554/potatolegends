@@ -21,6 +21,48 @@ namespace PotatoLegends.UI
         private void Start()
         {
             SetupUI();
+            SetupEventListeners();
+        }
+
+        private void SetupEventListeners()
+        {
+            // Subscribe to SupabaseClient events
+            if (PotatoLegends.Network.SupabaseClient.Instance != null)
+            {
+                PotatoLegends.Network.SupabaseClient.Instance.OnAuthenticationSuccess += OnAuthenticationSuccess;
+                PotatoLegends.Network.SupabaseClient.Instance.OnAuthenticationError += OnAuthenticationError;
+            }
+        }
+
+        private void OnDestroy()
+        {
+            // Unsubscribe from events
+            if (PotatoLegends.Network.SupabaseClient.Instance != null)
+            {
+                PotatoLegends.Network.SupabaseClient.Instance.OnAuthenticationSuccess -= OnAuthenticationSuccess;
+                PotatoLegends.Network.SupabaseClient.Instance.OnAuthenticationError -= OnAuthenticationError;
+            }
+        }
+
+        private void OnAuthenticationSuccess(string userEmail)
+        {
+            Debug.Log($"✅ Authentication successful for: {userEmail}");
+            ShowLoading(false);
+            
+            // Notify GameSceneManager of successful authentication
+            if (PotatoLegends.Core.GameSceneManager.Instance != null)
+            {
+                PotatoLegends.Core.GameSceneManager.Instance.OnAuthenticationSuccess(
+                    PotatoLegends.Network.SupabaseClient.Instance.GetAccessToken()
+                );
+            }
+        }
+
+        private void OnAuthenticationError(string error)
+        {
+            Debug.LogError($"❌ Authentication error: {error}");
+            ShowError(ParseErrorMessage(error));
+            ShowLoading(false);
         }
 
         private void SetupUI()
@@ -151,41 +193,35 @@ namespace PotatoLegends.UI
             string email = emailInput.text.Trim();
             string password = passwordInput.text;
 
+            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
+            {
+                ShowError("Please enter both email and password.");
+                ShowLoading(false);
+                return;
+            }
+
             try
             {
-                string userId;
-                string error;
+                bool success;
 
                 if (isSignIn)
                 {
-                    (userId, error) = await PotatoLegends.Network.SupabaseClient.Instance.SignIn(email, password);
+                    success = await PotatoLegends.Network.SupabaseClient.Instance.SignIn(email, password);
                 }
                 else
                 {
-                    (userId, error) = await PotatoLegends.Network.SupabaseClient.Instance.SignUp(email, password);
+                    success = await PotatoLegends.Network.SupabaseClient.Instance.SignUp(email, password);
                 }
 
-                if (error != null)
+                if (success)
                 {
-                    Debug.LogError($"❌ {(isSignIn ? "Sign In" : "Sign Up")} failed: {error}");
-                    ShowError(ParseErrorMessage(error));
+                    Debug.Log($"✅ {(isSignIn ? "Sign In" : "Sign Up")} successful!");
+                    // Authentication success is handled by SupabaseClient events
                 }
                 else
                 {
-                    Debug.Log($"✅ {(isSignIn ? "Sign In" : "Sign Up")} successful!");
-                    
-                    // Save user data
-                    PlayerPrefs.SetString("user_id", userId);
-                    PlayerPrefs.SetString("user_email", email);
-                    PlayerPrefs.Save();
-                    
-                    // Notify GameSceneManager of successful authentication
-                    if (PotatoLegends.Core.GameSceneManager.Instance != null)
-                    {
-                        PotatoLegends.Core.GameSceneManager.Instance.OnAuthenticationSuccess(
-                            PotatoLegends.Network.SupabaseClient.Instance.GetAccessToken()
-                        );
-                    }
+                    Debug.LogError($"❌ {(isSignIn ? "Sign In" : "Sign Up")} failed");
+                    ShowError("Authentication failed. Please check your credentials.");
                 }
             }
             catch (Exception e)

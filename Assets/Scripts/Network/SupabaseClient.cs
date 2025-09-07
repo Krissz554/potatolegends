@@ -1,11 +1,7 @@
-using UnityEngine;
-using System.Collections;
-using System.Threading.Tasks;
 using System;
-using System.Text;
-using UnityEngine.Networking;
-using PotatoLegends.Utils;
-using PotatoLegends.Data;
+using System.Collections.Generic;
+using UnityEngine;
+using System.Threading.Tasks;
 
 namespace PotatoLegends.Network
 {
@@ -13,28 +9,43 @@ namespace PotatoLegends.Network
     {
         public static SupabaseClient Instance { get; private set; }
 
-        [SerializeField] private string supabaseUrl = "https://xsknbbvyagngljxkftkd.supabase.co";
-        [SerializeField] private string anonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhza25iYnZ5YWduZ2xqeGtmdGtkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYwNTg0MzIsImV4cCI6MjA3MTYzNDQzMn0.J8G45OdXxTbWuGO8N05_50qOVPq7BMSDo1xeegQMW0";
+        [Header("Supabase Configuration")]
+        public GameConfig gameConfig;
 
         private string accessToken;
+        private string userId;
+        private string userEmail;
+
+        // Events
+        public System.Action<string> OnAuthenticationSuccess;
+        public System.Action<string> OnAuthenticationError;
+        public System.Action<List<CollectionItem>> OnCollectionLoaded;
+        public System.Action<string> OnCollectionError;
 
         void Awake()
         {
             if (Instance != null && Instance != this)
             {
                 Destroy(gameObject);
+                return;
             }
-            else
-            {
-                Instance = this;
-                DontDestroyOnLoad(gameObject);
-            }
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+
+            // Load saved authentication
+            LoadSavedAuth();
         }
 
-        public void SetAccessToken(string token)
+        private void LoadSavedAuth()
         {
-            accessToken = token;
-            Debug.Log("SupabaseClient: Access token set.");
+            accessToken = PlayerPrefs.GetString("user_token", "");
+            userId = PlayerPrefs.GetString("user_id", "");
+            userEmail = PlayerPrefs.GetString("user_email", "");
+
+            if (!string.IsNullOrEmpty(accessToken))
+            {
+                Debug.Log("Loaded saved authentication");
+            }
         }
 
         public string GetAccessToken()
@@ -42,205 +53,203 @@ namespace PotatoLegends.Network
             return accessToken;
         }
 
+        public string GetUserId()
+        {
+            return userId;
+        }
+
+        public string GetUserEmail()
+        {
+            return userEmail;
+        }
+
+        public async Task<bool> SignIn(string email, string password)
+        {
+            try
+            {
+                var response = await MakeRequest("/auth/v1/token?grant_type=password", "POST", 
+                    $"{{\"email\":\"{email}\",\"password\":\"{password}\"}}");
+
+                if (string.IsNullOrEmpty(response.error))
+                {
+                    var authResponse = JsonUtility.FromJson<AuthResponse>(response.data);
+                    if (authResponse != null && !string.IsNullOrEmpty(authResponse.access_token))
+                    {
+                        accessToken = authResponse.access_token;
+                        userId = authResponse.user.id;
+                        userEmail = authResponse.user.email;
+
+                        // Save to PlayerPrefs
+                        PlayerPrefs.SetString("user_token", accessToken);
+                        PlayerPrefs.SetString("user_id", userId);
+                        PlayerPrefs.SetString("user_email", userEmail);
+                        PlayerPrefs.Save();
+
+                        OnAuthenticationSuccess?.Invoke(userEmail);
+                        return true;
+                    }
+                }
+
+                OnAuthenticationError?.Invoke(response.error ?? "Authentication failed");
+                return false;
+            }
+            catch (Exception ex)
+            {
+                OnAuthenticationError?.Invoke(ex.Message);
+                return false;
+            }
+        }
+
+        public async Task<bool> SignUp(string email, string password)
+        {
+            try
+            {
+                var response = await MakeRequest("/auth/v1/signup", "POST", 
+                    $"{{\"email\":\"{email}\",\"password\":\"{password}\"}}");
+
+                if (string.IsNullOrEmpty(response.error))
+                {
+                    var authResponse = JsonUtility.FromJson<AuthResponse>(response.data);
+                    if (authResponse != null && !string.IsNullOrEmpty(authResponse.access_token))
+                    {
+                        accessToken = authResponse.access_token;
+                        userId = authResponse.user.id;
+                        userEmail = authResponse.user.email;
+
+                        // Save to PlayerPrefs
+                        PlayerPrefs.SetString("user_token", accessToken);
+                        PlayerPrefs.SetString("user_id", userId);
+                        PlayerPrefs.SetString("user_email", userEmail);
+                        PlayerPrefs.Save();
+
+                        OnAuthenticationSuccess?.Invoke(userEmail);
+                        return true;
+                    }
+                }
+
+                OnAuthenticationError?.Invoke(response.error ?? "Registration failed");
+                return false;
+            }
+            catch (Exception ex)
+            {
+                OnAuthenticationError?.Invoke(ex.Message);
+                return false;
+            }
+        }
+
+        public async Task<bool> SignOut()
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(accessToken))
+                {
+                    await MakeRequest("/auth/v1/logout", "POST", null);
+                }
+
+                // Clear local data
+                accessToken = "";
+                userId = "";
+                userEmail = "";
+
+                PlayerPrefs.DeleteKey("user_token");
+                PlayerPrefs.DeleteKey("user_id");
+                PlayerPrefs.DeleteKey("user_email");
+                PlayerPrefs.Save();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Sign out error: {ex.Message}");
+                return false;
+            }
+        }
+
+        public async Task<List<CollectionItem>> GetUserCollection()
+        {
+            try
+            {
+                var response = await MakeRequest("/rest/v1/rpc/get_user_collection", "POST", 
+                    $"{{\"user_id\":\"{userId}\"}}");
+
+                if (string.IsNullOrEmpty(response.error))
+                {
+                    var collection = JsonHelper.FromJson<CollectionItem>(response.data);
+                    OnCollectionLoaded?.Invoke(collection);
+                    return collection;
+                }
+                else
+                {
+                    OnCollectionError?.Invoke(response.error);
+                    return new List<CollectionItem>();
+                }
+            }
+            catch (Exception ex)
+            {
+                OnCollectionError?.Invoke(ex.Message);
+                return new List<CollectionItem>();
+            }
+        }
+
+        public async Task<List<CardData>> GetAllCards()
+        {
+            try
+            {
+                var response = await MakeRequest("/rest/v1/card_complete", "GET", null);
+
+                if (string.IsNullOrEmpty(response.error))
+                {
+                    return JsonHelper.FromJson<CardData>(response.data);
+                }
+                else
+                {
+                    Debug.LogError($"Get all cards error: {response.error}");
+                    return new List<CardData>();
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Get all cards exception: {ex.Message}");
+                return new List<CardData>();
+            }
+        }
+
         private async Task<(string data, string error)> MakeRequest(string endpoint, string method, string body = null)
         {
-            string fullUrl = supabaseUrl + endpoint;
+            if (gameConfig == null)
+            {
+                Debug.LogError("GameConfig is not assigned to SupabaseClient!");
+                return (null, "Configuration error");
+            }
+
+            string fullUrl = gameConfig.supabaseUrl + endpoint;
             Debug.Log($"Supabase Request: {method} {fullUrl}");
 
-            // For now, return dummy data to avoid UnityWebRequest issues
-            // TODO: Implement proper HTTP client when Unity Web Request package is available
-            await Task.Delay(500); // Simulate network delay
-
-            if (method == "GET")
+            var headers = new Dictionary<string, string>
             {
-                // Return dummy collection data for GET requests
-                return ("[]", null);
-            }
-            else if (method == "POST")
-            {
-                // Return dummy auth response for POST requests
-                if (endpoint.Contains("token") || endpoint.Contains("signup"))
-                {
-                    return ("{\"access_token\":\"dummy_token\",\"user\":{\"id\":\"dummy_user_id\",\"email\":\"test@example.com\"}}", null);
-                }
-                return ("{\"success\": true}", null);
-            }
-
-            return ("{\"success\": true}", null);
-        }
-
-        public async Task<(string userId, string error)> SignIn(string email, string password)
-        {
-            Debug.Log($"SupabaseClient: Signing in {email}");
-            
-            var authData = new
-            {
-                email = email,
-                password = password
+                {"apikey", gameConfig.supabaseAnonKey},
+                {"Content-Type", "application/json"},
+                {"Prefer", "return=minimal"}
             };
 
-            string body = JsonHelper.ToJson(authData);
-            var (data, error) = await MakeRequest("/auth/v1/token?grant_type=password", "POST", body);
-
-            if (error != null)
-            {
-                Debug.LogError($"SupabaseClient: Sign-in failed: {error}");
-                return (null, error);
-            }
-
-            try
-            {
-                var authResponse = JsonUtility.FromJson<AuthResponse>(data);
-                SetAccessToken(authResponse.access_token);
-                
-                Debug.Log($"SupabaseClient: Sign-in successful for {email}");
-                return (authResponse.user.id, null);
-            }
-            catch (Exception e)
-            {
-                Debug.LogError($"SupabaseClient: Sign-in JSON parsing error: {e.Message}");
-                return (null, $"Sign-in failed: {e.Message}");
-            }
-        }
-
-        public async Task<(string userId, string error)> SignUp(string email, string password)
-        {
-            Debug.Log($"SupabaseClient: Signing up {email}");
-            
-            var authData = new
-            {
-                email = email,
-                password = password
-            };
-
-            string body = JsonHelper.ToJson(authData);
-            var (data, error) = await MakeRequest("/auth/v1/signup", "POST", body);
-
-            if (error != null)
-            {
-                Debug.LogError($"SupabaseClient: Sign-up failed: {error}");
-                return (null, error);
-            }
-
-            try
-            {
-                var authResponse = JsonUtility.FromJson<AuthResponse>(data);
-                SetAccessToken(authResponse.access_token);
-                
-                Debug.Log($"SupabaseClient: Sign-up successful for {email}");
-                return (authResponse.user.id, null);
-            }
-            catch (Exception e)
-            {
-                Debug.LogError($"SupabaseClient: Sign-up JSON parsing error: {e.Message}");
-                return (null, $"Sign-up failed: {e.Message}");
-            }
-        }
-
-        public async Task SignOut()
-        {
             if (!string.IsNullOrEmpty(accessToken))
             {
-                // Call Supabase signout endpoint
-                var (data, error) = await MakeRequest("/auth/v1/logout", "POST");
-                if (error != null)
-                {
-                    Debug.LogWarning($"SupabaseClient: Sign-out request failed: {error}");
-                }
+                headers["Authorization"] = $"Bearer {accessToken}";
             }
+
+            var tcs = new TaskCompletionSource<(string, string)>();
             
-            accessToken = null;
-            PlayerPrefs.DeleteKey("user_token");
-            PlayerPrefs.DeleteKey("user_id");
-            PlayerPrefs.Save();
-            Debug.Log("SupabaseClient: Signed out.");
+            HttpClient.Instance.MakeRequestAsync(fullUrl, method, body, headers, (data, error) =>
+            {
+                tcs.SetResult((data, error));
+            });
+
+            return await tcs.Task;
         }
 
-        public async Task<(T[] data, string error)> GetData<T>(string tableName, string query = null)
+        public bool IsAuthenticated()
         {
-            string url = $"/rest/v1/{tableName}";
-            if (!string.IsNullOrEmpty(query))
-            {
-                url += $"?{query}";
-            }
-
-            var (data, error) = await MakeRequest(url, "GET");
-
-            if (error != null)
-            {
-                return (null, error);
-            }
-
-            try
-            {
-                T[] result = JsonHelper.FromJsonArray<T>(data);
-                return (result, null);
-            }
-            catch (Exception e)
-            {
-                Debug.LogError($"SupabaseClient: JSON deserialization error: {e.Message}");
-                return (null, $"JSON deserialization error: {e.Message}");
-            }
-        }
-
-        public async Task<(string data, string error)> CallEdgeFunction(string functionName, object payload = null)
-        {
-            string url = $"/functions/v1/{functionName}";
-            string body = payload != null ? JsonHelper.ToJson(payload) : null;
-
-            var (data, error) = await MakeRequest(url, "POST", body);
-
-            return (data, error);
-        }
-
-        public async Task<(CollectionItem[] collection, string error)> GetUserCollection(string userId)
-        {
-            Debug.Log($"SupabaseClient: Fetching collection for {userId}");
-            
-            var (data, error) = await MakeRequest($"/rest/v1/rpc/get_user_collection?user_uuid={userId}", "GET");
-            
-            if (error != null)
-            {
-                Debug.LogError($"SupabaseClient: Failed to fetch collection: {error}");
-                return (null, error);
-            }
-
-            try
-            {
-                var collectionData = JsonHelper.FromJsonArray<CollectionItem>(data);
-                Debug.Log($"SupabaseClient: Loaded {collectionData.Length} collection items");
-                return (collectionData, null);
-            }
-            catch (Exception e)
-            {
-                Debug.LogError($"SupabaseClient: Collection JSON parsing error: {e.Message}");
-                return (null, $"Collection parsing error: {e.Message}");
-            }
-        }
-
-        public async Task<(CardData[] cards, string error)> GetAllCards()
-        {
-            Debug.Log($"SupabaseClient: Fetching all cards");
-            
-            var (data, error) = await MakeRequest("/rest/v1/card_complete?order=rarity.desc,name.asc", "GET");
-            
-            if (error != null)
-            {
-                Debug.LogError($"SupabaseClient: Failed to fetch cards: {error}");
-                return (null, error);
-            }
-
-            try
-            {
-                var cardsData = JsonHelper.FromJsonArray<CardData>(data);
-                Debug.Log($"SupabaseClient: Loaded {cardsData.Length} cards");
-                return (cardsData, null);
-            }
-            catch (Exception e)
-            {
-                Debug.LogError($"SupabaseClient: Cards JSON parsing error: {e.Message}");
-                return (null, $"Cards parsing error: {e.Message}");
-            }
+            return !string.IsNullOrEmpty(accessToken) && !string.IsNullOrEmpty(userId);
         }
     }
 
@@ -248,9 +257,6 @@ namespace PotatoLegends.Network
     public class AuthResponse
     {
         public string access_token;
-        public string token_type;
-        public int expires_in;
-        public string refresh_token;
         public User user;
     }
 
@@ -259,8 +265,6 @@ namespace PotatoLegends.Network
     {
         public string id;
         public string email;
-        public string created_at;
-        public string updated_at;
     }
 
     [System.Serializable]
