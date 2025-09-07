@@ -9,7 +9,7 @@ namespace PotatoLegends.Data
         [Header("Core Identifiers")]
         public string id;
         public string registry_id;
-        public string name;
+        public new string name;
         [TextArea] public string description;
         public string set_id;
         public string[] format_legalities;

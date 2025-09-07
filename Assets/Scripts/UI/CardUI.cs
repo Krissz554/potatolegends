@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using PotatoLegends.Data;
+using PotatoLegends.Network;
 
 namespace PotatoLegends.UI
 {
