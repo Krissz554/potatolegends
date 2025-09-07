@@ -139,7 +139,7 @@ namespace PotatoLegends.Editor
         private void ClearScene()
         {
             // Find and destroy all GameObjects except the ones we want to keep
-            GameObject[] allObjects = FindObjectsOfType<GameObject>();
+            GameObject[] allObjects = FindObjectsByType<GameObject>(FindObjectsSortMode.None);
             foreach (GameObject obj in allObjects)
             {
                 if (obj.name != "Directional Light" && obj.name != "Main Camera")
